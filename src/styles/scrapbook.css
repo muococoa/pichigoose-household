@@ -1,0 +1,128 @@
+/* The Scrapbook look. Copied from docs/screens/hifi-source (identical in all three files).
+   Values come from docs/tokens.json. Keep this file in sync with the hi-fi CSS. */
+
+:root {
+  --hero: #D34471;
+  --hero-dark: #A8335A;
+  --lilac: #D6C8E6;
+  --page: #FFFDF8;
+  --rule: #E6DFE3;
+  --margin: rgba(211, 68, 113, .22);
+  --white: #FFFFFF;
+  --ink-headline: #1E1A30;
+  --ink-body: #2E2638;
+  --ink-muted: #63586B;
+  --ink-faint: #857A8C;
+  --ink-dashed: #B6ABBE;
+  --success-dark: #4E6B39;
+  --note-blush: #F2C1C4;
+  --note-peach: #F6CFA0;
+  --note-butter: #F8E6A8;
+  --note-mist: #DCE7F0;
+  --note-sand: #E9E1D6;
+  --note-sage: #CFDDB8;
+  --note-mint: #A7D3CC;
+  --note-lilac: #D6C8E6;
+}
+
+/* The page: notebook paper, ruled every 32 px starting 6 px down, red margin at x = 26. */
+.scr {
+  position: relative;
+  box-sizing: border-box;
+  font-family: Nunito, sans-serif;
+  color: #2E2638;
+  background-color: #FFFDF8;
+  background-image: url("../../assets/paper-white.png"), repeating-linear-gradient(#FFFDF8 0 31px, #E6DFE3 31px 32px);
+  background-size: 512px 512px, auto;
+  background-position: 0 0, 0 6px;
+  background-attachment: local, local;
+}
+/* The red margin line scrolls with the page. */
+.screen > .scroll {
+  background-image: linear-gradient(90deg, transparent 26px, rgba(211, 68, 113, .22) 26px 28px, transparent 28px), url("../../assets/paper-white.png"), repeating-linear-gradient(#FFFDF8 0 31px, #E6DFE3 31px 32px);
+  background-size: auto, 512px 512px, auto;
+  background-position: 0 0, 0 0, 0 6px;
+  background-attachment: local, local, local;
+}
+.margin { position: absolute; top: 0; bottom: 0; left: 26px; width: 2px; background: rgba(211, 68, 113, .22); pointer-events: none; z-index: 1 }
+
+/* Hand-written headlines: dry marker. Never clip letters: keep the padding and negative margin. */
+.hand {
+  font-family: Caveat, cursive; font-weight: 700; color: #1E1A30; filter: url(#dry-ink);
+  padding: .25em .15em; margin: -.25em -.15em;
+  -webkit-mask-image: url("../../assets/ink-patch.png"); mask-image: url("../../assets/ink-patch.png");
+  -webkit-mask-size: 420px 420px; mask-size: 420px 420px;
+}
+
+/* Sticky notes */
+.note { position: relative; box-sizing: border-box; padding: 18px 18px 14px; box-shadow: 2px 3px 0 rgba(30, 26, 48, .13) }
+.note::after { content: ""; position: absolute; inset: 0; background-image: url("../../assets/note-fresh.png"); background-size: 512px 512px; mix-blend-mode: multiply; pointer-events: none }
+.n-blush { background: #F2C1C4 } .n-butter { background: #F8E6A8 } .n-mist { background: #DCE7F0 } .n-sage { background: #CFDDB8 } .n-lilac { background: #D6C8E6 }
+.n-peach { background: #F6CFA0 } .n-sand { background: #E9E1D6 } .n-mint { background: #A7D3CC }
+
+/* Washi tape */
+.tape { position: absolute; height: 22px; width: 84px; z-index: 2; pointer-events: none }
+.tp { background: repeating-linear-gradient(45deg, rgba(242, 193, 196, .9) 0 8px, rgba(255, 253, 248, .7) 8px 16px) }
+.ty { background: repeating-linear-gradient(45deg, rgba(248, 230, 168, .95) 0 8px, rgba(255, 253, 248, .7) 8px 16px) }
+.tm { background: repeating-linear-gradient(45deg, rgba(167, 211, 204, .9) 0 8px, rgba(255, 253, 248, .7) 8px 16px) }
+.tb { background: repeating-linear-gradient(45deg, rgba(201, 211, 240, .95) 0 8px, rgba(255, 253, 248, .7) 8px 16px) }
+.tdots { background: radial-gradient(circle, rgba(211, 68, 113, .5) 2.5px, transparent 3px) 0 0/11px 11px, rgba(242, 193, 196, .85) }
+.tblocks { background: linear-gradient(90deg, rgba(132, 102, 184, .4) 50%, transparent 50%) 0 0/18px 100%, rgba(214, 200, 230, .9) }
+.ttri { background: linear-gradient(135deg, rgba(242, 160, 61, .55) 25%, transparent 25%) -8px 0/16px 16px, linear-gradient(225deg, rgba(242, 160, 61, .55) 25%, transparent 25%) -8px 0/16px 16px, rgba(248, 230, 168, .9) }
+.tcheck { background: linear-gradient(90deg, rgba(110, 145, 82, .35) 50%, transparent 50%) 0 0/12px 12px, linear-gradient(rgba(110, 145, 82, .35) 50%, transparent 50%) 0 0/12px 12px, rgba(207, 221, 184, .9) }
+
+/* Stamps are labels, never buttons */
+.stamp {
+  display: inline-block; font-weight: 800; font-size: 11px; line-height: 14px; border: 2px solid currentColor; border-radius: 5px; padding: 2px 7px;
+  text-transform: uppercase; letter-spacing: .06em; white-space: nowrap;
+  -webkit-mask-image: url("../../assets/stamp-grunge.png"); mask-image: url("../../assets/stamp-grunge.png");
+  -webkit-mask-size: 300px 300px; mask-size: 300px 300px;
+}
+
+/* Stickers are the buttons */
+.stk {
+  font-family: Nunito, sans-serif; font-weight: 800; font-size: 16px; line-height: 20px; height: 48px; padding: 0 22px; border: 4px solid #FFFFFF;
+  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box;
+  box-shadow: 0 0 0 1px rgba(30, 26, 48, .10), 2px 3px 4px rgba(30, 26, 48, .22);
+  border-radius: 8px 30px 12px 26px / 26px 10px 30px 14px; white-space: nowrap;
+}
+.stk.prim { background: #D34471; color: #FFFFFF }
+.stk.sec { background: #FFFDF8; color: #1E1A30 }
+.stk.sm { height: 38px; font-size: 14px; padding: 0 14px; border-width: 3px }
+.stk.round { width: 62px; height: 62px; padding: 0; border-radius: 58% 38% 54% 40% / 40% 56% 38% 58% }
+.stk:disabled, .stk.off { background: #E6DFE3; color: #857A8C }
+
+/* Checkboxes */
+.box { width: 22px; height: 22px; border: 2px solid #1E1A30; border-radius: 5px; box-sizing: border-box; position: relative; flex: none; background: rgba(255, 253, 248, .6) }
+.box svg { position: absolute; left: -2px; top: -8px }
+
+/* Avatars: lines stay 2 px at every size */
+.av { width: 34px; height: 34px; flex: none; display: block; border-radius: 50%; box-shadow: 0 0 0 2px #FFFFFF, 1px 2px 2px 1px rgba(30, 26, 48, .15) }
+
+/* Pichi's postage stamp */
+.postage {
+  flex: none; padding: 7px;
+  background:
+    radial-gradient(circle at 50% 0, transparent 3.5px, #FFFFFF 4px) left top/11px 7px round no-repeat,
+    radial-gradient(circle at 50% 100%, transparent 3.5px, #FFFFFF 4px) left bottom/11px 7px round no-repeat,
+    radial-gradient(circle at 0 50%, transparent 3.5px, #FFFFFF 4px) left top/7px 11px no-repeat round,
+    radial-gradient(circle at 100% 50%, transparent 3.5px, #FFFFFF 4px) right top/7px 11px no-repeat round;
+  filter: drop-shadow(1px 2px 1.5px rgba(30, 26, 48, .2));
+}
+.postage .in { background: #FFFFFF; padding: 4px }
+.postage img { display: block; border: 2px solid #1E1A30; box-sizing: border-box }
+
+/* Tab bar */
+.tabbar {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 84px; background: #FFFDF8;
+  box-shadow: 0 -2px 0 rgba(30, 26, 48, .06), 0 -6px 14px rgba(30, 26, 48, .08);
+  display: flex; justify-content: space-around; align-items: flex-start; padding: 10px 6px 0; box-sizing: border-box; z-index: 5;
+}
+.tabbar::before { content: ""; position: absolute; inset: 0; background-image: url("../../assets/paper-white.png"); background-size: 512px 512px; opacity: .8; pointer-events: none }
+.tab { position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; font-weight: 700; color: #63586B; width: 66px }
+.tab svg { width: 26px; height: 26px }
+.tab.on { color: #A8335A }
+.tab.on::after { content: ""; position: absolute; top: -4px; left: 12px; right: 12px; height: 12px; background: repeating-linear-gradient(45deg, rgba(242, 193, 196, .95) 0 6px, rgba(255, 253, 248, .7) 6px 12px); z-index: -1; transform: rotate(-3deg) }
+
+.cap { font-size: 12px; line-height: 16px; font-weight: 600; color: #63586B }
+.ln { display: flex; align-items: center; gap: 12px; font-size: 16px; line-height: 24px; font-weight: 600; color: #1E1A30 }

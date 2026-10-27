@@ -1,0 +1,76 @@
+/* App shell and the clean parts (inputs, sheets). The scrapbook parts live in scrapbook.css. */
+
+*, *::before, *::after { box-sizing: border-box }
+html, body { margin: 0; height: 100%; background: #FFFDF8; -webkit-tap-highlight-color: transparent; overscroll-behavior: none }
+body { font-family: Nunito, sans-serif; color: #2E2638; -webkit-font-smoothing: antialiased }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; text-align: inherit }
+button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid #8466B8; outline-offset: 2px }
+a { color: inherit; text-decoration: none }
+#root { max-width: 430px; margin: 0 auto; min-height: 100%; position: relative }
+
+:root {
+  --top: max(env(safe-area-inset-top, 0px), 12px);
+  --bottom: env(safe-area-inset-bottom, 0px);
+  --tabbar: calc(64px + max(var(--bottom), 20px));
+}
+
+/* A full-height screen of notebook paper. */
+.screen { min-height: 100dvh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden }
+.screen > .scroll { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; position: relative; z-index: 2 }
+.pad { padding: 0 22px 0 40px }
+.top { padding-top: calc(var(--top) + 8px) }
+.with-tabbar .scroll { padding-bottom: calc(var(--tabbar) + 24px) }
+.tabbar { height: var(--tabbar) }
+
+.row { display: flex; align-items: center }
+.grow { flex: 1; min-width: 0 }
+.body { font-size: 15px; line-height: 22px; font-weight: 600 }
+.label { display: block; font-size: 14px; line-height: 20px; font-weight: 800; color: #463D50; margin: 0 0 6px }
+.err { color: #A8335A; font-size: 14px; line-height: 20px; font-weight: 700 }
+.link { font-weight: 800; color: #A8335A; text-decoration: underline; text-underline-offset: 3px }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap }
+
+/* Inputs stay clean: white, 2 px lilac edge, slightly uneven corners. */
+.input {
+  width: 100%; height: 52px; background: #FFFFFF; border: 0; border-radius: 6px 14px 8px 12px;
+  box-shadow: inset 0 0 0 2px #D6C8E6; padding: 0 16px; font: 600 16px/24px Nunito, sans-serif; color: #1E1A30; outline: none;
+}
+.input::placeholder { color: #857A8C }
+.input:focus { box-shadow: inset 0 0 0 2px #8466B8 }
+textarea.input { height: auto; padding: 12px 16px; resize: none }
+
+/* Stickers: pressed state is not designed yet. Flatten the shadow and move down 2 px. */
+.stk { cursor: pointer; transition: transform .08s ease }
+.stk:active:not(:disabled) { box-shadow: 0 0 0 1px rgba(30, 26, 48, .10); translate: 0 2px }
+.stk:disabled { cursor: default }
+
+/* Checkbox button with the hand check. The stroke draws on quickly. */
+.check-btn { display: inline-flex; padding: 10px; margin: -10px; flex: none }
+.check-btn .box svg path { stroke-dasharray: 40; stroke-dashoffset: 0; animation: draw-check .22s ease-out }
+@keyframes draw-check { from { stroke-dashoffset: 40 } to { stroke-dashoffset: 0 } }
+
+/* Bottom sheets */
+.sheet-back { position: fixed; inset: 0; background: rgba(30, 26, 48, .35); z-index: 50; display: flex; align-items: flex-end; justify-content: center; animation: fade .15s ease-out }
+.sheet {
+  width: 100%; max-width: 430px; max-height: 88dvh; overflow-y: auto; border-radius: 22px 26px 0 0;
+  padding: 10px 22px calc(24px + var(--bottom)) 22px; box-shadow: 0 -6px 14px rgba(30, 26, 48, .12); animation: rise .2s ease-out;
+}
+.sheet .grab { width: 40px; height: 4px; border-radius: 2px; background: #CBC2CC; margin: 0 auto 14px }
+@keyframes fade { from { opacity: 0 } }
+@keyframes rise { from { transform: translateY(30px); opacity: .6 } }
+
+/* A small menu (the ··· menus). */
+.menu { position: absolute; right: 0; top: 100%; z-index: 30; background: #FFFFFF; border-radius: 10px 14px 12px 10px; box-shadow: 0 0 0 1px rgba(30, 26, 48, .08), 2px 6px 14px rgba(30, 26, 48, .18); padding: 6px; min-width: 200px }
+.menu button { display: block; width: 100%; padding: 10px 12px; border-radius: 8px; font-size: 15px; font-weight: 700; color: #1E1A30 }
+.menu button:active { background: #F6F0E8 }
+.menu button.danger { color: #A8335A }
+
+/* Toast for small messages like "Copied". */
+.toast { position: fixed; left: 50%; bottom: calc(var(--tabbar) + 16px); transform: translateX(-50%) rotate(-1deg); z-index: 60; background: #1E1A30; color: #FFFDF8; font-weight: 800; font-size: 14px; padding: 10px 16px; border-radius: 8px 14px 10px 12px; box-shadow: 2px 3px 0 rgba(30, 26, 48, .2) }
+
+/* Offline marker */
+.offline { position: fixed; top: calc(var(--top) - 30px); right: 16px; z-index: 40 }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important }
+}

@@ -1,0 +1,107 @@
+import { useEffect, type ReactNode } from 'react'
+import { BrowserRouter, Navigate, Route, Routes, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { AuthProvider, useAuth } from './auth'
+import { isConfigured } from './lib/supabase'
+import { setLanguage } from './i18n'
+import { useHousehold, useMyProfile } from './data/hooks'
+import { InkFilter, ToastHost } from './components/Scrapbook'
+import { Screen } from './components/Shell'
+import { AuthScreen, NewPasswordScreen } from './screens/Auth'
+import { JoinOrCreateScreen, rememberJoinAddress } from './screens/JoinOrCreate'
+import { HouseholdCreatedScreen } from './screens/HouseholdCreated'
+import { HomeScreen } from './screens/Home'
+import { ArrangeHomeScreen } from './screens/ArrangeHome'
+import { ShoppingScreen } from './screens/Shopping'
+import { TodosScreen } from './screens/Todos'
+import { NoteScreen, NotesScreen } from './screens/Notes'
+import { ProfileScreen, SettingsScreen } from './screens/Profile'
+
+/** Blank notebook paper while things load. */
+function Paper() {
+  return <Screen>{null}</Screen>
+}
+
+/** Signed in, with at least one household. */
+function Inside({ children }: { children: ReactNode }) {
+  const { session, loading } = useAuth()
+  const { loaded, households } = useHousehold()
+  if (loading) return <Paper />
+  if (!session) return <Navigate to="/signup" replace />
+  if (!loaded) return <Paper />
+  if (!households.length) return <Navigate to="/welcome" replace />
+  return <>{children}</>
+}
+
+/** Signed in, households or not. */
+function SignedIn({ children }: { children: ReactNode }) {
+  const { session, loading } = useAuth()
+  if (loading) return <Paper />
+  if (!session) return <Navigate to="/signup" replace />
+  return <>{children}</>
+}
+
+function SignedOut({ children }: { children: ReactNode }) {
+  const { session, loading } = useAuth()
+  if (loading) return <Paper />
+  if (session) return <Navigate to="/" replace />
+  return <>{children}</>
+}
+
+/** A shared link like /join/lemon.sunny.goose. */
+function JoinLink() {
+  const { address } = useParams()
+  if (address) rememberJoinAddress(address)
+  return <Navigate to="/welcome" replace />
+}
+
+/** Keeps the interface language in step with the profile. */
+function LanguageSync() {
+  const profile = useMyProfile()
+  const { i18n } = useTranslation()
+  useEffect(() => {
+    if (profile?.language && profile.language !== i18n.language) setLanguage(profile.language)
+  }, [profile?.language, i18n.language])
+  return null
+}
+
+function NotConfigured() {
+  return (
+    <Screen>
+      <div className="pad top body" style={{ paddingTop: 120 }}>
+        VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY are missing.
+      </div>
+    </Screen>
+  )
+}
+
+export default function App() {
+  if (!isConfigured) return <NotConfigured />
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <InkFilter />
+        <LanguageSync />
+        <Routes>
+          <Route path="/signup" element={<SignedOut><AuthScreen mode="signup" /></SignedOut>} />
+          <Route path="/login" element={<SignedOut><AuthScreen mode="login" /></SignedOut>} />
+          <Route path="/reset" element={<SignedOut><AuthScreen mode="reset" /></SignedOut>} />
+          <Route path="/new-password" element={<SignedIn><NewPasswordScreen /></SignedIn>} />
+          <Route path="/join/:address" element={<JoinLink />} />
+          <Route path="/welcome" element={<SignedIn><JoinOrCreateScreen /></SignedIn>} />
+          <Route path="/created/:id" element={<SignedIn><HouseholdCreatedScreen /></SignedIn>} />
+          <Route path="/" element={<Inside><HomeScreen /></Inside>} />
+          <Route path="/arrange" element={<Inside><ArrangeHomeScreen /></Inside>} />
+          <Route path="/shopping" element={<Inside><ShoppingScreen /></Inside>} />
+          <Route path="/todos" element={<Inside><TodosScreen /></Inside>} />
+          <Route path="/notes" element={<Inside><NotesScreen /></Inside>} />
+          <Route path="/notes/:id" element={<Inside><NoteScreen /></Inside>} />
+          <Route path="/profile" element={<Inside><ProfileScreen /></Inside>} />
+          <Route path="/settings" element={<Inside><SettingsScreen /></Inside>} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+        <ToastHost />
+      </BrowserRouter>
+    </AuthProvider>
+  )
+}

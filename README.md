@@ -12,6 +12,12 @@ This is a web app first (React, TypeScript, Vite, installable on the home screen
 - `docs/screens/`: hi-fi screens and wireframes.
 - `assets/`: textures, the logo and Pichi.
 
+## Run it
+
+1. Copy `.env.example` to `.env.local` and fill in the Supabase project address and publishable key.
+2. Apply the database setup in `supabase/migrations` to the Supabase project.
+3. `npm install`, then `npm run dev`.
+
 ## License
 
 ### The code is open

@@ -1,0 +1,230 @@
+import { useMemo, useSyncExternalStore } from 'react'
+import { supabase } from '../lib/supabase'
+import { useMe } from '../auth'
+import { useCollection, type Row } from './store'
+
+export type Avatar = { character: string; color: string; accessory: string | null }
+
+export type Profile = Row & {
+  display_name: string
+  avatar: Avatar
+  language: 'en' | 'sr'
+  theme: string
+  track_money: boolean
+}
+
+export type Household = Row & { name: string; address: string; kind: 'home' | 'event'; created_at: string }
+
+export type Section = 'news' | 'shopping' | 'todos' | 'money' | 'notes'
+export type LayoutEntry = { section: Section; visible: boolean }
+
+export type Member = Row & {
+  household_id: string
+  user_id: string
+  label: string | null
+  home_layout: LayoutEntry[]
+  joined_at: string
+}
+
+export type List = Row & { household_id: string; name: string; position: number; created_at: string }
+
+export type Item = Row & {
+  list_id: string
+  name: string
+  note: string | null
+  added_by: string | null
+  created_at: string
+  checked_by: string | null
+  checked_at: string | null
+  position: number
+}
+
+export type Todo = Row & {
+  household_id: string
+  title: string
+  assignee_id: string | null
+  due_date: string | null
+  repeat: 'daily' | 'weekly' | 'monthly' | null
+  done_at: string | null
+  done_by: string | null
+  created_by: string | null
+  created_at: string
+}
+
+export type Note = Row & {
+  household_id: string
+  title: string
+  body: string
+  pinned: boolean
+  created_by: string | null
+  updated_by: string | null
+  updated_at: string
+}
+
+// ---------------------------------------------------------------------------
+
+export function useProfiles() {
+  return useCollection<Profile>({
+    key: 'profiles',
+    table: 'profiles',
+    belongs: () => true,
+    load: () => supabase.from('profiles').select('*'),
+  })
+}
+
+export function useMyProfile(): Profile | undefined {
+  const me = useMe()
+  return useProfiles().rows.find((p) => p.id === me)
+}
+
+export function useHouseholds() {
+  return useCollection<Household>({
+    key: 'households',
+    table: 'households',
+    belongs: () => true,
+    load: () => supabase.from('households').select('*').order('created_at'),
+  })
+}
+
+export function useMembers() {
+  return useCollection<Member>({
+    key: 'members',
+    table: 'household_members',
+    belongs: () => true,
+    load: () => supabase.from('household_members').select('*').order('joined_at'),
+  })
+}
+
+export function useLists(householdId: string | null) {
+  return useCollection<List>(
+    householdId
+      ? {
+          key: `lists:${householdId}`,
+          table: 'lists',
+          belongs: (r) => r.household_id === householdId,
+          load: () => supabase.from('lists').select('*').eq('household_id', householdId).order('position').order('created_at'),
+          realtime: `household_id=eq.${householdId}`,
+        }
+      : null,
+  )
+}
+
+export function useItems(listId: string | null) {
+  return useCollection<Item>(
+    listId
+      ? {
+          key: `items:${listId}`,
+          table: 'list_items',
+          belongs: (r) => r.list_id === listId,
+          load: () => supabase.from('list_items').select('*').eq('list_id', listId),
+          realtime: `list_id=eq.${listId}`,
+        }
+      : null,
+  )
+}
+
+export function useTodos(householdId: string | null) {
+  return useCollection<Todo>(
+    householdId
+      ? {
+          key: `todos:${householdId}`,
+          table: 'todos',
+          belongs: (r) => r.household_id === householdId,
+          load: () => supabase.from('todos').select('*').eq('household_id', householdId),
+          realtime: `household_id=eq.${householdId}`,
+        }
+      : null,
+  )
+}
+
+export function useNotes(householdId: string | null) {
+  return useCollection<Note>(
+    householdId
+      ? {
+          key: `notes:${householdId}`,
+          table: 'notes',
+          belongs: (r) => r.household_id === householdId,
+          load: () => supabase.from('notes').select('*').eq('household_id', householdId),
+          realtime: `household_id=eq.${householdId}`,
+        }
+      : null,
+  )
+}
+
+// ---------------------------------------------------------------------------
+// The household you're looking at. Saved on the phone.
+// ---------------------------------------------------------------------------
+
+const CURRENT_KEY = 'pichigoose.household'
+const currentListeners = new Set<() => void>()
+
+function readCurrent() {
+  try {
+    return localStorage.getItem(CURRENT_KEY)
+  } catch {
+    return null
+  }
+}
+
+export function setCurrentHousehold(id: string) {
+  try {
+    localStorage.setItem(CURRENT_KEY, id)
+  } catch {
+    // ignore
+  }
+  currentListeners.forEach((l) => l())
+}
+
+/** The current household, the people in it and your own member row. */
+export function useHousehold() {
+  const me = useMe()
+  const saved = useSyncExternalStore(
+    (l) => {
+      currentListeners.add(l)
+      return () => currentListeners.delete(l)
+    },
+    readCurrent,
+  )
+  const households = useHouseholds()
+  const members = useMembers()
+  const profiles = useProfiles()
+
+  return useMemo(() => {
+    const mine = members.rows.filter((m) => m.user_id === me)
+    const homes = households.rows.filter((h) => mine.some((m) => m.household_id === h.id))
+    const household = homes.find((h) => h.id === saved) ?? homes[0] ?? null
+    const membership = household ? mine.find((m) => m.household_id === household.id) ?? null : null
+    const people = household
+      ? members.rows
+          .filter((m) => m.household_id === household.id)
+          .map((m) => profiles.rows.find((p) => p.id === m.user_id))
+          .filter((p): p is Profile => Boolean(p))
+      : []
+    return {
+      loaded: households.loaded && members.loaded,
+      households: homes,
+      household,
+      membership,
+      people,
+      /** What you call this household. */
+      name: (h: Household | null) => {
+        if (!h) return ''
+        const m = mine.find((x) => x.household_id === h.id)
+        return m?.label || h.name
+      },
+      peopleIn: (householdId: string) =>
+        members.rows
+          .filter((m) => m.household_id === householdId)
+          .map((m) => profiles.rows.find((p) => p.id === m.user_id))
+          .filter((p): p is Profile => Boolean(p)),
+    }
+  }, [me, saved, households.rows, households.loaded, members.rows, members.loaded, profiles.rows])
+}
+
+export const DEFAULT_LAYOUT: LayoutEntry[] = [
+  { section: 'news', visible: true },
+  { section: 'shopping', visible: true },
+  { section: 'todos', visible: true },
+  { section: 'money', visible: true },
+  { section: 'notes', visible: true },
+]
