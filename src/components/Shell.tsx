@@ -52,16 +52,15 @@ export function useOnline() {
   return useSyncExternalStore(subscribeOnline, () => navigator.onLine)
 }
 
-/** A small stamp when there's no signal, or when changes are still waiting to be sent. */
+/** A small stamp while changes made on this phone haven't reached the others yet. */
 function OfflineBadge() {
   const { t } = useTranslation()
-  const online = useOnline()
   const waiting = useOutboxCount()
-  if (online && !waiting) return null
+  if (!waiting) return null
   return (
     <div className="offline" aria-live="polite">
       <Stamp color={STAMP_COLORS.claude} rotate={2}>
-        {online ? t('common.notSaved') : t('common.offline')}
+        {t('common.notSynced')}
       </Stamp>
     </div>
   )
