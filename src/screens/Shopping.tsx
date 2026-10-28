@@ -171,7 +171,9 @@ export function ShoppingScreen() {
             position: 'fixed',
             left: 0,
             right: 0,
-            bottom: 'var(--tabbar)',
+            // Sits on the tab bar, or right on top of the keyboard when it's open.
+            bottom: 'max(var(--tabbar), var(--kb))',
+            transition: 'bottom .3s var(--ease-out)',
             maxWidth: 430,
             margin: '0 auto',
             zIndex: 6,
