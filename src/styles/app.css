@@ -273,7 +273,9 @@ html[data-kb="open"] .chat-screen .composer { padding-bottom: 10px }
   background: #FFFDF8 url("../../assets/paper-white.png") 0 0 / 512px 512px; box-shadow: 0 6px 12px -8px rgba(30, 26, 48, .25);
 }
 .chat-back { display: flex; color: #1E1A30; margin-left: -8px }
-.bubbles { flex: 1; padding: 8px 14px 14px 34px }
+.bubbles { flex: 1; padding: 8px 14px 14px 34px; display: flex; flex-direction: column }
+/* A short chat sits at the bottom, next to the field, like WhatsApp, instead of leaving a gap above the field. */
+.bubbles::before { content: ""; flex: 1 }
 .msg { display: flex; align-items: flex-end; gap: 12px; margin-top: 2px }
 .msg.first { margin-top: 10px }
 .msg.mine { justify-content: flex-end }
