@@ -142,7 +142,10 @@ export function ShoppingScreen() {
     return (
       <Tick key={x.id} checked={isBought} onCommit={() => toggleItem(x, me)}>
         {(on, toggle) => (
-      <div className={`ln${on ? ' row-done' : ''}`} style={{ height: desktop ? 72 : isBought ? 48 : 64 }}>
+      <div
+        className={`ln${on ? ' row-done' : ''}${isBought ? '' : ' top'}`}
+        style={isBought ? { height: desktop ? 72 : 48 } : { minHeight: desktop ? 72 : 64, padding: desktop ? '14px 0' : '10px 0' }}
+      >
         <Check checked={on} onToggle={toggle} label={x.name} rotate={tilt(x.id)} />
         <button
           type="button"

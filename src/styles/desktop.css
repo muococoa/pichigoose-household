@@ -19,7 +19,8 @@
   .nav svg { width: 24px; height: 24px; flex: none }
   .nav:hover { color: #1E1A30 }
   .nav.on { color: #A8335A }
-  .nav.on::before { content: ""; position: absolute; left: 6px; width: 38px; top: 15px; height: 15px; background: repeating-linear-gradient(45deg, rgba(242, 193, 196, .95) 0 7px, rgba(255, 253, 248, .7) 7px 14px); transform: rotate(-1.5deg); z-index: -1 }
+  .nav .tab-icon { position: relative; display: flex }
+  .nav .tab-circle { position: absolute; left: 50%; top: 50%; width: 44px; height: 36px; margin: -18px 0 0 -22px; overflow: visible; pointer-events: none; filter: url(#dry-ink) }
 
   .desk > .screen.page {
     flex: 1; min-width: 0; height: auto; min-height: 0; margin: 18px 18px 18px -6px; border-radius: 6px; position: relative; z-index: 1;
@@ -41,7 +42,8 @@
 
   /* Phone-only pieces. */
   .fab, .phone-only { display: none !important }
-  .desk .ln { font-size: 17px; line-height: 24px }
+  /* Rows on the Home notes: a step under the note's title, close to the empty-note text. */
+  .desk .note .ln { font-size: 15px; line-height: 21px }
   .desk .note { padding: 22px 22px 18px }
 
   /* Bottom sheets become a side panel on the right of the page, 400 px wide, so the list stays in view. */

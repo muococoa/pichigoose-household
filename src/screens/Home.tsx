@@ -23,6 +23,8 @@ import { AddSheet } from './AddSheet'
 import { AskName, madeFromEmail } from './AskName'
 import { ago, daysFromToday, dueLabel, fromDateString } from '../lib/time'
 import { useDesktop } from '../lib/desktop'
+import { DragBoard } from '../components/DragBoard'
+import { db } from '../data/store'
 
 // Desktop: the small notes inside the notes section, each its own color and tape.
 const MINI: { note: string; tape: TapeKind; rotate: number }[] = [
@@ -109,11 +111,23 @@ export function HomeScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toBuy, openTodos, me, people, i18n.language])
 
-  const layout = useMemo(() => {
+  const fullLayout = useMemo(() => {
     const saved = membership?.home_layout?.length ? membership.home_layout : DEFAULT_LAYOUT
-    const all = [...saved, ...DEFAULT_LAYOUT.filter((d) => !saved.some((s) => s.section === d.section))]
-    return all.filter((s) => s.visible && s.section !== 'money')
+    return [...saved, ...DEFAULT_LAYOUT.filter((d) => !saved.some((s) => s.section === d.section))]
   }, [membership])
+  const layout = useMemo(() => fullLayout.filter((s) => s.visible && s.section !== 'money'), [fullLayout])
+
+  // Desktop: notes moved on the board keep their new order. Hidden sections, money and Pichi's news
+  // keep their places; only the board's own slots are reshuffled.
+  function saveBoard(keys: Section[]) {
+    if (!household) return
+    const slots = fullLayout.map((e, i) => (keys.includes(e.section) ? i : -1)).filter((i) => i >= 0)
+    const next = [...fullLayout]
+    keys.forEach((k, j) => {
+      next[slots[j]] = fullLayout.find((e) => e.section === k)!
+    })
+    db.update('household_members', { household_id: household.id, user_id: me }, { home_layout: next })
+  }
 
   function section(s: Section) {
     const look = LOOK[s]
@@ -278,14 +292,13 @@ export function HomeScreen() {
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 24 }}>
             {layout.some((s) => s.section === 'news') && section('news')}
             <span style={{ flex: 1 }} />
-            <Link to="/arrange" className="stk sec sm" style={{ transform: 'rotate(2deg)', marginTop: 18 }}>
+            <Link to="/arrange" className="stk sec sm" aria-label={t('home.arrange')} title={t('home.arrange')} style={{ width: 42, padding: 0, transform: 'rotate(3deg)', marginTop: 18 }}>
               <PencilIcon />
-              {t('home.arrange')}
             </Link>
           </div>
           <PendingInvites style={{ maxWidth: 620 }} />
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 30, alignItems: 'start', marginTop: 10 }}>
-            {board.map((s) => section(s.section))}
+          <div style={{ marginTop: 10 }}>
+            <DragBoard items={board.map((s) => ({ key: s.section, node: section(s.section) }))} onReorder={saveBoard} dropLabel={t('arrange.dropHere')} />
           </div>
         </div>
         <AskName save open={needsName && !askedName} onClose={() => setAskedName(true)} onJoin={() => {}} />

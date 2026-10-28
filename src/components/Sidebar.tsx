@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useHousehold, useMyProfile } from '../data/hooks'
 import { Avatar } from './Avatar'
 import { Hand, Tape } from './Scrapbook'
-import { BasketIcon, ChevronDown, HomeIcon, NoteIcon, PlusIcon, TodoIcon } from './Icons'
+import { BasketIcon, ChevronDown, HomeIcon, InkCircle, NoteIcon, PlusIcon, TodoIcon } from './Icons'
 import { AddSheet } from '../screens/AddSheet'
 import logo from '../../assets/logo-pichigoose.png'
 
@@ -46,8 +46,16 @@ export function Sidebar() {
       <nav style={{ display: 'flex', flexDirection: 'column', gap: 4, position: 'relative', zIndex: 0 }}>
         {tabs.map((tab) => (
           <NavLink key={tab.to} to={tab.to} end={tab.to === '/'} className={({ isActive }) => `nav${isActive ? ' on' : ''}`}>
-            {tab.icon}
-            <span>{tab.label}</span>
+            {({ isActive }) => (
+              <>
+                {/* Same as the phone tab bar: the active one gets a hand-drawn ink circle. */}
+                <span className="tab-icon">
+                  {tab.icon}
+                  {isActive && <InkCircle />}
+                </span>
+                <span>{tab.label}</span>
+              </>
+            )}
           </NavLink>
         ))}
       </nav>

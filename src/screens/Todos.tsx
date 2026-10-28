@@ -12,6 +12,9 @@ import { ChevronDown, PlusIcon } from '../components/Icons'
 import { MyHouseholds } from './MyHouseholds'
 import { addDays, capitalize, daysFromToday, dueLabel, fromDateString, toDateString, weekdayName } from '../lib/time'
 
+// On phones the keyboard would cover half the form the moment it opens, so the title field waits for a tap.
+const touchScreen = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches
+
 type Group = 'today' | 'thisWeek' | 'later' | 'noDate' | 'done'
 const ORDER: Group[] = ['today', 'thisWeek', 'later', 'noDate', 'done']
 const GROUP_COLOR: Record<Group, string> = {
@@ -166,7 +169,7 @@ export function TodosScreen() {
               return (
                 <Tick key={x.id} checked={done} onCommit={() => toggleTodo(x, me)}>
                   {(on, toggle) => (
-                    <div className={`ln${on ? ' row-done' : ''}`} style={{ minHeight: 64 }}>
+                    <div className={`ln${on ? ' row-done' : ''}${detail(x) ? ' top' : ''}`} style={{ minHeight: 64, ['--title-top' as string]: '8px' }}>
                       <Check checked={on} onToggle={toggle} label={x.title} rotate={tilt(x.id)} />
                       <button type="button" onClick={() => setEditing(x)} style={{ flex: 1, minWidth: 0, fontSize: 17, padding: '8px 0' }}>
                         <Struck on={on}>{x.title}</Struck>
@@ -250,7 +253,7 @@ function TodoSheet({ todo, householdId, people, onClose }: { todo: Todo | null; 
           <label className="label" htmlFor="todo-title">
             {t('todos.what')}
           </label>
-          <input id="todo-title" className="input" autoFocus={!todo} placeholder={t('todos.whatPlaceholder')} value={title} onChange={(e) => setTitle(e.target.value)} />
+          <input id="todo-title" className="input" autoFocus={!todo && !touchScreen} placeholder={t('todos.whatPlaceholder')} value={title} onChange={(e) => setTitle(e.target.value)} />
         </div>
         <div>
           <span className="label">{t('todos.who')}</span>
