@@ -132,6 +132,11 @@ textarea.input { height: auto; padding: 12px 16px; resize: none }
 .sheet .grab { width: 40px; height: 4px; border-radius: 2px; background: #CBC2CC; margin: 0 auto 14px }
 @keyframes fade { from { opacity: 0 } }
 @keyframes rise { from { transform: translateY(30px); opacity: .6 } }
+/* Closing: the paper drops away (ease-in) while the shade fades. Same 0.22 s as CLOSE_MS in Scrapbook.tsx. */
+.sheet-back.closing { animation: fade-out .22s ease-in forwards }
+.sheet-back.closing .sheet { animation: drop .22s cubic-bezier(.55, 0, 1, .45) forwards }
+@keyframes fade-out { to { opacity: 0 } }
+@keyframes drop { to { transform: translateY(60%) } }
 
 /* A small menu (the ··· menus). */
 .menu { position: absolute; right: 0; top: 100%; z-index: 70; background: #FFFFFF; border-radius: 10px 14px 12px 10px; box-shadow: 0 0 0 1px rgba(30, 26, 48, .08), 2px 6px 14px rgba(30, 26, 48, .18); padding: 6px; min-width: 200px }

@@ -4,6 +4,7 @@
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import pichi from '../../assets/pichi-painted.jpg'
+import paperWhite from '../../assets/paper-white.png'
 
 /** Turns any text into a stable number, so each headline and stamp gets its own texture offset. */
 function seed(text: string) {
@@ -227,28 +228,57 @@ export function PichiPolaroid({ width = 150, rotate = -3, tape = 'tp' as TapeKin
 
 type SheetProps = { open: boolean; onClose: () => void; title?: string; children: ReactNode; labelledBy?: string }
 
-/** A bottom sheet of notebook paper. */
+// The pop-up paper, loaded up front so the first pop-up doesn't flash plain and then fill in.
+const preload = new Image()
+preload.src = paperWhite
+
+const CLOSE_MS = 220
+
+/** A bottom sheet of notebook paper. It slides up when it opens and drops away when it closes. */
 export function Sheet({ open, onClose, title, children }: SheetProps) {
   const ref = useRef<HTMLDivElement>(null)
+  const [closing, setClosing] = useState(false)
+  // While it drops away, keep showing what it showed last, even if the screen already moved on.
+  const last = useRef<{ title?: string; children: ReactNode }>({ title, children })
+  if (open) last.current = { title, children }
+
+  const [mounted, setMounted] = useState(open)
+  useEffect(() => {
+    if (open) {
+      setMounted(true)
+      setClosing(false)
+      return
+    }
+    if (!mounted) return
+    setClosing(true)
+    const timer = window.setTimeout(() => {
+      setMounted(false)
+      setClosing(false)
+    }, CLOSE_MS)
+    return () => window.clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open])
+
   useEffect(() => {
     if (!open) return
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [open, onClose])
-  if (!open) return null
+  if (!open && !mounted) return null
+  const shown = open ? { title, children } : last.current
   return createPortal(
-    <div className="sheet-back" onClick={onClose}>
-      <div ref={ref} className="sheet" role="dialog" aria-modal="true" aria-label={title} onClick={(e) => e.stopPropagation()}>
+    <div className={`sheet-back${closing ? ' closing' : ''}`} onClick={closing ? undefined : onClose}>
+      <div ref={ref} className="sheet" role="dialog" aria-modal="true" aria-label={shown.title} onClick={(e) => e.stopPropagation()}>
         <div className="grab" />
-        {title && (
+        {shown.title && (
           <div style={{ marginBottom: 14 }}>
             <Hand size={34} lineHeight={36}>
-              {title}
+              {shown.title}
             </Hand>
           </div>
         )}
-        {children}
+        {shown.children}
       </div>
     </div>,
     document.body,
