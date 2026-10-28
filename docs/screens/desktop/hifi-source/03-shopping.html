@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Desktop shopping</title>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&amp;family=Caveat:wght@600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.scr{width:390px;height:844px;position:relative;overflow:hidden;box-sizing:border-box;font-family:Nunito,sans-serif;color:#2E2638;
+ background-color:#FFFDF8;background-image:url("../../../../assets/paper-white.png"),repeating-linear-gradient(#FFFDF8 0 31px,#E6DFE3 31px 32px);background-size:512px 512px,auto;background-position:0 0,0 6px}
+.margin{position:absolute;top:0;bottom:0;left:26px;width:2px;background:rgba(211,68,113,.22)}
+.hand{font-family:Caveat,cursive;font-weight:700;color:#1E1A30;filter:url(#dry-ink);padding:.25em .15em;margin:-.25em -.15em;
+ -webkit-mask-image:url("../../../../assets/ink-patch.png");mask-image:url("../../../../assets/ink-patch.png");-webkit-mask-size:420px 420px;mask-size:420px 420px}
+.note .hand{-webkit-mask-position:-150px -90px;mask-position:-150px -90px}
+.note:nth-of-type(even) .hand{-webkit-mask-position:-260px -210px;mask-position:-260px -210px}
+.note{position:relative;box-sizing:border-box;padding:18px 18px 14px;box-shadow:2px 3px 0 rgba(30,26,48,.13)}
+.note::after{content:"";position:absolute;inset:0;background-image:url("../../../../assets/note-fresh.png");background-size:512px 512px;mix-blend-mode:multiply;pointer-events:none}
+.n-blush{background:#F2C1C4}.n-butter{background:#F8E6A8}.n-mist{background:#DCE7F0}.n-sage{background:#CFDDB8}.n-lilac{background:#D6C8E6}
+.tape{position:absolute;height:22px;width:84px;z-index:2}
+.tp{background:repeating-linear-gradient(45deg,rgba(242,193,196,.9) 0 8px,rgba(255,253,248,.7) 8px 16px)}
+.ty{background:repeating-linear-gradient(45deg,rgba(248,230,168,.95) 0 8px,rgba(255,253,248,.7) 8px 16px)}
+.tm{background:repeating-linear-gradient(45deg,rgba(167,211,204,.9) 0 8px,rgba(255,253,248,.7) 8px 16px)}
+.tdots{background:radial-gradient(circle,rgba(211,68,113,.5) 2.5px,transparent 3px) 0 0/11px 11px,rgba(242,193,196,.85)}
+.tblocks{background:linear-gradient(90deg,rgba(132,102,184,.4) 50%,transparent 50%) 0 0/18px 100%,rgba(214,200,230,.9)}
+.ttri{background:linear-gradient(135deg,rgba(242,160,61,.55) 25%,transparent 25%) -8px 0/16px 16px,linear-gradient(225deg,rgba(242,160,61,.55) 25%,transparent 25%) -8px 0/16px 16px,rgba(248,230,168,.9)}
+.tcheck{background:linear-gradient(90deg,rgba(110,145,82,.35) 50%,transparent 50%) 0 0/12px 12px,linear-gradient(rgba(110,145,82,.35) 50%,transparent 50%) 0 0/12px 12px,rgba(207,221,184,.9)}
+.stamp{display:inline-block;font-weight:800;font-size:11px;line-height:14px;border:2px solid currentColor;border-radius:5px;padding:2px 7px;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;
+ -webkit-mask-image:url("../../../../assets/stamp-grunge.png");mask-image:url("../../../../assets/stamp-grunge.png");-webkit-mask-size:300px 300px;mask-size:300px 300px}
+.stk{font-family:Nunito,sans-serif;font-weight:800;font-size:16px;line-height:20px;height:48px;padding:0 22px;border:4px solid #FFFFFF;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;box-sizing:border-box;
+ box-shadow:0 0 0 1px rgba(30,26,48,.10),2px 3px 4px rgba(30,26,48,.22);border-radius:8px 30px 12px 26px / 26px 10px 30px 14px;white-space:nowrap}
+.stk.prim{background:#D34471;color:#FFFFFF}
+.stk.sec{background:#FFFDF8;color:#1E1A30}
+.stk.sm{height:38px;font-size:14px;padding:0 14px;border-width:3px}
+.stk.round{width:62px;height:62px;padding:0;border-radius:58% 38% 54% 40% / 40% 56% 38% 58%}
+.box{width:22px;height:22px;border:2px solid #1E1A30;border-radius:5px;box-sizing:border-box;position:relative;flex:none;background:rgba(255,253,248,.6)}
+.box svg{position:absolute;left:-2px;top:-8px}
+.av{width:34px;height:34px;flex:none;display:block;border-radius:50%;box-shadow:0 0 0 2px #FFFFFF,1px 2px 2px 1px rgba(30,26,48,.15)}
+.postage{flex:none;padding:7px;background:radial-gradient(circle at 50% 0,transparent 3.5px,#FFFFFF 4px) left top/11px 7px round no-repeat,radial-gradient(circle at 50% 100%,transparent 3.5px,#FFFFFF 4px) left bottom/11px 7px round no-repeat,radial-gradient(circle at 0 50%,transparent 3.5px,#FFFFFF 4px) left top/7px 11px no-repeat round,radial-gradient(circle at 100% 50%,transparent 3.5px,#FFFFFF 4px) right top/7px 11px no-repeat round;filter:drop-shadow(1px 2px 1.5px rgba(30,26,48,.2))}
+.postage .in{background:#FFFFFF;padding:4px}
+.postage img{display:block;border:2px solid #1E1A30;box-sizing:border-box}
+.tabbar{position:absolute;left:0;right:0;bottom:0;height:84px;background:#FFFDF8;box-shadow:0 -2px 0 rgba(30,26,48,.06),0 -6px 14px rgba(30,26,48,.08);display:flex;justify-content:space-around;align-items:flex-start;padding:10px 6px 0;box-sizing:border-box;z-index:5}
+.tabbar::before{content:"";position:absolute;inset:0;background-image:url("../../../../assets/paper-white.png");background-size:512px 512px;opacity:.8;pointer-events:none}
+.tab{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:700;color:#63586B;width:66px}
+.tab svg{width:26px;height:26px}
+.tab.on{color:#A8335A}
+.tab.on::after{content:"";position:absolute;top:-4px;left:12px;right:12px;height:12px;background:repeating-linear-gradient(45deg,rgba(242,193,196,.95) 0 6px,rgba(255,253,248,.7) 6px 12px);z-index:-1;transform:rotate(-3deg)}
+.cap{font-size:12px;line-height:16px;font-weight:600;color:#63586B}
+.ln{display:flex;align-items:center;gap:12px;font-size:16px;line-height:24px;font-weight:600;color:#1E1A30}
+
+.desk{width:1440px;height:900px;position:relative;overflow:hidden;font-family:Nunito,sans-serif;color:#2E2638;display:flex;background:#D6C8E6}
+.side{width:264px;flex:none;position:relative;margin:18px 0 18px 18px;border-radius:6px;box-sizing:border-box;padding:30px 20px 22px;display:flex;flex-direction:column;gap:22px;
+ background-color:#FFFFFF;background-image:url("../../../../assets/paper-white.png");background-size:512px 512px;box-shadow:2px 3px 0 rgba(30,26,48,.13);z-index:2}
+.sheet{flex:1;position:relative;margin:18px 18px 18px -6px;border-radius:6px;overflow:hidden;
+ background-color:#FFFDF8;background-image:url("../../../../assets/paper-white.png"),repeating-linear-gradient(#FFFDF8 0 35px,#E6DFE3 35px 36px);background-size:512px 512px,auto;background-position:0 0,0 10px;box-shadow:3px 4px 0 rgba(30,26,48,.13)}
+.sheet .mline{position:absolute;top:0;bottom:0;left:64px;width:2px;background:rgba(211,68,113,.22)}
+.content{position:absolute;inset:0;padding:40px 48px 32px 100px;box-sizing:border-box;display:flex;flex-direction:column;gap:26px}
+.nav{position:relative;display:flex;align-items:center;gap:14px;height:44px;padding:0 12px;font-size:16px;font-weight:700;color:#63586B}
+.nav svg{width:24px;height:24px;flex:none}
+.nav.on{color:#A8335A}
+.nav.on::before{content:"";position:absolute;left:6px;width:38px;top:15px;height:15px;background:repeating-linear-gradient(45deg,rgba(242,193,196,.95) 0 7px,rgba(255,253,248,.7) 7px 14px);transform:rotate(-1.5deg);z-index:-1}
+.hhbox{display:flex;flex-direction:column;gap:2px;padding:4px 4px 0}
+.desk .ln{font-size:17px;line-height:24px}
+.desk .note{padding:22px 22px 18px}
+.desk .av{width:34px;height:34px}
+.itemrow{display:flex;align-items:center;gap:14px;height:72px;font-size:18px;font-weight:600;color:#1E1A30}
+</style>
+</helmet>
+<svg width="0" height="0" aria-hidden="true" style="position:absolute"><filter id="dry-ink" x="-20%" y="-60%" width="140%" height="220%"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="7" result="n"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="1.3" xChannelSelector="R" yChannelSelector="G" result="rough"></feDisplacementMap><feMorphology in="rough" operator="erode" radius="0.85" result="core"></feMorphology><feComponentTransfer in="n" result="spk"><feFuncA type="discrete" tableValues="0 0 1 1 1 1"></feFuncA></feComponentTransfer><feComposite in="rough" in2="spk" operator="in" result="edge"></feComposite><feMerge><feMergeNode in="core"></feMergeNode><feMergeNode in="edge"></feMergeNode></feMerge></filter></svg>
+<div class="desk">
+  <div class="side">
+    <div class="tape tdots" style="top:-10px;left:86px;width:92px;transform:rotate(-3deg)"></div>
+    <img src="../../../../assets/logo-pichigoose.png" alt="Pichigoose" style="width:150px;height:auto;display:block;margin:6px 0 0 6px">
+    <div class="hhbox">
+      <div style="display:flex;align-items:center;gap:2px;color:#1E1A30"><span class="hand" style="font-size:34px;line-height:36px">Our home</span><svg viewBox="0 0 26 26" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 10.5l5 5 5-5"/></svg></div>
+      <div class="cap">lemon.sunny.goose · 2 people</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px;position:relative;z-index:0"><div class="nav"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.2 13 4.5l9 7.7"/><path d="M6.5 10.5V21h13V10.5"/><path d="M11 21v-5.5h4V21"/></svg><span>Home</span></div><div class="nav on"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h18l-2 11.5H6Z"/><path d="M9 9.5 11.5 4M17 9.5 14.5 4"/><path d="M10 14v3.5M13 14v3.5M16 14v3.5"/></svg><span>Shopping</span></div><div class="nav"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="4.5" width="17" height="17" rx="3"/><path d="M8.5 13.2l3 3 6-6.5"/></svg><span>To-dos</span></div><div class="nav"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4.5h10l4 4V21.5H6Z"/><path d="M16 4.5v4h4"/><path d="M9 13h8M9 17h6"/></svg><span>Notes</span></div></div>
+    <span class="stk prim" style="align-self:flex-start;transform:rotate(-2deg)"><svg viewBox="0 0 26 26" width="20" height="20" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M13 5.5v15M5.5 13h15"/></svg>Add</span>
+    <div style="flex:1"></div>
+    <div style="display:flex;align-items:center;gap:12px;padding:6px 4px">
+      <svg viewBox="0 0 40 40" width="40" height="40" style="display:block;border-radius:50%;box-shadow:0 0 0 2px #FFFFFF,1px 2px 2px 1px rgba(30,26,48,.15)"><circle cx="20" cy="20" r="20" fill="#F2C1C4"/><path d="M20 8.5C25 8.5 31.5 20 31 26.5C30.6 30.5 9.4 30.5 9 26.5C8.5 20 15 8.5 20 8.5Z" fill="#FFFDF8" stroke="#1E1A30" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path d="M14 25h12v5.2H14z" fill="#1E1A30"/><circle cx="16.6" cy="19.6" r="1.4" fill="#1E1A30"/><circle cx="23.4" cy="19.6" r="1.4" fill="#1E1A30"/><path d="M18.2 22.2q1.8 1.5 3.6 0" fill="none" stroke="#1E1A30" stroke-width="1.6" vector-effect="non-scaling-stroke" stroke-linecap="round"/><circle cx="14.4" cy="22" r="1.3" fill="#F2A0B0"/><circle cx="25.6" cy="22" r="1.3" fill="#F2A0B0"/></svg>
+      <span style="font-size:15px;font-weight:800;color:#1E1A30;line-height:19px">Nora<div class="cap" style="font-weight:600">Profile and settings</div></span>
+    </div>
+  </div>
+  <div class="sheet"><div class="mline"></div>
+    <div class="content">
+    <div style="display:flex;align-items:center;gap:16px">
+      <span class="hand" style="font-size:52px;line-height:56px">Shopping</span>
+      <span style="flex:1"></span>
+      <span class="stk sec sm" style="width:42px;padding:0;transform:rotate(3deg)"><svg viewBox="0 0 26 26" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"><path d="M13 15V4M8.5 8.5 13 4l4.5 4.5"/><path d="M6 13v8h14v-8"/></svg></span>
+    </div>
+    <div style="display:flex;gap:12px;align-items:center;margin-top:-8px">
+      <span class="tp" style="position:relative;display:inline-flex;align-items:center;height:30px;padding:0 14px;font-size:14px;color:#1E1A30;font-weight:800;transform:rotate(-2deg);box-shadow:1px 2px 0 rgba(30,26,48,.12)">Groceries</span><span class="tm" style="position:relative;display:inline-flex;align-items:center;height:30px;padding:0 14px;font-size:14px;color:#63586B;font-weight:700;transform:rotate(1.5deg);opacity:.75">Pharmacy</span>
+      <span style="display:inline-flex;align-items:center;height:28px;padding:0 12px;font-size:14px;font-weight:700;color:#63586B;border:2px dashed #B6ABBE;border-radius:4px">+ list</span>
+    </div>
+    <div style="display:flex;gap:64px;align-items:flex-start">
+      <div style="flex:1.5">
+        <div style="display:flex;gap:14px;align-items:center;margin-bottom:8px">
+          <div style="flex:1;height:52px;background:#FFFFFF;border-radius:6px 14px 8px 12px;box-shadow:inset 0 0 0 2px #D6C8E6;display:flex;align-items:center;padding:0 18px;font-size:17px;font-weight:600;color:#857A8C">Add an item...</div>
+          <span class="stk prim" style="transform:rotate(-1.5deg)">Add item</span>
+        </div>
+        <div class="itemrow"><span class="box" style="transform:rotate(-2deg)"></span><span style="flex:1">rice<div class="cap" style="font-size:13px">added by Danko · 2 hours ago</div></span><svg class="av" viewBox="0 0 40 40" aria-label="Danko"><circle cx="20" cy="20" r="20" fill="#A7D3CC"/><path d="M7.5 21C7.5 14 13 10.5 20 10.5S32.5 14 32.5 21 27 31 20 31 7.5 28 7.5 21Z" fill="#F8E6A8" stroke="#1E1A30" stroke-width="2" vector-effect="non-scaling-stroke"/><path d="M20 10.5c1-3 3.5-4 6-3.6-1 2.6-3.4 3.8-6 3.6Z" fill="#6E9152" stroke="#1E1A30" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><circle cx="16.4" cy="20" r="1.4" fill="#1E1A30"/><circle cx="23.6" cy="20" r="1.4" fill="#1E1A30"/><path d="M18 23q2 1.7 4 0" fill="none" stroke="#1E1A30" stroke-width="1.6" vector-effect="non-scaling-stroke" stroke-linecap="round"/></svg></div>
+        <div class="itemrow"><span class="box" style="transform:rotate(1.5deg)"></span><span style="flex:1">eggs<div class="cap" style="font-size:13px">added by Nora · yesterday</div></span><svg class="av" viewBox="0 0 40 40" aria-label="Nora"><circle cx="20" cy="20" r="20" fill="#F2C1C4"/><path d="M20 8.5C25 8.5 31.5 20 31 26.5C30.6 30.5 9.4 30.5 9 26.5C8.5 20 15 8.5 20 8.5Z" fill="#FFFDF8" stroke="#1E1A30" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path d="M14 25h12v5.2H14z" fill="#1E1A30"/><circle cx="16.6" cy="19.6" r="1.4" fill="#1E1A30"/><circle cx="23.4" cy="19.6" r="1.4" fill="#1E1A30"/><path d="M18.2 22.2q1.8 1.5 3.6 0" fill="none" stroke="#1E1A30" stroke-width="1.6" vector-effect="non-scaling-stroke" stroke-linecap="round"/><circle cx="14.4" cy="22" r="1.3" fill="#F2A0B0"/><circle cx="25.6" cy="22" r="1.3" fill="#F2A0B0"/></svg></div>
+        <div class="itemrow"><span class="box" style="transform:rotate(-1deg)"></span><span style="flex:1">bread<div class="cap" style="font-size:13px">added by Danko · yesterday</div></span><svg class="av" viewBox="0 0 40 40" aria-label="Danko"><circle cx="20" cy="20" r="20" fill="#A7D3CC"/><path d="M7.5 21C7.5 14 13 10.5 20 10.5S32.5 14 32.5 21 27 31 20 31 7.5 28 7.5 21Z" fill="#F8E6A8" stroke="#1E1A30" stroke-width="2" vector-effect="non-scaling-stroke"/><path d="M20 10.5c1-3 3.5-4 6-3.6-1 2.6-3.4 3.8-6 3.6Z" fill="#6E9152" stroke="#1E1A30" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><circle cx="16.4" cy="20" r="1.4" fill="#1E1A30"/><circle cx="23.6" cy="20" r="1.4" fill="#1E1A30"/><path d="M18 23q2 1.7 4 0" fill="none" stroke="#1E1A30" stroke-width="1.6" vector-effect="non-scaling-stroke" stroke-linecap="round"/></svg></div>
+        <div class="itemrow"><span class="box" style="transform:rotate(2deg)"></span><span style="flex:1">milk<div class="cap" style="font-size:13px">added by Nora · Monday</div></span><svg class="av" viewBox="0 0 40 40" aria-label="Nora"><circle cx="20" cy="20" r="20" fill="#F2C1C4"/><path d="M20 8.5C25 8.5 31.5 20 31 26.5C30.6 30.5 9.4 30.5 9 26.5C8.5 20 15 8.5 20 8.5Z" fill="#FFFDF8" stroke="#1E1A30" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path d="M14 25h12v5.2H14z" fill="#1E1A30"/><circle cx="16.6" cy="19.6" r="1.4" fill="#1E1A30"/><circle cx="23.4" cy="19.6" r="1.4" fill="#1E1A30"/><path d="M18.2 22.2q1.8 1.5 3.6 0" fill="none" stroke="#1E1A30" stroke-width="1.6" vector-effect="non-scaling-stroke" stroke-linecap="round"/><circle cx="14.4" cy="22" r="1.3" fill="#F2A0B0"/><circle cx="25.6" cy="22" r="1.3" fill="#F2A0B0"/></svg></div>
+        <div class="itemrow"><span class="box" style="transform:rotate(-1.5deg)"></span><span style="flex:1">olive oil<div class="cap" style="font-size:13px">added by Nora · Monday</div></span><svg class="av" viewBox="0 0 40 40" aria-label="Nora"><circle cx="20" cy="20" r="20" fill="#F2C1C4"/><path d="M20 8.5C25 8.5 31.5 20 31 26.5C30.6 30.5 9.4 30.5 9 26.5C8.5 20 15 8.5 20 8.5Z" fill="#FFFDF8" stroke="#1E1A30" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path d="M14 25h12v5.2H14z" fill="#1E1A30"/><circle cx="16.6" cy="19.6" r="1.4" fill="#1E1A30"/><circle cx="23.4" cy="19.6" r="1.4" fill="#1E1A30"/><path d="M18.2 22.2q1.8 1.5 3.6 0" fill="none" stroke="#1E1A30" stroke-width="1.6" vector-effect="non-scaling-stroke" stroke-linecap="round"/><circle cx="14.4" cy="22" r="1.3" fill="#F2A0B0"/><circle cx="25.6" cy="22" r="1.3" fill="#F2A0B0"/></svg></div>
+      </div>
+      <div style="flex:1;padding-top:10px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><span class="stamp" style="color:#4E6B39;transform:rotate(-3deg)">Bought</span><span class="cap">2 items</span></div>
+        <div class="itemrow" style="color:#857A8C"><span class="box" style="transform:rotate(1deg)"><svg viewBox="0 0 28 28" width="28" height="28" aria-hidden="true"><path d="M5 15.5 C7 17, 9 19.8, 10.6 22.4 C13.5 15, 17.5 9, 24 3.5" fill="none" stroke="#D34471" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span style="flex:1;text-decoration:line-through;text-decoration-color:#D34471;text-decoration-thickness:2px">cheese</span><span style="opacity:.6;display:flex"><svg class="av" viewBox="0 0 40 40" aria-label="Danko"><circle cx="20" cy="20" r="20" fill="#A7D3CC"/><path d="M7.5 21C7.5 14 13 10.5 20 10.5S32.5 14 32.5 21 27 31 20 31 7.5 28 7.5 21Z" fill="#F8E6A8" stroke="#1E1A30" stroke-width="2" vector-effect="non-scaling-stroke"/><path d="M20 10.5c1-3 3.5-4 6-3.6-1 2.6-3.4 3.8-6 3.6Z" fill="#6E9152" stroke="#1E1A30" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><circle cx="16.4" cy="20" r="1.4" fill="#1E1A30"/><circle cx="23.6" cy="20" r="1.4" fill="#1E1A30"/><path d="M18 23q2 1.7 4 0" fill="none" stroke="#1E1A30" stroke-width="1.6" vector-effect="non-scaling-stroke" stroke-linecap="round"/></svg></span></div>
+        <div class="itemrow" style="color:#857A8C"><span class="box" style="transform:rotate(-2deg)"><svg viewBox="0 0 28 28" width="28" height="28" aria-hidden="true"><path d="M5 15.5 C7 17, 9 19.8, 10.6 22.4 C13.5 15, 17.5 9, 24 3.5" fill="none" stroke="#D34471" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span style="flex:1;text-decoration:line-through;text-decoration-color:#D34471;text-decoration-thickness:2px">yogurt</span><span style="opacity:.6;display:flex"><svg class="av" viewBox="0 0 40 40" aria-label="Nora"><circle cx="20" cy="20" r="20" fill="#F2C1C4"/><path d="M20 8.5C25 8.5 31.5 20 31 26.5C30.6 30.5 9.4 30.5 9 26.5C8.5 20 15 8.5 20 8.5Z" fill="#FFFDF8" stroke="#1E1A30" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/><path d="M14 25h12v5.2H14z" fill="#1E1A30"/><circle cx="16.6" cy="19.6" r="1.4" fill="#1E1A30"/><circle cx="23.4" cy="19.6" r="1.4" fill="#1E1A30"/><path d="M18.2 22.2q1.8 1.5 3.6 0" fill="none" stroke="#1E1A30" stroke-width="1.6" vector-effect="non-scaling-stroke" stroke-linecap="round"/><circle cx="14.4" cy="22" r="1.3" fill="#F2A0B0"/><circle cx="25.6" cy="22" r="1.3" fill="#F2A0B0"/></svg></span></div>
+      </div>
+    </div></div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

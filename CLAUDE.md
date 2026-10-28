@@ -7,6 +7,7 @@ A shared household organizer for families: shopping lists, to-dos, notes and "wh
 - `docs/DATA.md`: the database plan. Follow it, and ask before changing the shape of a table.
 - `docs/DESIGN.md` and `docs/tokens.json`: the look. These are the source of truth.
 - `docs/screens/`: the hi-fi screens (images plus the HTML behind them) and wireframes for every other screen.
+- `docs/DESKTOP.md`: the desktop layout (sidebar, side panels, the board on home). Desktop screens are in `docs/screens/desktop/`.
 - `assets/`: the paper, note, ink and stamp textures, the logo and Pichi.
 
 ## Stack

@@ -115,6 +115,8 @@ A temporary household for something people from different homes do together, lik
 | Create an event | wireframes/WF17-CreateEvent.png | E1 |
 | Notifications | wireframes/WF18-Notifications.png | P3, P4, X1, X2 |
 
+**Desktop:** every screen also has a desktop layout. See DESKTOP.md and `screens/desktop/`.
+
 **Notes on the screens:**
 - The wireframes have Serbian placeholder copy. Build in English, with Serbian through the language switch.
 - The money toggle (A12) came after the wireframes. Add it to Settings: "Track money", on by default.
