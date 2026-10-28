@@ -12,5 +12,10 @@
       "source": "/((?!assets/|email/|og/|.*\\..*).*)",
       "destination": "/index.html"
     }
-  ]
+  ],
+  "git": {
+    "deploymentEnabled": {
+      "claude/brave-newton-io3klv": false
+    }
+  }
 }
