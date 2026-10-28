@@ -33,7 +33,7 @@ html[data-nav="back"] .screen > .scroll { animation: sheet-in-left .35s cubic-be
 .with-tabbar .scroll { padding-bottom: calc(var(--tabbar) + 24px) }
 /* Screens with the round + button: room under the last thing on the page (the button's height plus a gap),
    so everything can scroll up above the button and nothing stays hidden under it. */
-.has-fab.with-tabbar .scroll { padding-bottom: calc(var(--tabbar) + 104px) }
+.has-fab.with-tabbar .scroll { padding-bottom: calc(var(--tabbar) + 128px) }
 .tabbar { height: var(--tabbar) }
 
 .row { display: flex; align-items: center }

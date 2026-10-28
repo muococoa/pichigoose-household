@@ -74,11 +74,35 @@ export function TabBar() {
     <nav className="tabbar">
       {tabs.map((tab) => (
         <NavLink key={tab.to} to={tab.to} end className={({ isActive }) => `tab${isActive ? ' on' : ''}`}>
-          {tab.icon}
-          <span>{tab.label}</span>
+          {({ isActive }) => (
+            <>
+              <span className="tab-icon">
+                {tab.icon}
+                {isActive && <InkCircle />}
+              </span>
+              <span>{tab.label}</span>
+            </>
+          )}
         </NavLink>
       ))}
     </nav>
+  )
+}
+
+/** A loose loop of marker around the active tab's icon. It overshoots where it started, like a quick hand circle. */
+function InkCircle() {
+  return (
+    <svg className="tab-circle" viewBox="0 0 46 38" aria-hidden>
+      <path
+        d="M30.5 4.2C21 1.6 7.6 4.6 4.3 14.2 1.4 23 9.6 33.4 22.6 33.9 35.2 34.4 43 26.4 41.6 17.2 40.4 9.6 32.6 4.6 23.2 4.4 19.6 4.3 16.4 5.2 14.2 6.4"
+        pathLength={1}
+        fill="none"
+        stroke="#A8335A"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   )
 }
 

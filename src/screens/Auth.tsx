@@ -25,12 +25,13 @@ function errorKey(message: string) {
 export function AuthScreen({ mode }: { mode: Mode }) {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
+  const [displayName, setDisplayName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [info, setInfo] = useState('')
-  const [fieldErr, setFieldErr] = useState<{ email?: string; password?: string }>({})
+  const [fieldErr, setFieldErr] = useState<{ name?: string; email?: string; password?: string }>({})
   const desktop = useDesktop()
 
   // Switching between Log in, Create account and Forgot password keeps what you typed,
@@ -42,7 +43,8 @@ export function AuthScreen({ mode }: { mode: Mode }) {
   }, [mode])
 
   function check() {
-    const next: { email?: string; password?: string } = {}
+    const next: { name?: string; email?: string; password?: string } = {}
+    if (mode === 'signup' && !displayName.trim()) next.name = t('join.yourNameMissing')
     const mail = email.trim()
     if (!mail) next.email = t('auth.errors.emailMissing')
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) next.email = t('auth.errors.email')
@@ -51,7 +53,7 @@ export function AuthScreen({ mode }: { mode: Mode }) {
       else if (mode === 'signup' && password.length < 6) next.password = t('auth.errors.weak')
     }
     setFieldErr(next)
-    return !next.email && !next.password
+    return !next.name && !next.email && !next.password
   }
 
   async function submit(e: FormEvent) {
@@ -65,7 +67,7 @@ export function AuthScreen({ mode }: { mode: Mode }) {
         const { data, error } = await supabase.auth.signUp({
           email: email.trim(),
           password,
-          options: { data: { language: i18n.language }, emailRedirectTo: window.location.origin },
+          options: { data: { language: i18n.language, display_name: displayName.trim() }, emailRedirectTo: window.location.origin },
         })
         if (error) setError(t(errorKey(error.message)))
         else if (!data.session) setInfo(t('auth.checkEmail'))
@@ -88,6 +90,26 @@ export function AuthScreen({ mode }: { mode: Mode }) {
 
   const form = (
     <form noValidate onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 26 }}>
+      {mode === 'signup' && (
+        <div>
+          <label className="label" htmlFor="display-name">
+            {t('join.whatCallYou')}
+          </label>
+          <input
+            id="display-name"
+            className="input"
+            autoComplete="given-name"
+            value={displayName}
+            aria-invalid={Boolean(fieldErr.name)}
+            aria-describedby={fieldErr.name ? 'name-err' : undefined}
+            onChange={(e) => {
+              setDisplayName(e.target.value)
+              setFieldErr((f) => ({ ...f, name: undefined }))
+            }}
+          />
+          {fieldErr.name && <FieldError id="name-err">{fieldErr.name}</FieldError>}
+        </div>
+      )}
       <div>
         <label className="label" htmlFor="email">
           {t('auth.email')}
