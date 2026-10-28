@@ -133,6 +133,23 @@ export function useItems(listId: string | null) {
   )
 }
 
+/** Items from several lists at once (Home's "to buy" shows every list in the household). */
+export function useItemsIn(listIds: string[]) {
+  const ids = [...listIds].sort()
+  const key = ids.join(',')
+  return useCollection<Item>(
+    ids.length
+      ? {
+          key: `items-in:${key}`,
+          table: 'list_items',
+          belongs: (r) => ids.includes(r.list_id as string),
+          load: () => supabase.from('list_items').select('*').in('list_id', ids),
+          realtime: `list_id=in.(${key})`,
+        }
+      : null,
+  )
+}
+
 export function useTodos(householdId: string | null) {
   return useCollection<Todo>(
     householdId

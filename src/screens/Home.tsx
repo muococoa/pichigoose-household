@@ -5,7 +5,7 @@ import { useAuth, useMe } from '../auth'
 import {
   DEFAULT_LAYOUT,
   useHousehold,
-  useItems,
+  useItemsIn,
   useLists,
   useComments,
   useMyProfile,
@@ -67,8 +67,10 @@ export function HomeScreen() {
   const { household, membership, people, name } = useHousehold()
   const hid = household?.id ?? null
   const lists = useLists(hid)
-  const firstList = [...lists.rows].sort((a, b) => a.position - b.position || a.created_at.localeCompare(b.created_at))[0]
-  const items = useItems(firstList?.id ?? null)
+  // "to buy" shows what's left on every list in the household, not just the first one.
+  const items = useItemsIn(lists.rows.map((l) => l.id))
+  const listName = (id: string) => lists.rows.find((l) => l.id === id)?.name ?? ''
+  const manyLists = lists.rows.length > 1
   const todos = useTodos(hid)
   const notes = useNotes(hid)
   const desktop = useDesktop()
@@ -240,6 +242,8 @@ export function HomeScreen() {
                       <span style={{ flex: 1, minWidth: 0 }}>
                         <Struck on={on}>{x.name}</Struck>
                         <CommentCount n={commentsOn(x.id)} />
+                        {/* Which list it's on, when there's more than one. */}
+                        {manyLists && <div className="cap">{listName(x.list_id)}</div>}
                       </span>
                       {who && (
                         <span className={`av-fade${on ? ' done' : ''}`}>
