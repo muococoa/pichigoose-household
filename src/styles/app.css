@@ -116,7 +116,8 @@ textarea.input { height: auto; padding: 12px 16px; resize: none }
 .comment { display: flex; gap: 10px; align-items: flex-start }
 .comment-body { font-size: 15px; line-height: 21px; font-weight: 600; color: #2E2638; white-space: pre-wrap; overflow-wrap: anywhere; margin-top: 1px }
 .comment-delete { display: flex; padding: 6px; margin: -4px -6px 0 0; color: #857A8C; border-radius: 50% }
-.comment-count { display: inline-flex; align-items: center; gap: 3px; margin-left: 8px; font-size: 12px; font-weight: 800; color: #6A4F9C; vertical-align: 1px }
+/* Same off-black ink as the logo. */
+.comment-count { display: inline-flex; align-items: center; gap: 3px; margin-left: 8px; font-size: 13px; font-weight: 800; color: #1E1A30; vertical-align: -3px }
 .comment-count svg { display: block }
 
 /* Switching a filter: the old list fades out quickly (ease-in), the new one fades in and settles (kinetic ease-out). */

@@ -36,8 +36,17 @@ export function CommentCount({ n }: { n: number }) {
   if (!n) return null
   return (
     <span className="comment-count" aria-label={t('comments.count', { count: n })} title={t('comments.count', { count: n })}>
-      <svg viewBox="0 0 20 18" width="16" height="15" aria-hidden>
-        <path d="M3.5 2.5h13a2 2 0 0 1 2 2v6.5a2 2 0 0 1-2 2H9l-4.2 3.2v-3.2H3.5a2 2 0 0 1-2-2V4.5a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+      {/* A round, chubby bubble. Drawn on the menu icons' 26 px grid; at 18 px the thicker stroke
+          comes out at the same 2 px line as the menu. */}
+      <svg viewBox="0 0 26 26" width="18" height="18" aria-hidden>
+        <path
+          d="M13.4 4.6c5 0 8.6 3.4 8.6 7.7s-3.6 7.6-8.6 7.6c-1.3 0-2.5-.2-3.6-.6L5.2 21.4l1.3-4.3C5 15.8 4.4 14.1 4.4 12.3c0-4.3 3.9-7.7 9-7.7Z"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.9"
+          strokeLinejoin="round"
+          strokeLinecap="round"
+        />
       </svg>
       {n}
     </span>
