@@ -34,10 +34,16 @@ export function PersonScreen() {
             <BackIcon />
           </button>
           <span style={{ flex: 1 }} />
+          {/* Your own profile: change your character, or go to Settings. */}
           {id === me && (
-            <Link to="/profile" className="stk sec sm" aria-label={t('settings.changeCharacter')} title={t('settings.changeCharacter')} style={{ width: 38, padding: 0, transform: 'rotate(3deg)' }}>
-              <PencilIcon />
-            </Link>
+            <div className="row" style={{ gap: 10 }}>
+              <Link to="/settings" className="stk sec sm" style={{ transform: 'rotate(-2deg)' }}>
+                {t('settings.title')}
+              </Link>
+              <Link to="/profile" className="stk sec sm" aria-label={t('settings.changeCharacter')} title={t('settings.changeCharacter')} style={{ width: 38, padding: 0, transform: 'rotate(3deg)' }}>
+                <PencilIcon />
+              </Link>
+            </div>
           )}
         </div>
         {person && (
