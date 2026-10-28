@@ -51,8 +51,8 @@ function SignedOut({ children }: { children: ReactNode }) {
 
 /** A shared link like /join/lemon.sunny.goose. */
 function JoinLink() {
-  const { address } = useParams()
-  if (address) rememberJoinAddress(address)
+  const { address, secret } = useParams()
+  if (address) rememberJoinAddress(address, secret)
   return <Navigate to="/welcome" replace />
 }
 
@@ -115,6 +115,7 @@ export default function App() {
           <Route path="/reset" element={<SignedOut><AuthScreen mode="reset" /></SignedOut>} />
           <Route path="/new-password" element={<SignedIn><NewPasswordScreen /></SignedIn>} />
           <Route path="/join/:address" element={<JoinLink />} />
+          <Route path="/join/:address/:secret" element={<JoinLink />} />
           <Route path="/welcome" element={<SignedIn><JoinOrCreateScreen /></SignedIn>} />
           <Route path="/created/:id" element={<SignedIn><HouseholdCreatedScreen /></SignedIn>} />
           <Route path="/" element={<Inside><HomeScreen /></Inside>} />

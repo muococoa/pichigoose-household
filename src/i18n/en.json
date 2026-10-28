@@ -62,7 +62,14 @@
     "addressMissing": "Add the three-word address.",
     "notFound": "We couldn't find that address. Check the three words.",
     "whatCallYou": "What do we call you?",
-    "yourNameMissing": "Add your name."
+    "yourNameMissing": "Add your name.",
+    "knock": "Knock knock!",
+    "secretQuestion": "What's the household's secret password?",
+    "secretHelp": "Every household has its own secret password. Ask someone in the household for it.",
+    "secretWrong": "That's not it. Ask someone in the household.",
+    "secret": "Secret password",
+    "secretCreateHelp": "People who type in the address will need it to join.",
+    "secretMissing": "Add a secret password."
   },
   "created": {
     "title": "{{name}} is ready!",
@@ -72,7 +79,8 @@
     "send": "Send message",
     "unique": "The address is yours alone. No one else has the same three words.",
     "goHome": "Go to home",
-    "shareText": "Join our household on Pichigoose: {{link}}"
+    "shareText": "Join our household on Pichigoose: {{link}}",
+    "secretLabel": "Secret password"
   },
   "households": {
     "title": "My households",
@@ -86,7 +94,8 @@
     "stay": "Stay",
     "join": "Join",
     "createNew": "Create new",
-    "invite": "Invite someone"
+    "invite": "Invite someone",
+    "secret": "Secret password"
   },
   "tabs": {
     "home": "Home",

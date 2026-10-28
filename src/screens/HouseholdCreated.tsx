@@ -35,13 +35,19 @@ export function HouseholdCreatedScreen() {
           <div style={{ fontSize: 24, lineHeight: '32px', fontWeight: 800, color: '#1E1A30', margin: '6px 0 14px', wordBreak: 'break-word' }}>
             {household?.address ?? '...'}
           </div>
+          <div className="cap" style={{ textTransform: 'uppercase', letterSpacing: '.08em', fontWeight: 800 }}>
+            {t('created.secretLabel')}
+          </div>
+          <div style={{ fontSize: 20, lineHeight: '28px', fontWeight: 800, color: '#1E1A30', margin: '4px 0 14px', wordBreak: 'break-word' }}>
+            {household?.secret ?? '...'}
+          </div>
           <div className="row" style={{ gap: 12, position: 'relative', zIndex: 1 }}>
             <button
               type="button"
               className="stk sec sm"
               style={{ flex: 1, transform: 'rotate(-1.5deg)' }}
               disabled={!household}
-              onClick={() => household && copyText(joinLink(household.address), t('common.copied'))}
+              onClick={() => household && copyText(joinLink(household), t('common.copied'))}
             >
               {t('created.copy')}
             </button>
@@ -51,7 +57,7 @@ export function HouseholdCreatedScreen() {
               style={{ flex: 1.3, transform: 'rotate(1deg)' }}
               disabled={!household}
               onClick={() =>
-                household && shareAddress(household.address, t('created.shareText', { link: joinLink(household.address) }), t('common.copied'))
+                household && shareAddress(household, t('created.shareText', { link: joinLink(household) }), t('common.copied'))
               }
             >
               {t('created.send')}

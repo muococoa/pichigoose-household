@@ -5,6 +5,10 @@
       "destination": "/join.html"
     },
     {
+      "source": "/join/:address/:secret",
+      "destination": "/join.html"
+    },
+    {
       "source": "/((?!assets/|email/|og/|.*\\..*).*)",
       "destination": "/index.html"
     }

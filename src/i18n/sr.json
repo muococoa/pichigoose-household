@@ -64,7 +64,14 @@
     "addressMissing": "Unesi adresu od tri reči.",
     "notFound": "Nema te adrese. Proveri tri reči.",
     "whatCallYou": "Kako da te zovemo?",
-    "yourNameMissing": "Upiši svoje ime."
+    "yourNameMissing": "Upiši svoje ime.",
+    "knock": "Kuc kuc!",
+    "secretQuestion": "Koja je tajna lozinka domaćinstva?",
+    "secretHelp": "Svako domaćinstvo ima svoju tajnu lozinku. Pitaj nekog iz domaćinstva.",
+    "secretWrong": "Nije to. Pitaj nekog iz domaćinstva.",
+    "secret": "Tajna lozinka",
+    "secretCreateHelp": "Trebaće onima koji ukucaju adresu da bi se pridružili.",
+    "secretMissing": "Upiši tajnu lozinku."
   },
   "created": {
     "title": "{{name}} je spremna!",
@@ -74,7 +81,8 @@
     "send": "Pošalji poruku",
     "unique": "Adresa je samo vaša. Niko drugi nema iste tri reči.",
     "goHome": "Idi na početnu",
-    "shareText": "Pridruži se našem domaćinstvu na Pichigoose: {{link}}"
+    "shareText": "Pridruži se našem domaćinstvu na Pichigoose: {{link}}",
+    "secretLabel": "Tajna lozinka"
   },
   "households": {
     "title": "Moja domaćinstva",
@@ -88,7 +96,8 @@
     "stay": "Ostani",
     "join": "Pridruži se",
     "createNew": "Napravi novo",
-    "invite": "Pozovi nekoga"
+    "invite": "Pozovi nekoga",
+    "secret": "Tajna lozinka"
   },
   "tabs": {
     "home": "Početna",

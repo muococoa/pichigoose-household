@@ -20,6 +20,8 @@ export function MyHouseholds({ open, onClose, page }: { open: boolean; onClose: 
   const [label, setLabel] = useState('')
   const [leaving, setLeaving] = useState<Household | null>(null)
   const [inviting, setInviting] = useState<Household | null>(null)
+  const [secretFor, setSecretFor] = useState<Household | null>(null)
+  const [secretText, setSecretText] = useState('')
 
   function pick(h: Household) {
     setCurrentHousehold(h.id)
@@ -51,6 +53,36 @@ export function MyHouseholds({ open, onClose, page }: { open: boolean; onClose: 
     <>
 
       <InviteSheet household={inviting} onClose={() => setInviting(null)} />
+
+      {/* The household's secret password: everyone in it can see and change it. */}
+      <Sheet small open={Boolean(secretFor)} onClose={() => setSecretFor(null)} title={t('households.secret')}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            if (secretFor && secretText.trim()) db.update('households', secretFor.id, { secret: secretText.trim() })
+            setSecretFor(null)
+          }}
+          style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
+        >
+          <div>
+            <input
+              className="input"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              value={secretText}
+              aria-label={t('households.secret')}
+              onChange={(e) => setSecretText(e.target.value)}
+            />
+            <p className="cap" style={{ margin: '8px 0 0' }}>
+              {t('join.secretCreateHelp')}
+            </p>
+          </div>
+          <button type="submit" className="stk prim" style={{ width: '100%' }}>
+            {t('common.save')}
+          </button>
+        </form>
+      </Sheet>
 
       <Sheet small open={Boolean(renaming)} onClose={() => setRenaming(null)} title={t('households.renameTitle')}>
         <form
@@ -139,7 +171,14 @@ export function MyHouseholds({ open, onClose, page }: { open: boolean; onClose: 
                               },
                             },
                             { label: t('households.invite'), onClick: () => setInviting(h) },
-                            { label: t('households.copyAddress'), onClick: () => copyText(joinLink(h.address), t('common.copied')) },
+                            {
+                      label: t('households.secret'),
+                      onClick: () => {
+                        setSecretText(h.secret ?? '')
+                        setSecretFor(h)
+                      },
+                    },
+                    { label: t('households.copyAddress'), onClick: () => copyText(joinLink(h), t('common.copied')) },
                             { label: t('households.leave'), onClick: () => setLeaving(h), danger: true },
                           ]}
                         >
@@ -163,7 +202,7 @@ export function MyHouseholds({ open, onClose, page }: { open: boolean; onClose: 
 
   return (
     <>
-      <Sheet open={open && !renaming && !leaving && !inviting} onClose={onClose} title={t('households.title')}>
+      <Sheet open={open && !renaming && !leaving && !inviting && !secretFor} onClose={onClose} title={t('households.title')}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           {households.map((h) => {
             const people = peopleIn(h.id)
@@ -207,7 +246,14 @@ export function MyHouseholds({ open, onClose, page }: { open: boolean; onClose: 
                       },
                     },
                     { label: t('households.invite'), onClick: () => setInviting(h) },
-                    { label: t('households.copyAddress'), onClick: () => copyText(joinLink(h.address), t('common.copied')) },
+                    {
+                      label: t('households.secret'),
+                      onClick: () => {
+                        setSecretText(h.secret ?? '')
+                        setSecretFor(h)
+                      },
+                    },
+                    { label: t('households.copyAddress'), onClick: () => copyText(joinLink(h), t('common.copied')) },
                     { label: t('households.leave'), onClick: () => setLeaving(h), danger: true },
                   ]}
                 >

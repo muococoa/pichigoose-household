@@ -88,12 +88,13 @@ Deno.serve(async (req) => {
     if (invite.accepted_at) return json({ status: 'already_joined' })
     if (invite.emailed_at && Date.now() - new Date(invite.emailed_at).getTime() < 10 * 60 * 1000) return json({ status: 'recently_sent' })
 
-    const { data: household } = await asCaller.from('households').select('address').eq('id', invite.household_id).single()
+    const { data: household } = await asCaller.from('households').select('address, secret').eq('id', invite.household_id).single()
     const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
     // Write in their language if they already use Pichigoose, otherwise in the inviter's.
     const { data: theirLang } = await admin.rpc('language_for_email', { e: invite.email })
     const lang: 'en' | 'sr' = (theirLang ?? language) === 'sr' ? 'sr' : 'en'
-    const link = `${SITE}/join/${household!.address}`
+    // The link carries the secret password, so the invited person never has to type it.
+    const link = `${SITE}/join/${household!.address}/${encodeURIComponent(household!.secret)}`
 
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',

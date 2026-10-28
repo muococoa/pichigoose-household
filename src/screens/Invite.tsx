@@ -137,7 +137,7 @@ export function InviteSheet({ household, onClose }: { household: Household | nul
               type="button"
               className="link"
               style={{ alignSelf: 'center', display: 'flex', alignItems: 'center', gap: 6, color: '#6A4F9C', marginTop: 2 }}
-              onClick={() => shareAddress(household.address, t('created.shareText', { link: joinLink(household.address) }), t('common.copied'))}
+              onClick={() => shareAddress(household, t('created.shareText', { link: joinLink(household) }), t('common.copied'))}
             >
               <ShareIcon size={16} />
               {t('invite.orMessage')}

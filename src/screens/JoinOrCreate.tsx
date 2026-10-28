@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase'
 import { refetchAll } from '../data/store'
 import { setCurrentHousehold, useHousehold } from '../data/hooks'
 import { Screen } from '../components/Shell'
-import { Hand, Tape } from '../components/Scrapbook'
+import { Hand, Sheet, Tape } from '../components/Scrapbook'
 import { BackIcon } from '../components/Icons'
 import { FieldError } from '../components/FieldError'
 import { PendingInvites } from './Invite'
@@ -13,24 +13,33 @@ import { AskName } from './AskName'
 import { useDesktop } from '../lib/desktop'
 
 const PENDING_KEY = 'pichigoose.joinAddress'
+const SECRET_KEY = 'pichigoose.joinSecret'
 
-export function rememberJoinAddress(address: string) {
+/** A join link was opened: keep its address (and the password it carries) until the Join screen. */
+export function rememberJoinAddress(address: string, secret?: string) {
   try {
     localStorage.setItem(PENDING_KEY, address)
+    if (secret) localStorage.setItem(SECRET_KEY, secret)
+    else localStorage.removeItem(SECRET_KEY)
   } catch {
     // ignore
   }
 }
 
-function takeJoinAddress() {
+function takeJoin() {
   try {
-    const a = localStorage.getItem(PENDING_KEY)
+    const address = localStorage.getItem(PENDING_KEY) ?? ''
+    const secret = localStorage.getItem(SECRET_KEY) ?? ''
     localStorage.removeItem(PENDING_KEY)
-    return a ?? ''
+    localStorage.removeItem(SECRET_KEY)
+    return { address, secret }
   } catch {
-    return ''
+    return { address: '', secret: '' }
   }
 }
+
+// A suggested password for a new household. People can change it to anything.
+const SUGGESTIONS = ['pancake', 'pickle', 'noodle', 'muffin', 'pretzel', 'waffle', 'dumpling', 'biscuit', 'teapot', 'mango']
 
 function Radio({ on }: { on: boolean }) {
   return (
@@ -57,9 +66,16 @@ export function JoinOrCreateScreen() {
   const navigate = useNavigate()
   const [params] = useSearchParams()
   const { households } = useHousehold()
-  const [pending] = useState(takeJoinAddress)
+  const [pending] = useState(takeJoin)
   const [mode, setMode] = useState<'join' | 'create'>(params.get('mode') === 'create' ? 'create' : 'join')
-  const [address, setAddress] = useState(pending)
+  const [address, setAddress] = useState(pending.address)
+  // The password: from the join link, or typed in "Knock knock!".
+  const [secret, setSecret] = useState(pending.secret)
+  const [knocking, setKnocking] = useState(false)
+  const [knockText, setKnockText] = useState('')
+  const [knockErr, setKnockErr] = useState('')
+  const [newSecret, setNewSecret] = useState(() => SUGGESTIONS[Math.floor(Math.random() * SUGGESTIONS.length)])
+  const [newSecretErr, setNewSecretErr] = useState('')
   const [name, setName] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
@@ -70,8 +86,15 @@ export function JoinOrCreateScreen() {
   const showJoin = desktop || mode === 'join'
   const showCreate = desktop || mode === 'create'
 
-  // Joining asks "What do we call you?" first, then joins.
+  // Joining: "Knock knock!" asks for the password (unless the link brought it),
+  // then "What do we call you?", then in.
   const [askingName, setAskingName] = useState(false)
+
+  function openKnock() {
+    setKnockText('')
+    setKnockErr('')
+    setKnocking(true)
+  }
 
   function join(e: FormEvent) {
     e.preventDefault()
@@ -79,14 +102,48 @@ export function JoinOrCreateScreen() {
       setAddressErr(t('join.addressMissing'))
       return
     }
+    if (secret) setAskingName(true)
+    else openKnock()
+  }
+
+  async function knock(e: FormEvent) {
+    e.preventDefault()
+    if (!knockText.trim()) {
+      setKnockErr(t('join.secretWrong'))
+      return
+    }
+    setBusy(true)
+    const { data, error } = await supabase.rpc('check_household_secret', { address, secret: knockText })
+    setBusy(false)
+    if (error) {
+      setKnockErr(navigator.onLine ? t('common.somethingWrong') : t('common.needsSignal'))
+      return
+    }
+    if (data === 'not_found') {
+      setKnocking(false)
+      setAddressErr(t('join.notFound'))
+      return
+    }
+    if (data !== 'ok') {
+      setKnockErr(t('join.secretWrong'))
+      return
+    }
+    setSecret(knockText)
+    setKnocking(false)
     setAskingName(true)
   }
 
   async function joinNow() {
     setBusy(true)
     setError('')
-    const { data, error } = await supabase.rpc('join_household', { address, label: '' })
+    const { data, error } = await supabase.rpc('join_household', { address, label: '', secret })
     setBusy(false)
+    if (error?.code === '28P01') {
+      // The password changed since the link was sent. Ask for it.
+      setSecret('')
+      openKnock()
+      return
+    }
     if (error) {
       setError(error.code === 'P0002' ? t('join.notFound') : navigator.onLine ? t('common.somethingWrong') : t('common.needsSignal'))
       return
@@ -98,10 +155,14 @@ export function JoinOrCreateScreen() {
 
   async function create(e: FormEvent) {
     e.preventDefault()
+    if (!newSecret.trim()) {
+      setNewSecretErr(t('join.secretMissing'))
+      return
+    }
     setBusy(true)
     setError('')
     const householdName = name.trim() || t('join.namePlaceholder')
-    const { data, error } = await supabase.rpc('create_household', { household_name: householdName, first_list_name: t('join.firstList') })
+    const { data, error } = await supabase.rpc('create_household', { household_name: householdName, first_list_name: t('join.firstList'), secret: newSecret.trim() })
     setBusy(false)
     if (error || !data) {
       setError(navigator.onLine ? t('common.somethingWrong') : t('common.needsSignal'))
@@ -193,6 +254,29 @@ export function JoinOrCreateScreen() {
                 </label>
                 <input id="hname" className="input" placeholder={t('join.namePlaceholder')} value={name} onChange={(e) => setName(e.target.value)} />
               </div>
+              <div>
+                <label className="label" htmlFor="hsecret">
+                  {t('join.secret')}
+                </label>
+                <input
+                  id="hsecret"
+                  className="input"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  value={newSecret}
+                  aria-invalid={Boolean(newSecretErr)}
+                  aria-describedby={newSecretErr ? 'hsecret-err' : undefined}
+                  onChange={(e) => {
+                    setNewSecret(e.target.value)
+                    setNewSecretErr('')
+                  }}
+                />
+                {newSecretErr && <FieldError id="hsecret-err">{newSecretErr}</FieldError>}
+                <p className="cap" style={{ margin: '8px 0 0' }}>
+                  {t('join.secretCreateHelp')}
+                </p>
+              </div>
               {error && <p className="err" role="alert" style={{ margin: 0 }}>{error}</p>}
               <button type="submit" className="stk prim" disabled={busy} style={{ width: '100%', transform: 'rotate(-1deg)' }}>
                 {t('join.create')}
@@ -202,6 +286,37 @@ export function JoinOrCreateScreen() {
         </div>
         </div>
       </div>
+      <Sheet small open={knocking} onClose={() => setKnocking(false)} title={t('join.knock')}>
+        <form noValidate onSubmit={knock} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div>
+            <label className="label" htmlFor="knock">
+              {t('join.secretQuestion')}
+            </label>
+            <input
+              id="knock"
+              className="input"
+              autoFocus
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              value={knockText}
+              aria-invalid={Boolean(knockErr)}
+              aria-describedby={knockErr ? 'knock-err' : 'knock-help'}
+              onChange={(e) => {
+                setKnockText(e.target.value)
+                setKnockErr('')
+              }}
+            />
+            {knockErr && <FieldError id="knock-err">{knockErr}</FieldError>}
+            <p id="knock-help" className="cap" style={{ margin: '8px 0 0' }}>
+              {t('join.secretHelp')}
+            </p>
+          </div>
+          <button type="submit" className="stk violet" disabled={busy} style={{ width: '100%', transform: 'rotate(-1deg)' }}>
+            {t('join.join')}
+          </button>
+        </form>
+      </Sheet>
       <AskName open={askingName} onClose={() => setAskingName(false)} onJoin={joinNow} />
     </Screen>
   )
