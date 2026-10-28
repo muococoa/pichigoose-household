@@ -16,8 +16,9 @@ import { recentlyDone, toggleItem, toggleTodo } from '../data/actions'
 import { Screen } from '../components/Shell'
 import { Avatar, NobodyAvatar } from '../components/Avatar'
 import { Check, Hand, Struck, Tick, PichiStamp, Sheet, Tape, tilt, type TapeKind } from '../components/Scrapbook'
-import { InkChevron, PencilIcon, PlusIcon } from '../components/Icons'
+import { InkChevron, PencilIcon, PersonAddIcon, PlusIcon } from '../components/Icons'
 import { MyHouseholds } from './MyHouseholds'
+import { InviteSheet, PendingInvites } from './Invite'
 import { daysFromToday, dueLabel, fromDateString } from '../lib/time'
 
 // Each section is a sticky note in its own pastel, held by its own tape.
@@ -60,6 +61,7 @@ export function HomeScreen() {
   const notes = useNotes(hid)
   const [switching, setSwitching] = useState(false)
   const [adding, setAdding] = useState(false)
+  const [inviting, setInviting] = useState(false)
 
   const person = (id: string | null) => people.find((p) => p.id === id)
 
@@ -243,6 +245,7 @@ export function HomeScreen() {
             </Link>
           </div>
         </div>
+        <PendingInvites />
         {layout.map((s) => section(s.section))}
       </div>
 
@@ -268,8 +271,22 @@ export function HomeScreen() {
           <button type="button" className="stk sec" style={{ transform: 'rotate(-.5deg)' }} onClick={() => navigate('/notes/new')}>
             {t('home.addNote')}
           </button>
+          {/* People get the violet sticker. */}
+          <button
+            type="button"
+            className="stk violet"
+            style={{ transform: 'rotate(1deg)' }}
+            onClick={() => {
+              setAdding(false)
+              setInviting(true)
+            }}
+          >
+            <PersonAddIcon />
+            {t('home.addSomeone')}
+          </button>
         </div>
       </Sheet>
+      <InviteSheet household={inviting ? household : null} onClose={() => setInviting(false)} />
     </Screen>
   )
 }

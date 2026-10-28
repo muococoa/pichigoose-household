@@ -55,6 +55,13 @@ export const DotsIcon = (p: P) => (
     <path d="M6 13h.01M13 13h.01M20 13h.01" />
   </Svg>
 )
+export const PersonAddIcon = (p: P) => (
+  <Svg size={22} width={2.2} {...p}>
+    <circle cx="10.5" cy="9" r="4" />
+    <path d="M3.5 21c.6-3.8 3.4-6 7-6s6.4 2.2 7 6" />
+    <path d="M20 7.5v6M17 10.5h6" />
+  </Svg>
+)
 export const CloseIcon = (p: P) => (
   <Svg size={22} width={2.2} {...p}>
     <path d="M7 7l12 12M19 7 7 19" />

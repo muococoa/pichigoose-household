@@ -21,7 +21,7 @@
     "someone": "Neko"
   },
   "auth": {
-    "tagline": "Planiraj domaćinstvo sa ljudima s\u00a0kojima živiš, da svi budu organizovani.",
+    "tagline": "Planiraj domaćinstvo sa ljudima s kojima živiš, da svi budu organizovani.",
     "email": "Email",
     "emailPlaceholder": "ime@primer.com",
     "password": "Lozinka",
@@ -85,7 +85,8 @@
     "leaveLast": "Ovde više nema nikog drugog. Ako odeš, domaćinstvo i sve u njemu se briše.",
     "stay": "Ostani",
     "join": "Pridruži se",
-    "createNew": "Napravi novo"
+    "createNew": "Napravi novo",
+    "invite": "Pozovi nekoga"
   },
   "tabs": {
     "home": "Početna",
@@ -119,7 +120,8 @@
     "addWhat": "Dodaj nešto",
     "addItem": "Nešto za kupovinu",
     "addTodo": "Zadatak",
-    "addNote": "Belešku"
+    "addNote": "Belešku",
+    "addSomeone": "Nekoga u domaćinstvo"
   },
   "arrange": {
     "title": "Složi svoju početnu",
@@ -238,7 +240,8 @@
       "glasses": "Naočare",
       "flower": "Cvet",
       "hat": "Kapa za žurku"
-    }
+    },
+    "saveChanges": "Sačuvaj izmene"
   },
   "settings": {
     "title": "Podešavanja",
@@ -246,5 +249,21 @@
     "language": "Jezik",
     "appLanguage": "Jezik aplikacije",
     "logOut": "Odjavi se"
+  },
+  "invite": {
+    "title": "Pozovi nekoga",
+    "intro": "Poslaćemo im email sa linkom za {{name}}.",
+    "email": "Njihov email",
+    "send": "Pošalji poziv",
+    "orMessage": "Ili pošalji link porukom",
+    "sent": "Poziv je poslat!",
+    "sentText": "Poslali smo email na {{email}}. Mogu da se pridruže jednim dodirom.",
+    "notEmailed": "Email nije otišao, ali {{email}} će videti poziv kad otvori Pichigoose.",
+    "already": "{{email}} je već u domaćinstvu {{name}}.",
+    "another": "Pozovi još nekoga",
+    "invited": "Poziv za tebe!",
+    "card": "{{inviter}} te poziva u {{household}}.",
+    "join": "Pridruži se",
+    "noThanks": "Ne, hvala"
   }
 }

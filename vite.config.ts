@@ -42,7 +42,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       // Registered in src/main.tsx, so the app can reload itself when a new version is out.
       injectRegister: false,
-      includeAssets: ['apple-touch-icon.png', 'favicon.png'],
+      includeAssets: ['apple-touch-icon.png', 'favicon.ico'],
       manifest: {
         name: 'Pichigoose',
         short_name: 'Pichigoose',

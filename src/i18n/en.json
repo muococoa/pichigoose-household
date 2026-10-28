@@ -83,7 +83,8 @@
     "leaveLast": "You're the last one here. Leaving deletes the household and everything in it.",
     "stay": "Stay",
     "join": "Join",
-    "createNew": "Create new"
+    "createNew": "Create new",
+    "invite": "Invite someone"
   },
   "tabs": {
     "home": "Home",
@@ -115,7 +116,8 @@
     "addWhat": "Add something",
     "addItem": "Something to buy",
     "addTodo": "A to-do",
-    "addNote": "A note"
+    "addNote": "A note",
+    "addSomeone": "Someone to the household"
   },
   "arrange": {
     "title": "Arrange your home",
@@ -234,7 +236,8 @@
       "glasses": "Glasses",
       "flower": "Flower",
       "hat": "Party hat"
-    }
+    },
+    "saveChanges": "Save changes"
   },
   "settings": {
     "title": "Settings",
@@ -242,5 +245,21 @@
     "language": "Language",
     "appLanguage": "App language",
     "logOut": "Log out"
+  },
+  "invite": {
+    "title": "Invite someone",
+    "intro": "We'll email them a link to join {{name}}.",
+    "email": "Their email",
+    "send": "Send invite",
+    "orMessage": "Or send the link in a message",
+    "sent": "Invite sent!",
+    "sentText": "We emailed {{email}}. They can join with one tap.",
+    "notEmailed": "We couldn't send the email, but {{email}} will see the invite when they open Pichigoose.",
+    "already": "{{email}} is already in {{name}}.",
+    "another": "Invite someone else",
+    "invited": "You're invited!",
+    "card": "{{inviter}} invited you to {{household}}.",
+    "join": "Join",
+    "noThanks": "No thanks"
   }
 }

@@ -44,6 +44,7 @@ Eight patterns in `tokens.json` under `washi.patterns`: stripes in pink, yellow,
 
 - Buttons are hand-cut stickers: a thick white border (4 px, or 3 px for small ones), uneven corners, and a soft lift shadow (`shadow.sticker`). This is Nora's pick.
 - **Primary:** hero pink with white text. **Secondary:** paper color with ink text. **Disabled:** `sticker.disabled`.
+- **People:** violet `#8466B8` with white text (`sticker.people`). Violet is the second hero color, used only for people: inviting someone and joining a household.
 - **The round add button** is a hand-cut blob, 62 px, primary pink, rotated about -4 degrees, with the plus drawn as a 3.2 px line.
 - **Shape:** the uneven corners are elliptical radii (see `sticker.handCutRadius`), written as CSS `border-radius`.
 - **Pressed state:** not designed yet. For now, flatten the shadow and move the sticker down 2 px.

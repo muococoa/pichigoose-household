@@ -88,6 +88,8 @@
 }
 .stk.prim { background: #D34471; color: #FFFFFF }
 .stk.sec { background: #FFFDF8; color: #1E1A30 }
+/* Violet is the second hero color, for people: inviting and joining. */
+.stk.violet { background: #8466B8; color: #FFFFFF }
 .stk.sm { height: 38px; font-size: 14px; padding: 0 14px; border-width: 3px }
 .stk.round { width: 62px; height: 62px; padding: 0; border-radius: 58% 38% 54% 40% / 40% 56% 38% 58% }
 .stk:disabled, .stk.off { background: #E6DFE3; color: #857A8C }

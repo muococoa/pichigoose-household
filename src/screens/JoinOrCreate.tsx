@@ -8,6 +8,7 @@ import { Screen } from '../components/Shell'
 import { Hand, Tape } from '../components/Scrapbook'
 import { BackIcon } from '../components/Icons'
 import { FieldError } from '../components/FieldError'
+import { PendingInvites } from './Invite'
 
 const PENDING_KEY = 'pichigoose.joinAddress'
 
@@ -114,6 +115,8 @@ export function JoinOrCreateScreen() {
         <p className="body" style={{ margin: '8px 0 26px' }}>
           {t('join.intro')}
         </p>
+
+        <PendingInvites style={{ marginBottom: 30 }} />
 
         <div className="note n-butter" style={{ transform: 'rotate(-.8deg)', opacity: mode === 'join' ? 1 : 0.7 }}>
           <Tape kind="tm" style={{ top: -10, left: 26, transform: 'rotate(-4deg)' }} />

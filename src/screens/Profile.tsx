@@ -64,7 +64,8 @@ export function ProfileScreen() {
   return (
     <Screen
       footer={
-        <div style={{ position: 'relative', zIndex: 3, display: 'flex', gap: 12, padding: '12px 22px calc(var(--bottom) + 32px) 40px' }}>
+        <div style={{ position: 'relative', zIndex: 3, padding: '12px 22px calc(var(--bottom) + 24px) 40px' }}>
+          <div style={{ display: 'flex', gap: 12 }}>
           <button type="button" className="stk sec" style={{ flex: 1, transform: 'rotate(-1deg)' }} onClick={() => (stepIndex ? setStep(STEPS[stepIndex - 1]) : navigate(-1))}>
             {t('common.back')}
           </button>
@@ -77,6 +78,15 @@ export function ProfileScreen() {
               {t('common.save')}
             </button>
           )}
+          </div>
+          {/* Changed just one thing? Save from any step. On the last step the big button already saves. */}
+          <div style={{ height: 44, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+            {stepIndex < STEPS.length - 1 && (
+              <button type="button" className="link" onClick={save} style={{ padding: '8px 12px' }}>
+                {t('profile.saveChanges')}
+              </button>
+            )}
+          </div>
         </div>
       }
     >

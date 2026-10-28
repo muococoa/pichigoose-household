@@ -8,6 +8,7 @@ import { Avatar } from '../components/Avatar'
 import { Menu, Sheet } from '../components/Scrapbook'
 import { DotsIcon, SmallCheck } from '../components/Icons'
 import { copyText, joinLink } from './HouseholdCreated'
+import { InviteSheet } from './Invite'
 
 /** The sheet that opens from the household name on Home. */
 export function MyHouseholds({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -18,6 +19,7 @@ export function MyHouseholds({ open, onClose }: { open: boolean; onClose: () => 
   const [renaming, setRenaming] = useState<Household | null>(null)
   const [label, setLabel] = useState('')
   const [leaving, setLeaving] = useState<Household | null>(null)
+  const [inviting, setInviting] = useState<Household | null>(null)
 
   function pick(h: Household) {
     setCurrentHousehold(h.id)
@@ -46,7 +48,7 @@ export function MyHouseholds({ open, onClose }: { open: boolean; onClose: () => 
 
   return (
     <>
-      <Sheet open={open && !renaming && !leaving} onClose={onClose} title={t('households.title')}>
+      <Sheet open={open && !renaming && !leaving && !inviting} onClose={onClose} title={t('households.title')}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           {households.map((h) => {
             const people = peopleIn(h.id)
@@ -89,6 +91,7 @@ export function MyHouseholds({ open, onClose }: { open: boolean; onClose: () => 
                         setRenaming(h)
                       },
                     },
+                    { label: t('households.invite'), onClick: () => setInviting(h) },
                     { label: t('households.copyAddress'), onClick: () => copyText(joinLink(h.address), t('common.copied')) },
                     { label: t('households.leave'), onClick: () => setLeaving(h), danger: true },
                   ]}
@@ -124,6 +127,8 @@ export function MyHouseholds({ open, onClose }: { open: boolean; onClose: () => 
           </button>
         </div>
       </Sheet>
+
+      <InviteSheet household={inviting} onClose={() => setInviting(null)} />
 
       <Sheet open={Boolean(renaming)} onClose={() => setRenaming(null)} title={t('households.renameTitle')}>
         <form
