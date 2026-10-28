@@ -309,7 +309,7 @@ function TodoSheet({ todo, householdId, people, onClose }: { todo: Todo | null; 
             ))}
           </div>
         </div>
-        <div className="row" style={{ gap: 12, marginTop: 4 }}>
+        <div className="row sheet-actions" style={{ gap: 12, marginTop: 4 }}>
           {todo && (
             <button
               type="button"

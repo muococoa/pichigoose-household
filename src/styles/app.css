@@ -135,6 +135,14 @@ textarea.input { height: auto; padding: 12px 16px; resize: none }
 /* Pop-ups are a separate sheet of paper: a lighter off-white than the notebook page, same fibers, no ruled lines. */
 .sheet { background-color: #FFFEFC; background-image: url("../../assets/paper-white.png"); background-size: 512px 512px }
 .sheet .grab { width: 40px; height: 4px; border-radius: 2px; background: #CBC2CC; margin: 0 auto 14px }
+/* With the keyboard open, a pop-up uses all the room above it instead of getting squeezed. */
+html[data-kb="open"] .sheet { max-height: calc(100% - var(--top) - 4px) }
+/* The main button of a long pop-up stays pinned to its bottom edge, so it's always in reach. */
+.sheet-actions {
+  position: sticky; bottom: calc(-24px - var(--bottom)); z-index: 2; margin: 0 -22px calc(-24px - var(--bottom)); padding: 12px 22px calc(18px + var(--bottom));
+  background-color: #FFFEFC; background-image: url("../../assets/paper-white.png"); background-size: 512px 512px;
+  box-shadow: 0 -8px 12px -6px rgba(30, 26, 48, .12);
+}
 @keyframes fade { from { opacity: 0 } }
 @keyframes rise { from { transform: translateY(30px); opacity: .6 } }
 /* Closing: the paper drops away (ease-in) while the shade fades. Same 0.22 s as CLOSE_MS in Scrapbook.tsx. */

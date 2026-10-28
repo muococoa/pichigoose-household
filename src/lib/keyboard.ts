@@ -13,7 +13,11 @@ export function watchKeyboard() {
     if (!vv) return
     const covered = Math.max(0, window.innerHeight - vv.height - vv.offsetTop)
     // Small differences are browser toolbars, not a keyboard.
-    root.style.setProperty('--kb', `${covered > 80 ? Math.round(covered) : 0}px`)
+    const open = covered > 80
+    root.style.setProperty('--kb', `${open ? Math.round(covered) : 0}px`)
+    // Lets pop-ups grow to use all the room above the keyboard.
+    if (open) root.dataset.kb = 'open'
+    else delete root.dataset.kb
   }
 
   vv?.addEventListener('resize', update)
