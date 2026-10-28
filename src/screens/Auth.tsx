@@ -70,7 +70,8 @@ export function AuthScreen({ mode }: { mode: Mode }) {
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 8 }}>
           <PichiPolaroid width={112} rotate={-4} />
           <img src={logo} alt="Pichigoose" style={{ width: 150, marginTop: 18 }} />
-          <p className="body" style={{ textAlign: 'center', margin: '10px 0 0', color: '#463D50', maxWidth: 290 }}>
+          {/* Same two-line height in every language, so switching EN and SR doesn't move the form. */}
+          <p className="body" style={{ textAlign: 'center', margin: '10px 0 0', color: '#463D50', minHeight: 44, textWrap: 'balance' }}>
             {t('auth.tagline')}
           </p>
         </div>
