@@ -26,7 +26,9 @@ export function Sidebar() {
 
   return (
     <aside className="side">
+      {/* The tape sits outside the scrolling part, so it can hang over the top edge. */}
       <Tape kind="tdots" style={{ top: -10, left: 86, width: 92, transform: 'rotate(-3deg)' }} />
+      <div className="side-inner">
       <Link to="/" style={{ display: 'block' }}>
         <img src={logo} alt="Pichigoose" style={{ width: 150, height: 'auto', display: 'block', margin: '6px 0 0 6px' }} />
       </Link>
@@ -63,6 +65,7 @@ export function Sidebar() {
           </span>
         </span>
       </Link>
+      </div>
       <AddSheet open={adding} onClose={() => setAdding(false)} />
     </aside>
   )

@@ -7,11 +7,13 @@
   /* The frame: lilac desk, the sidebar sheet on the left, the notebook page on the right. */
   .desk { --top: 32px; --bottom: 0px; --tabbar: 0px; display: flex; height: 100dvh; background: #D6C8E6; overflow: hidden }
   .side {
-    width: 264px; flex: none; position: relative; margin: 18px 0 18px 18px; border-radius: 6px; box-sizing: border-box; padding: 30px 20px 22px;
-    display: flex; flex-direction: column; gap: 22px; overflow-y: auto; overflow-x: hidden;
+    width: 264px; flex: none; position: relative; margin: 18px 0 18px 18px; border-radius: 6px; box-sizing: border-box;
+    display: flex; flex-direction: column;
     background-color: #FFFFFF; background-image: url("../../assets/paper-white.png"); background-size: 512px 512px; box-shadow: 2px 3px 0 rgba(30, 26, 48, .13); z-index: 2;
   }
   .side .tape { position: absolute }
+  /* Everything else in the sidebar scrolls if the window is short. */
+  .side-inner { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 22px; padding: 30px 20px 22px; overflow-y: auto; overflow-x: hidden }
   .hhbox { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 4px 4px 0; text-align: left }
   .nav { position: relative; display: flex; align-items: center; gap: 14px; height: 44px; padding: 0 12px; font-size: 16px; font-weight: 700; color: #63586B; border-radius: 8px }
   .nav svg { width: 24px; height: 24px; flex: none }
