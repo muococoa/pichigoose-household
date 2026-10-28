@@ -103,7 +103,6 @@ function Body({ character }: { character: string }) {
       return (
         <>
           <path d="M10.5 30.5c-2-3.5-2.2-9.5-.3-13.6l.9-8 6 4.6h5.8l6-4.6.9 8c1.9 4.1 1.7 10.1-.3 13.6Z" fill="#F6CFA0" {...line} strokeLinejoin="round" />
-          <path d="M19.2 22.3h1.6l-.8.9Z" fill={INK} />
         </>
       )
     default:
@@ -146,17 +145,24 @@ function Accessory({ kind, face, character }: { kind: string | null; face: Face;
           <circle r="1.5" fill="#A8335A" {...line} />
         </g>
       )
-    case 'glasses':
+    case 'glasses': {
+      // Absurdly big round glasses, centered on the eyes. The two lenses never touch:
+      // a short bridge joins them.
+      const r = 5.4
+      const mid = (x1 + x2) / 2
+      const lx = mid - r - 0.9
+      const rx = mid + r + 0.9
       return (
         <g>
-          <circle cx={x1} cy={y} r="3.4" fill="rgba(255,255,255,.35)" {...line} />
-          <circle cx={x2} cy={y} r="3.4" fill="rgba(255,255,255,.35)" {...line} />
-          <path d={`M${x1 + 3.4} ${y}q${(x2 - x1 - 6.8) / 2} -1.2 ${x2 - x1 - 6.8} 0`} fill="none" {...line} strokeLinecap="round" />
+          <circle cx={lx} cy={y} r={r} fill="rgba(255,255,255,.4)" {...line} />
+          <circle cx={rx} cy={y} r={r} fill="rgba(255,255,255,.4)" {...line} />
+          <path d={`M${lx + r} ${y - 0.4}q0.9 -1 1.8 0`} fill="none" {...line} strokeLinecap="round" />
         </g>
       )
+    }
     case 'flower':
-      // Petals drawn twice: once with the outline, then once more on top without it,
-      // so only the outer edge of the flower is inked.
+      // Five round petals with one outline around the whole flower, no center.
+      // Petals are drawn twice: with the outline, then again on top without it, so only the outer edge is inked.
       return (
         <g transform={at(spots.flower)}>
           {PETALS.map(([px, py]) => (
@@ -165,7 +171,7 @@ function Accessory({ kind, face, character }: { kind: string | null; face: Face;
           {PETALS.map(([px, py]) => (
             <circle key={`f${px}`} cx={px} cy={py} r="1.9" fill="#FFFDF8" />
           ))}
-          <circle r="1.4" fill="#F2A03D" {...line} />
+          <circle r="1.6" fill="#FFFDF8" />
         </g>
       )
     case 'hat':
