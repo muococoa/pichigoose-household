@@ -73,6 +73,11 @@ export const SearchIcon = (p: P) => (
     <path d="m16.5 16.5 4 4" />
   </Svg>
 )
+export const SendIcon = (p: P) => (
+  <Svg size={22} width={2.4} {...p}>
+    <path d="M13 20.5V6M7 11.5 13 5.5l6 6" />
+  </Svg>
+)
 export const SmallCheck = (p: P) => (
   <Svg size={20} width={2.4} {...p}>
     <path d="M6 13.5l4.5 4.5L20 8" />

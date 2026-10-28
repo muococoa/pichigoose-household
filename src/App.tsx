@@ -18,7 +18,7 @@ import { NoteScreen, NotesScreen } from './screens/Notes'
 import { ProfileScreen, SettingsScreen } from './screens/Profile'
 import { HouseholdsScreen } from './screens/Households'
 import { PersonScreen } from './screens/Person'
-import { MessagesScreen } from './screens/Messages'
+import { ChatScreen, MessagesScreen } from './screens/Messages'
 
 /** Blank notebook paper while things load. */
 function Paper() {
@@ -126,6 +126,7 @@ export default function App() {
           <Route path="/todos" element={<Inside><TodosScreen /></Inside>} />
           <Route path="/notes" element={<Inside><NotesScreen /></Inside>} />
           <Route path="/messages" element={<Inside><MessagesScreen /></Inside>} />
+          <Route path="/messages/:chat" element={<Inside><ChatScreen /></Inside>} />
           <Route path="/notes/:id" element={<Inside><NoteScreen /></Inside>} />
           <Route path="/profile" element={<Inside><ProfileScreen /></Inside>} />
           <Route path="/settings" element={<Inside><SettingsScreen /></Inside>} />

@@ -7,6 +7,7 @@ import { Hand, Tape } from './Scrapbook'
 import { BasketIcon, ChevronDown, HomeIcon, InkCircle, MessagesIcon, NoteIcon, PlusIcon, TodoIcon } from './Icons'
 import { AddSheet } from '../screens/AddSheet'
 import logo from '../../assets/logo-pichigoose.png'
+import { useUnreadTotal } from '../data/chats'
 
 /** Desktop: the sidebar replaces the bottom tab bar. Its own sheet of paper, taped at the top. */
 export function Sidebar() {
@@ -17,6 +18,7 @@ export function Sidebar() {
   const [adding, setAdding] = useState(false)
 
   // Money comes in phase 3 and stays hidden until then.
+  const unread = useUnreadTotal()
   const tabs = [
     { to: '/', label: t('tabs.home'), icon: <HomeIcon /> },
     { to: '/shopping', label: t('tabs.shopping'), icon: <BasketIcon /> },
@@ -53,6 +55,7 @@ export function Sidebar() {
                 <span className="tab-icon">
                   {tab.icon}
                   {isActive && <InkCircle />}
+                  {tab.to === '/messages' && unread > 0 && <span className="tab-badge">{unread > 99 ? '99+' : unread}</span>}
                 </span>
                 <span>{tab.label}</span>
               </>

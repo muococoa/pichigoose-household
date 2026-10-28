@@ -159,6 +159,28 @@ A short conversation under a shopping item, to-do or note [Nora]. Flat, like a c
 
 Everyone in the household can read and write comments; people can delete only their own. Live updates on.
 
+### messages
+Chat, like WhatsApp [Nora]: each household has one group chat for everyone, and each pair of people in it has a private chat.
+
+| column | type | notes |
+|---|---|---|
+| id | uuid, primary key | |
+| household_id | uuid, references households | |
+| author_id | uuid, references profiles | must be the person writing it |
+| to_user | uuid, nullable | empty: the household's group chat. Set: a private message to that person (who must be in the household) |
+| body | text | 1 to 4000 characters |
+| created_at | timestamptz | |
+
+Group messages: everyone in the household reads them. Private ones: only the two people. You can delete your own. Live updates on.
+
+### chat_reads
+Where each person stopped reading each chat, for the unread counts. Only you see your own.
+
+| column | type | notes |
+|---|---|---|
+| user_id, household_id, chat | primary key | chat is `household` or the other person's id |
+| read_at | timestamptz | set by `mark_chat_read(hid, chat)` while the chat is open |
+
 ### money_people
 The people someone has money with (M1 to M3). They don't need the app.
 

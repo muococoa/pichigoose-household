@@ -71,6 +71,16 @@ export type Comment = Row & {
   created_at: string
 }
 
+export type Message = Row & {
+  household_id: string
+  author_id: string | null
+  to_user: string | null
+  body: string
+  created_at: string
+}
+
+export type ChatRead = Row & { household_id: string; chat: string; read_at: string }
+
 // ---------------------------------------------------------------------------
 
 export function useProfiles() {
@@ -188,6 +198,35 @@ export function useComments(householdId: string | null) {
           belongs: (r) => r.household_id === householdId,
           load: () => supabase.from('comments').select('*').eq('household_id', householdId).order('created_at'),
           realtime: `household_id=eq.${householdId}`,
+        }
+      : null,
+  )
+}
+
+/** Every message I can see in the household: the group chat and my private chats. */
+export function useMessages(householdId: string | null) {
+  return useCollection<Message>(
+    householdId
+      ? {
+          key: `messages:${householdId}`,
+          table: 'messages',
+          belongs: (r) => r.household_id === householdId,
+          load: () => supabase.from('messages').select('*').eq('household_id', householdId).order('created_at'),
+          realtime: `household_id=eq.${householdId}`,
+        }
+      : null,
+  )
+}
+
+/** Where I stopped reading each chat in the household. */
+export function useChatReads(householdId: string | null) {
+  return useCollection<ChatRead>(
+    householdId
+      ? {
+          key: `chat_reads:${householdId}`,
+          table: 'chat_reads',
+          belongs: (r) => r.household_id === householdId,
+          load: () => supabase.from('chat_reads').select('*').eq('household_id', householdId),
         }
       : null,
   )

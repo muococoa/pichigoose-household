@@ -6,6 +6,7 @@ import { BasketIcon, HomeIcon, InkCircle, MessagesIcon, NoteIcon, TodoIcon } fro
 import { DoodleSpot, Stamp, STAMP_COLORS, type DoodlePose } from './Scrapbook'
 import { flush, refetchAll, useOutboxCount } from '../data/store'
 import { useDesktop } from '../lib/desktop'
+import { useUnreadTotal } from '../data/chats'
 import { useBounce } from '../lib/bounce'
 import { Sidebar } from './Sidebar'
 
@@ -75,6 +76,7 @@ export function Screen({ children, tabbar, footer, className = '', wide, center,
 // Money comes in phase 3. Until then the tab is hidden so nothing leads nowhere.
 export function TabBar() {
   const { t } = useTranslation()
+  const unread = useUnreadTotal()
   const tabs = [
     { to: '/', label: t('tabs.home'), icon: <HomeIcon /> },
     { to: '/shopping', label: t('tabs.shopping'), icon: <BasketIcon /> },
@@ -91,6 +93,7 @@ export function TabBar() {
               <span className="tab-icon">
                 {tab.icon}
                 {isActive && <InkCircle />}
+                {tab.to === '/messages' && unread > 0 && <span className="tab-badge">{unread > 99 ? '99+' : unread}</span>}
               </span>
               <span>{tab.label}</span>
             </>

@@ -287,6 +287,16 @@
   },
   "messages": {
     "title": "Messages",
-    "soon": "Messages for the whole household are coming soon."
+    "you": "You",
+    "placeholder": "Write a message...",
+    "send": "Send",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "sayHi": "Say hi to {{name}}!",
+    "sayHiAll": "Say hi to everyone!",
+    "pick": "Pick a chat to start talking.",
+    "none": "No messages yet.",
+    "unread_one": "{{count}} unread message",
+    "unread_other": "{{count}} unread messages"
   }
 }

@@ -35,6 +35,7 @@ export type CollectionDef = {
 // Tables without a single id column get one made from their key columns.
 const syntheticId: Record<string, (row: Record<string, unknown>) => string> = {
   household_members: (r) => `${r.household_id}:${r.user_id}`,
+  chat_reads: (r) => `${r.household_id}:${r.chat}`,
 }
 
 function withId(table: string, row: Record<string, unknown>): Row {
@@ -245,7 +246,7 @@ export async function refetch(def: CollectionDef, attempt = 0): Promise<void> {
   }
 }
 
-function refetchTable(table: string) {
+export function refetchTable(table: string) {
   for (const def of defs.values()) if (def.table === table) void refetch(def)
 }
 

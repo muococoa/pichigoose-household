@@ -292,6 +292,17 @@
   },
   "messages": {
     "title": "Poruke",
-    "soon": "Poruke za celo domaćinstvo stižu uskoro."
+    "you": "Ti",
+    "placeholder": "Napiši poruku...",
+    "send": "Pošalji",
+    "today": "Danas",
+    "yesterday": "Juče",
+    "sayHi": "Još nema poruka. Napiši prvu!",
+    "sayHiAll": "Pozdravi sve!",
+    "pick": "Izaberi razgovor.",
+    "none": "Još nema poruka.",
+    "unread_one": "{{count}} nepročitana poruka",
+    "unread_few": "{{count}} nepročitane poruke",
+    "unread_other": "{{count}} nepročitanih poruka"
   }
 }
