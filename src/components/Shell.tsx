@@ -10,10 +10,10 @@ import { Sidebar } from './Sidebar'
 /** Screens inside a household. On desktop they sit on the notebook page next to the sidebar. */
 export const Framed = createContext(false)
 
-type ScreenProps = { children: ReactNode; tabbar?: boolean; footer?: ReactNode; className?: string; wide?: boolean }
+type ScreenProps = { children: ReactNode; tabbar?: boolean; footer?: ReactNode; className?: string; wide?: boolean; center?: boolean }
 
 /** A screen of notebook paper with the red margin. */
-export function Screen({ children, tabbar, footer, className = '', wide }: ScreenProps) {
+export function Screen({ children, tabbar, footer, className = '', wide, center }: ScreenProps) {
   const desktop = useDesktop()
   const framed = useContext(Framed)
   if (desktop && framed) {
@@ -24,7 +24,7 @@ export function Screen({ children, tabbar, footer, className = '', wide }: Scree
         <Sidebar />
         <div className={`screen scr page ${className}`}>
           <div className="scroll scr">
-            <div className={`desk-content${wide ? ' wide' : ''}`}>{children}</div>
+            <div className={`desk-content${wide ? ' wide' : ''}${center ? ' center' : ''}`}>{children}</div>
           </div>
           {footer && <div className={`desk-footer${wide ? ' wide' : ''}`}>{footer}</div>}
           <OfflineBadge />

@@ -32,6 +32,8 @@
   /* Content starts right of the margin: 100 px in, 48 px from the right. Screens bring 40 / 22 px of their own. */
   .desk-content { padding: 8px 26px 32px 60px; max-width: 820px }
   .desk-content.wide { max-width: none }
+  /* One centered column, 600 px of content (Settings). */
+  .desk-content.center { max-width: 698px; margin: 0 auto; padding-left: 0; padding-right: 36px }
   .desk-footer { max-width: 820px; padding-left: 38px }
   .desk-footer.wide { max-width: none }
 

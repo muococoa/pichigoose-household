@@ -10,6 +10,7 @@ import { ACCESSORIES, Avatar, CHARACTERS, COLORS, COLOR_HEX } from '../component
 import { Hand } from '../components/Scrapbook'
 import { BackIcon } from '../components/Icons'
 import { LangSwitch } from '../components/LangSwitch'
+import { useDesktop } from '../lib/desktop'
 
 type Step = 'character' | 'color' | 'extra'
 const STEPS: Step[] = ['character', 'color', 'extra']
@@ -34,6 +35,7 @@ export function ProfileScreen() {
   const [avatar, setAvatar] = useState<AvatarData>(() => ({ character: 'onigiri', color: 'blush', accessory: null, ...profile?.avatar }))
   const [displayName, setDisplayName] = useState(profile?.display_name ?? '')
   const stepIndex = STEPS.indexOf(step)
+  const desktop = useDesktop()
 
   const charIndex = Math.max(0, CHARACTERS.indexOf(avatar.character as (typeof CHARACTERS)[number]))
   const accIndex = Math.max(0, ACCESSORIES.indexOf((avatar.accessory ?? 'none') as (typeof ACCESSORIES)[number]))
@@ -60,6 +62,156 @@ export function ProfileScreen() {
         : t(`profile.characters.${avatar.character}`)
   const count = step === 'character' ? CHARACTERS.length : step === 'extra' ? ACCESSORIES.length : 0
   const at = step === 'character' ? charIndex : accIndex
+
+  if (desktop) {
+    // Desktop (D9): the big preview on the left; on the right the steps as tabs, with every option
+    // shown at once so it can be clicked directly, the name, and the buttons.
+    const options =
+      step === 'character'
+        ? CHARACTERS.map((c) => ({ key: c, on: avatar.character === c, label: t(`profile.characters.${c}`), preview: { ...avatar, character: c }, pick: () => setAvatar((a) => ({ ...a, character: c })) }))
+        : step === 'extra'
+          ? ACCESSORIES.map((x) => ({
+              key: x,
+              on: (avatar.accessory ?? 'none') === x,
+              label: t(`profile.accessories.${x}`),
+              preview: { ...avatar, accessory: x === 'none' ? null : x },
+              pick: () => setAvatar((a) => ({ ...a, accessory: x === 'none' ? null : x })),
+            }))
+          : []
+    return (
+      <Screen wide>
+        <div style={{ padding: 'var(--top) 22px 32px 40px' }}>
+          <div className="row" style={{ gap: 6, marginLeft: -10 }}>
+            <button type="button" aria-label={t('common.back')} onClick={() => navigate(-1)} style={{ display: 'flex', color: '#1E1A30' }}>
+              <BackIcon />
+            </button>
+            <Hand as="h1" style={{ margin: 0 }}>
+              {t('profile.title')}
+            </Hand>
+          </div>
+          <div style={{ display: 'flex', gap: 56, alignItems: 'flex-start', marginTop: 28 }}>
+            <div style={{ flex: 'none', width: 380, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div className="row" style={{ gap: 14 }}>
+                {step !== 'color' && <Arrow dir={-1} onClick={() => cycle(-1)} label={t('profile.previous')} />}
+                <Avatar avatar={avatar} size={240} label={caption} className="" style={{ filter: 'drop-shadow(2px 4px 0 rgba(30,26,48,.12))' }} />
+                {step !== 'color' && <Arrow dir={1} onClick={() => cycle(1)} label={t('profile.nextOne')} />}
+              </div>
+              <div style={{ marginTop: 16, fontSize: 24, lineHeight: '30px', fontWeight: 800, color: '#1E1A30' }}>{caption}</div>
+              {count > 0 && (
+                <div className="row" style={{ justifyContent: 'center', gap: 6, marginTop: 10 }} aria-hidden>
+                  {Array.from({ length: count }, (_, i) => (
+                    <span key={i} style={{ width: i === at ? 18 : 8, height: 8, borderRadius: 4, background: i === at ? '#A8335A' : '#CBC2CC' }} />
+                  ))}
+                </div>
+              )}
+            </div>
+            <div style={{ flex: 1, minWidth: 0, maxWidth: 560 }}>
+              <div role="tablist" className="row" style={{ gap: 6 }}>
+                {STEPS.map((x, i) => (
+                  <button
+                    key={x}
+                    type="button"
+                    role="tab"
+                    aria-selected={step === x}
+                    onClick={() => setStep(x)}
+                    className={step === x ? 'tp' : undefined}
+                    style={{
+                      flex: 1,
+                      height: 34,
+                      textAlign: 'center',
+                      fontSize: 15,
+                      fontWeight: step === x ? 800 : 700,
+                      color: step === x ? '#1E1A30' : '#857A8C',
+                      transform: step === x ? `rotate(${i % 2 ? 1.5 : -1.5}deg)` : undefined,
+                      boxShadow: step === x ? '1px 2px 0 rgba(30,26,48,.12)' : 'inset 0 -2px 0 #E6DFE3',
+                    }}
+                  >
+                    {t(`profile.${x}`)}
+                  </button>
+                ))}
+              </div>
+              {step === 'color' ? (
+                <div role="radiogroup" aria-label={t('profile.color')} style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 18, marginTop: 24, justifyItems: 'center' }}>
+                  {COLORS.map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      role="radio"
+                      aria-checked={avatar.color === c}
+                      aria-label={t(`profile.colors.${c}`)}
+                      onClick={() => setAvatar((a) => ({ ...a, color: c }))}
+                      style={{
+                        width: 60,
+                        height: 60,
+                        borderRadius: '50%',
+                        background: COLOR_HEX[c],
+                        boxShadow: avatar.color === c ? '0 0 0 3px #FFFFFF, 0 0 0 5px #1E1A30' : '0 0 0 2px #FFFFFF, 1px 2px 2px 1px rgba(30,26,48,.15)',
+                      }}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div role="radiogroup" aria-label={t(`profile.${step}`)} style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginTop: 24 }}>
+                  {options.map((o, i) => (
+                    <button
+                      key={o.key}
+                      type="button"
+                      role="radio"
+                      aria-checked={o.on}
+                      onClick={o.pick}
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: 8,
+                        padding: '14px 6px 10px',
+                        background: '#FFFFFF',
+                        borderRadius: '10px 14px 12px 10px',
+                        transform: `rotate(${i % 2 ? 1 : -1}deg)`,
+                        boxShadow: o.on ? 'inset 0 0 0 2px #1E1A30, 2px 3px 0 rgba(30,26,48,.10)' : '0 0 0 1px rgba(30,26,48,.08), 2px 3px 0 rgba(30,26,48,.08)',
+                      }}
+                    >
+                      <Avatar avatar={o.preview} size={56} className="" />
+                      <span style={{ fontSize: 14, fontWeight: 800, color: '#1E1A30' }}>{o.label}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+              {step === 'character' && (
+                <div style={{ marginTop: 24 }}>
+                  <label className="label" htmlFor="display-name">
+                    {t('profile.name')}
+                  </label>
+                  <input id="display-name" className="input" value={displayName} onChange={(e) => setDisplayName(e.target.value)} autoComplete="nickname" />
+                </div>
+              )}
+              <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
+                <button type="button" className="stk sec" style={{ flex: 1, transform: 'rotate(-1deg)' }} onClick={() => (stepIndex ? setStep(STEPS[stepIndex - 1]) : navigate(-1))}>
+                  {t('common.back')}
+                </button>
+                {stepIndex < STEPS.length - 1 ? (
+                  <button type="button" className="stk prim" style={{ flex: 1.8, transform: 'rotate(1deg)' }} onClick={() => setStep(STEPS[stepIndex + 1])}>
+                    {t('profile.next', { step: t(`profile.${STEPS[stepIndex + 1]}`) })}
+                  </button>
+                ) : (
+                  <button type="button" className="stk prim" style={{ flex: 1.8, transform: 'rotate(1deg)' }} onClick={save}>
+                    {t('common.save')}
+                  </button>
+                )}
+              </div>
+              {stepIndex < STEPS.length - 1 && (
+                <div style={{ textAlign: 'center', marginTop: 14 }}>
+                  <button type="button" className="link" onClick={save} style={{ padding: '8px 12px' }}>
+                    {t('profile.saveChanges')}
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </Screen>
+    )
+  }
 
   return (
     <Screen
@@ -182,7 +334,7 @@ export function SettingsScreen() {
   const email = useAuth().session?.user.email ?? ''
 
   return (
-    <Screen>
+    <Screen center>
       <div style={{ padding: 'calc(var(--top) + 8px) 22px 32px 40px', display: 'flex', flexDirection: 'column', gap: 22 }}>
         <div className="row" style={{ gap: 6, marginLeft: -10 }}>
           <button type="button" aria-label={t('common.back')} onClick={() => navigate(-1)} style={{ display: 'flex', color: '#1E1A30' }}>
