@@ -11,6 +11,7 @@ import { FieldError } from '../components/FieldError'
 import { PendingInvites } from './Invite'
 import { AskName } from './AskName'
 import { useDesktop } from '../lib/desktop'
+import { useBack } from '../lib/back'
 
 const PENDING_KEY = 'pichigoose.joinAddress'
 const SECRET_KEY = 'pichigoose.joinSecret'
@@ -64,6 +65,7 @@ function Radio({ on }: { on: boolean }) {
 export function JoinOrCreateScreen() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const back = useBack()
   const [params] = useSearchParams()
   const { households } = useHousehold()
   const [pending] = useState(takeJoin)
@@ -178,7 +180,7 @@ export function JoinOrCreateScreen() {
     <Screen wide={desktop}>
       <div className="pad top" style={{ paddingBottom: 40, ...(desktop ? { padding: '24px 0 40px', textAlign: 'center' } : {}) }}>
         {households.length > 0 && (
-          <button type="button" aria-label={t('common.back')} onClick={() => navigate(-1)} style={{ display: 'flex', marginLeft: -10, marginBottom: 4, color: '#1E1A30' }}>
+          <button type="button" aria-label={t('common.back')} onClick={back} style={{ display: 'flex', marginLeft: -10, marginBottom: 4, color: '#1E1A30' }}>
             <BackIcon />
           </button>
         )}

@@ -320,7 +320,8 @@ export function DoodleSpot({ pose }: { pose: DoodlePose }) {
   return (
     <div className="doodle-spot" aria-hidden>
       <div className="doodle">
-        <img src={DOODLES[pose]} alt="" draggable={false} />
+        {/* Nora's drawing used as a stencil, so it takes the ink color from CSS (the gray of the captions). */}
+        <span className="doodle-ink" style={{ ['--doodle' as string]: `url(${DOODLES[pose]})` }} />
         <svg viewBox="0 0 240 22" width="240" height="22">
           <path d="M6 13c18-5 30 4 48 1s26-7 44-3 30 6 50 1 30-6 46-2 22 4 40 1" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
           <path d="M62 15l-3 5M70 14l2 5M166 12l-2 5M174 12l3 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />

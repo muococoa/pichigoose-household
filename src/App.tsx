@@ -92,10 +92,11 @@ function SlideDirection() {
     if (from !== null && from !== to) {
       const a = TABS.indexOf(from)
       const b = TABS.indexOf(to)
-      nav = type === 'POP' || (a >= 0 && b >= 0 && b < a) ? 'back' : 'forward'
+      const back = (location.state as { back?: boolean } | null)?.back
+      nav = type === 'POP' || back || (a >= 0 && b >= 0 && b < a) ? 'back' : 'forward'
     }
     document.documentElement.dataset.nav = nav
-  }, [location.pathname, type])
+  }, [location.pathname, type, location.state])
   return null
 }
 

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
 import { useComments, useHousehold, useItemsIn, useLists, useNotes, useProfiles, useTodos } from '../data/hooks'
@@ -7,6 +7,7 @@ import { Screen } from '../components/Shell'
 import { Avatar } from '../components/Avatar'
 import { Hand } from '../components/Scrapbook'
 import { BackIcon, MessagesIcon, PencilIcon } from '../components/Icons'
+import { useBackInApp } from '../lib/back'
 
 /** Wraps an avatar so tapping it opens that person's profile. */
 export function PersonLink({ id, children }: { id: string | null | undefined; children: ReactNode }) {
@@ -23,7 +24,7 @@ export function PersonScreen() {
   const { t } = useTranslation()
   const { id } = useParams()
   const me = useMe()
-  const navigate = useNavigate()
+  const back = useBackInApp()
   const person = useProfiles().rows.find((p) => p.id === id)
   const { household, people } = useHousehold()
   const hid = household?.id ?? null
@@ -51,7 +52,7 @@ export function PersonScreen() {
     <Screen center>
       <div style={{ padding: 'calc(var(--top) + 8px) 22px 32px 40px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <div className="row" style={{ alignSelf: 'stretch', marginLeft: -10 }}>
-          <button type="button" aria-label={t('common.back')} onClick={() => navigate(-1)} style={{ display: 'flex', color: '#1E1A30' }}>
+          <button type="button" aria-label={t('common.back')} onClick={back} style={{ display: 'flex', color: '#1E1A30' }}>
             <BackIcon />
           </button>
           <span style={{ flex: 1 }} />

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth, useMe } from '../auth'
 import { supabase } from '../lib/supabase'
@@ -12,6 +12,7 @@ import { BackIcon } from '../components/Icons'
 import { LangSwitch } from '../components/LangSwitch'
 import { useDesktop } from '../lib/desktop'
 import { THEMES, applyTheme } from '../lib/theme'
+import { useBack, useBackInApp } from '../lib/back'
 
 type Step = 'character' | 'color' | 'extra'
 const STEPS: Step[] = ['character', 'color', 'extra']
@@ -30,7 +31,7 @@ function Arrow({ dir, onClick, label }: { dir: -1 | 1; onClick: () => void; labe
 export function ProfileScreen() {
   const { t } = useTranslation()
   const me = useMe()
-  const navigate = useNavigate()
+  const back = useBackInApp('/settings')
   const profile = useMyProfile()
   const [step, setStep] = useState<Step>('character')
   const [avatar, setAvatar] = useState<AvatarData>(() => ({ character: 'onigiri', color: 'blush', accessory: null, ...profile?.avatar }))
@@ -52,7 +53,7 @@ export function ProfileScreen() {
 
   function save() {
     db.update('profiles', me, { avatar, display_name: displayName.trim() || profile?.display_name || '' })
-    navigate(-1)
+    back()
   }
 
   const caption =
@@ -83,7 +84,7 @@ export function ProfileScreen() {
       <Screen wide>
         <div style={{ padding: 'var(--top) 22px 32px 40px' }}>
           <div className="row" style={{ gap: 6, marginLeft: -10 }}>
-            <button type="button" aria-label={t('common.back')} onClick={() => navigate(-1)} style={{ display: 'flex', color: '#1E1A30' }}>
+            <button type="button" aria-label={t('common.back')} onClick={back} style={{ display: 'flex', color: '#1E1A30' }}>
               <BackIcon />
             </button>
             <Hand as="h1" style={{ margin: 0 }}>
@@ -187,7 +188,7 @@ export function ProfileScreen() {
                 </div>
               )}
               <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
-                <button type="button" className="stk sec" style={{ flex: 1, transform: 'rotate(-1deg)' }} onClick={() => (stepIndex ? setStep(STEPS[stepIndex - 1]) : navigate(-1))}>
+                <button type="button" className="stk sec" style={{ flex: 1, transform: 'rotate(-1deg)' }} onClick={() => (stepIndex ? setStep(STEPS[stepIndex - 1]) : back())}>
                   {t('common.back')}
                 </button>
                 {stepIndex < STEPS.length - 1 ? (
@@ -219,7 +220,7 @@ export function ProfileScreen() {
       footer={
         <div style={{ position: 'relative', zIndex: 3, padding: '12px 22px calc(var(--bottom) + 24px) 40px' }}>
           <div style={{ display: 'flex', gap: 12 }}>
-          <button type="button" className="stk sec" style={{ flex: 1, transform: 'rotate(-1deg)' }} onClick={() => (stepIndex ? setStep(STEPS[stepIndex - 1]) : navigate(-1))}>
+          <button type="button" className="stk sec" style={{ flex: 1, transform: 'rotate(-1deg)' }} onClick={() => (stepIndex ? setStep(STEPS[stepIndex - 1]) : back())}>
             {t('common.back')}
           </button>
           {stepIndex < STEPS.length - 1 ? (
@@ -245,7 +246,7 @@ export function ProfileScreen() {
     >
       <div style={{ padding: 'calc(var(--top) + 8px) 22px 0 40px' }}>
         <div className="row" style={{ gap: 6, marginLeft: -10 }}>
-          <button type="button" aria-label={t('common.back')} onClick={() => navigate(-1)} style={{ display: 'flex', color: '#1E1A30' }}>
+          <button type="button" aria-label={t('common.back')} onClick={back} style={{ display: 'flex', color: '#1E1A30' }}>
             <BackIcon />
           </button>
           <Hand as="h1" style={{ margin: 0 }}>
@@ -330,7 +331,7 @@ export function ProfileScreen() {
 
 export function SettingsScreen() {
   const { t } = useTranslation()
-  const navigate = useNavigate()
+  const back = useBack()
   const me = useMe()
   const profile = useMyProfile()
   const email = useAuth().session?.user.email ?? ''
@@ -339,7 +340,7 @@ export function SettingsScreen() {
     <Screen center>
       <div style={{ padding: 'calc(var(--top) + 8px) 22px 32px 40px', display: 'flex', flexDirection: 'column', gap: 22 }}>
         <div className="row" style={{ gap: 6, marginLeft: -10 }}>
-          <button type="button" aria-label={t('common.back')} onClick={() => navigate(-1)} style={{ display: 'flex', color: '#1E1A30' }}>
+          <button type="button" aria-label={t('common.back')} onClick={back} style={{ display: 'flex', color: '#1E1A30' }}>
             <BackIcon />
           </button>
           <Hand as="h1" style={{ margin: 0 }}>

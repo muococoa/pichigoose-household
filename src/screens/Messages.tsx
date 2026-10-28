@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
-import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { Navigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
 import { db } from '../data/store'
@@ -11,6 +11,7 @@ import { Stamp, STAMP_COLORS } from '../components/Scrapbook'
 import { BackIcon, HomeIcon, SendIcon } from '../components/Icons'
 import { useDesktop } from '../lib/desktop'
 import { PersonLink } from './Person'
+import { useBackInApp } from '../lib/back'
 
 const touchScreen = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches
 
@@ -111,7 +112,7 @@ function Bubbles({ messages, group, readByAll }: { messages: Message[]; group: b
 function Conversation({ chatKey, header, back }: { chatKey: string; header?: boolean; back?: boolean }) {
   const { t } = useTranslation()
   const me = useMe()
-  const navigate = useNavigate()
+  const goBack = useBackInApp()
   const { household, name, people } = useHousehold()
   const chats = useChats()
   const chat = chats.find((c) => c.key === chatKey)
@@ -183,7 +184,7 @@ function Conversation({ chatKey, header, back }: { chatKey: string; header?: boo
       {header && (
         <div className="chat-header">
           {back && (
-            <button type="button" className="chat-back" aria-label={t('common.back')} onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))}>
+            <button type="button" className="chat-back" aria-label={t('common.back')} onClick={goBack}>
               <BackIcon />
             </button>
           )}

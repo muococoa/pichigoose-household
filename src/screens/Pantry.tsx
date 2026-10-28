@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type FormEvent, type PointerEvent } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
 import { db } from '../data/store'
@@ -11,6 +11,7 @@ import { BackIcon, PlusIcon } from '../components/Icons'
 import { CONTAINERS, ContainerDrawing, Shelf, guessContainer, insideSpan } from '../components/Containers'
 import { useDesktop } from '../lib/desktop'
 import { Chip } from './Todos'
+import { useBack } from '../lib/back'
 
 const PLACES: Place[] = ['pantry', 'bathroom']
 const STEPS = [
@@ -52,7 +53,7 @@ export function usePantryLevel() {
 export function PantryScreen() {
   const { t } = useTranslation()
   const me = useMe()
-  const navigate = useNavigate()
+  const back = useBack()
   const desktop = useDesktop()
   const [params, setParams] = useSearchParams()
   const place: Place = params.get('place') === 'bathroom' ? 'bathroom' : 'pantry'
@@ -80,7 +81,7 @@ export function PantryScreen() {
       <div style={{ padding: 'calc(var(--top) + 8px) 22px 0 40px', display: 'flex', flexDirection: 'column', gap: desktop ? 18 : 14 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: desktop ? 0 : -10 }}>
           {!desktop && (
-            <button type="button" aria-label={t('common.back')} onClick={() => navigate('/')} style={{ color: '#1E1A30', display: 'flex' }}>
+            <button type="button" aria-label={t('common.back')} onClick={back} style={{ color: '#1E1A30', display: 'flex' }}>
               <BackIcon />
             </button>
           )}
