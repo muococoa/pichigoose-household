@@ -60,7 +60,9 @@
     "create": "Create",
     "firstList": "Groceries",
     "addressMissing": "Add the three-word address.",
-    "notFound": "We couldn't find that address. Check the three words."
+    "notFound": "We couldn't find that address. Check the three words.",
+    "whatCallYou": "What do we call you?",
+    "yourNameMissing": "Add your name."
   },
   "created": {
     "title": "{{name}} is ready!",

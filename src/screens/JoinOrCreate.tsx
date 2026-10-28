@@ -9,6 +9,7 @@ import { Hand, Tape } from '../components/Scrapbook'
 import { BackIcon } from '../components/Icons'
 import { FieldError } from '../components/FieldError'
 import { PendingInvites } from './Invite'
+import { AskName } from './AskName'
 import { useDesktop } from '../lib/desktop'
 
 const PENDING_KEY = 'pichigoose.joinAddress'
@@ -58,7 +59,6 @@ export function JoinOrCreateScreen() {
   const { households } = useHousehold()
   const [pending] = useState(takeJoinAddress)
   const [mode, setMode] = useState<'join' | 'create'>(params.get('mode') === 'create' ? 'create' : 'join')
-  const [label, setLabel] = useState('')
   const [address, setAddress] = useState(pending)
   const [name, setName] = useState('')
   const [busy, setBusy] = useState(false)
@@ -70,15 +70,22 @@ export function JoinOrCreateScreen() {
   const showJoin = desktop || mode === 'join'
   const showCreate = desktop || mode === 'create'
 
-  async function join(e: FormEvent) {
+  // Joining asks "What do we call you?" first, then joins.
+  const [askingName, setAskingName] = useState(false)
+
+  function join(e: FormEvent) {
     e.preventDefault()
     if (!address.trim()) {
       setAddressErr(t('join.addressMissing'))
       return
     }
+    setAskingName(true)
+  }
+
+  async function joinNow() {
     setBusy(true)
     setError('')
-    const { data, error } = await supabase.rpc('join_household', { address, label })
+    const { data, error } = await supabase.rpc('join_household', { address, label: '' })
     setBusy(false)
     if (error) {
       setError(error.code === 'P0002' ? t('join.notFound') : navigator.onLine ? t('common.somethingWrong') : t('common.needsSignal'))
@@ -136,12 +143,6 @@ export function JoinOrCreateScreen() {
           {showJoin && (
             <form noValidate onSubmit={join} style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 14, position: 'relative', zIndex: 1 }}>
               <div>
-                <label className="label" htmlFor="label">
-                  {t('join.whatCall')}
-                </label>
-                <input id="label" className="input" placeholder={t('join.whatCallPlaceholder')} value={label} onChange={(e) => setLabel(e.target.value)} />
-              </div>
-              <div>
                 <label className="label" htmlFor="address">
                   {t('join.address')}
                 </label>
@@ -166,7 +167,7 @@ export function JoinOrCreateScreen() {
                 </p>
               </div>
               {error && <p className="err" role="alert" style={{ margin: 0 }}>{error}</p>}
-              <button type="submit" className="stk prim" disabled={busy} style={{ width: '100%', transform: 'rotate(1deg)' }}>
+              <button type="submit" className="stk violet" disabled={busy} style={{ width: '100%', transform: 'rotate(1deg)' }}>
                 {t('join.join')}
               </button>
             </form>
@@ -201,6 +202,7 @@ export function JoinOrCreateScreen() {
         </div>
         </div>
       </div>
+      <AskName open={askingName} onClose={() => setAskingName(false)} onJoin={joinNow} />
     </Screen>
   )
 }

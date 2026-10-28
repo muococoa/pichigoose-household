@@ -72,13 +72,13 @@ Who belongs to which household, plus each person's own settings for that househo
 |---|---|---|
 | household_id | uuid, references households | primary key together with user_id |
 | user_id | uuid, references profiles | |
-| label | text, nullable | what this person calls the household, from the join screen ("What do you call it?"). If empty, the app shows `households.name` |
+| label | text, nullable | what this person calls the household, set with Rename in My households. Joining leaves it empty (Nora: the person joining doesn't name the household). If empty, the app shows `households.name` |
 | home_layout | jsonb | this person's own home order (A11): `[{ "section": "todos", "visible": true }, { "section": "shopping", "visible": true }, ...]` [Nora] |
 | joined_at | timestamptz | |
 
 - Leaving a household deletes this row (A7). When the last member leaves, the household and everything in it is deleted [Claude].
 - Default `home_layout` order: Pichi's news, shopping, to-dos, money, notes.
-- Still open (from the join board): is the household name shared by everyone, or does each person name it themselves? This table supports both. For now, `label` is personal and `name` is shared.
+- Decided by Nora: the household name is shared, and the person who joins doesn't name it. `label` stays as a personal rename from My households.
 
 ### lists
 Shopping lists inside a household, like Groceries and Pharmacy (S4).

@@ -9,6 +9,7 @@ import { Hand, Sheet, Tape } from '../components/Scrapbook'
 import { FieldError } from '../components/FieldError'
 import { ShareIcon } from '../components/Icons'
 import { joinLink, shareAddress } from '../lib/share'
+import { AskName } from './AskName'
 
 type Invite = Row & {
   household_id: string
@@ -174,6 +175,8 @@ export function PendingInvites({ style }: { style?: React.CSSProperties }) {
   const [hidden, setHidden] = useState<string[]>([])
   const [busy, setBusy] = useState('')
   const [error, setError] = useState('')
+  // Saying yes asks "What do we call you?" first.
+  const [asking, setAsking] = useState<Invite | null>(null)
 
   async function accept(i: Invite) {
     setBusy(i.id)
@@ -219,13 +222,14 @@ export function PendingInvites({ style }: { style?: React.CSSProperties }) {
               <button type="button" className="stk sec" style={{ flex: 1, transform: 'rotate(-1deg)' }} onClick={() => decline(i)}>
                 {t('invite.noThanks')}
               </button>
-              <button type="button" className="stk violet" disabled={busy === i.id} style={{ flex: 1.4, transform: 'rotate(1deg)' }} onClick={() => accept(i)}>
+              <button type="button" className="stk violet" disabled={busy === i.id} style={{ flex: 1.4, transform: 'rotate(1deg)' }} onClick={() => setAsking(i)}>
                 {t('invite.join')}
               </button>
             </div>
           </div>
         </div>
       ))}
+      <AskName open={Boolean(asking)} onClose={() => setAsking(null)} onJoin={() => asking && accept(asking)} />
     </div>
   )
 }

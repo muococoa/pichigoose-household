@@ -62,7 +62,9 @@
     "create": "Napravi",
     "firstList": "Namirnice",
     "addressMissing": "Unesi adresu od tri reči.",
-    "notFound": "Nema te adrese. Proveri tri reči."
+    "notFound": "Nema te adrese. Proveri tri reči.",
+    "whatCallYou": "Kako da te zovemo?",
+    "yourNameMissing": "Upiši svoje ime."
   },
   "created": {
     "title": "{{name}} je spremna!",
