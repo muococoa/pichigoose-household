@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { DndContext, DragOverlay, PointerSensor, KeyboardSensor, closestCenter, useSensor, useSensors, type DragEndEvent, type DragStartEvent } from '@dnd-kit/core'
 import { SortableContext, arrayMove, rectSortingStrategy, sortableKeyboardCoordinates, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -16,6 +16,8 @@ export function DragBoard<K extends string>({ items, onReorder, dropLabel }: { i
   const keysOf = items.map((i) => i.key).join('|')
   const [order, setOrder] = useState<K[]>(() => items.map((i) => i.key))
   const [active, setActive] = useState<K | null>(null)
+  // Letting go of a dragged note shouldn't also count as a click that opens it.
+  const lastDrop = useRef(0)
 
   // Follow changes from elsewhere (another device, Arrange), but not in the middle of a drag.
   useEffect(() => {
@@ -34,6 +36,7 @@ export function DragBoard<K extends string>({ items, onReorder, dropLabel }: { i
 
   function end(e: DragEndEvent) {
     setActive(null)
+    lastDrop.current = Date.now()
     const from = order.indexOf(e.active.id as K)
     const to = e.over ? order.indexOf(e.over.id as K) : from
     if (from === to || to < 0) return
@@ -44,12 +47,12 @@ export function DragBoard<K extends string>({ items, onReorder, dropLabel }: { i
 
   const byKey = new Map(items.map((i) => [i.key, i.node]))
   return (
-    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={start} onDragEnd={end} onDragCancel={() => setActive(null)}>
+    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={start} onDragEnd={end} onDragCancel={() => { setActive(null); lastDrop.current = Date.now() }}>
       <SortableContext items={order} strategy={rectSortingStrategy}>
         {/* As many columns as fit, at least 280 px each: three on a big screen, fewer in a narrow window. */}
         <div className="board-grid">
           {order.map((key) => (
-            <Slot key={key} id={key} dropLabel={dropLabel}>
+            <Slot key={key} id={key} dropLabel={dropLabel} justDropped={() => Date.now() - lastDrop.current < 400}>
               {byKey.get(key)}
             </Slot>
           ))}
@@ -63,7 +66,7 @@ export function DragBoard<K extends string>({ items, onReorder, dropLabel }: { i
   )
 }
 
-function Slot({ id, dropLabel, children }: { id: string; dropLabel: string; children: ReactNode }) {
+function Slot({ id, dropLabel, justDropped, children }: { id: string; dropLabel: string; justDropped: () => boolean; children: ReactNode }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
   return (
     <div
@@ -71,6 +74,12 @@ function Slot({ id, dropLabel, children }: { id: string; dropLabel: string; chil
       {...attributes}
       {...listeners}
       className="drag-slot"
+      onClickCapture={(e) => {
+        if (justDropped()) {
+          e.stopPropagation()
+          e.preventDefault()
+        }
+      }}
       style={{ transform: CSS.Translate.toString(transform), transition, position: 'relative' }}
     >
       {/* Keeps its size while the note is being carried, and shows where it will land. */}

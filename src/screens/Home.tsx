@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth, useMe } from '../auth'
 import {
@@ -150,6 +150,13 @@ export function HomeScreen() {
     db.update('household_members', { household_id: household.id, user_id: me }, { home_layout: next })
   }
 
+  // Clicking the note itself (not a checkbox, an item or a link on it) opens its page.
+  const navigate = useNavigate()
+  const open = (path: string) => (e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('button, a, input, label, textarea')) return
+    navigate(path)
+  }
+
   function section(s: Section) {
     const look = LOOK[s]
     if (s === 'news') {
@@ -179,7 +186,7 @@ export function HomeScreen() {
     }
     if (s === 'todos') {
       return (
-        <div key="todos" className={`note ${look.note}`} style={{ transform: `rotate(${look.rotate}deg)` }}>
+        <div key="todos" className={`note ${look.note} note-link`} onClick={open('/todos')} style={{ transform: `rotate(${look.rotate}deg)` }}>
           <Tape kind={look.tape} style={look.tapeStyle} />
           <NoteHead
             title={t('home.todos')}
@@ -230,7 +237,7 @@ export function HomeScreen() {
     }
     if (s === 'shopping') {
       return (
-        <div key="shopping" className={`note ${look.note}`} style={{ transform: `rotate(${look.rotate}deg)` }}>
+        <div key="shopping" className={`note ${look.note} note-link`} onClick={open('/shopping')} style={{ transform: `rotate(${look.rotate}deg)` }}>
           <Tape kind={look.tape} style={look.tapeStyle} />
           <NoteHead
             title={t('home.toBuy')}
@@ -267,7 +274,7 @@ export function HomeScreen() {
       )
     }
     return (
-      <div key="notes" className={`note ${look.note}`} style={{ transform: `rotate(${look.rotate}deg)` }}>
+      <div key="notes" className={`note ${look.note} note-link`} onClick={open('/notes')} style={{ transform: `rotate(${look.rotate}deg)` }}>
         <Tape kind={look.tape} style={look.tapeStyle} />
         <NoteHead title={t('home.notes')} to="/notes" right={t('common.seeAll')} />
         {desktop ? (
