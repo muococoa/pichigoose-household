@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="{{ if .Data.language }}{{ .Data.language }}{{ else }}en{{ end }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<title>Pichigoose</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; padding: 0; background: #F6F0E8; }
+  a.sticker:hover { background: #A8335A !important; }
+  @media (max-width: 560px) { .card { padding: 28px 22px 26px !important; } .headline { width: 240px !important; } }
+</style>
+</head>
+<body style="margin:0;padding:0;background:#F6F0E8;">
+{{ if and .Data.language (eq .Data.language "sr") }}
+<div style="display:none;max-height:0;overflow:hidden;">Dodirni dugme i izaberi novu lozinku.</div>
+{{ else }}
+<div style="display:none;max-height:0;overflow:hidden;">Tap the button to choose a new password.</div>
+{{ end }}
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F6F0E8;">
+  <tr>
+    <td align="center" style="padding:28px 12px 36px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px;">
+        <!-- Washi tape holding the note -->
+        <tr>
+          <td align="center" style="line-height:0;padding:0;">
+            <img src="https://www.pichigoose.com/email/tape-pink.png" width="146" height="50" alt="" style="display:block;border:0;margin:0 auto -26px;position:relative;">
+          </td>
+        </tr>
+        <!-- The note -->
+        <tr>
+          <td class="card" style="background:#FFFDF8;border-radius:6px;padding:36px 40px 32px;box-shadow:2px 3px 0 rgba(30,26,48,.13);font-family:Nunito,'Trebuchet MS',Arial,sans-serif;color:#2E2638;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td align="center" style="padding-bottom:6px;">
+                  <img src="https://www.pichigoose.com/email/pichi-stamp.png" width="132" height="154" alt="Pichi" style="display:block;border:0;">
+                </td>
+              </tr>
+              <tr>
+                <td align="center" style="padding:4px 0 8px;">
+{{ if and .Data.language (eq .Data.language "sr") }}
+                  <img class="headline" src="https://www.pichigoose.com/email/new-password-sr.png" width="250" height="76" alt="Nova lozinka?" style="display:block;border:0;">
+{{ else }}
+                  <img class="headline" src="https://www.pichigoose.com/email/new-password-en.png" width="277" height="76" alt="New password?" style="display:block;border:0;">
+{{ end }}
+                </td>
+              </tr>
+              <tr>
+                <td align="center" style="font-size:17px;line-height:26px;font-weight:600;padding:0 0 24px;">
+{{ if and .Data.language (eq .Data.language "sr") }}
+                  Bez brige, desi se. Dodirni dugme i izaberi novu.
+{{ else }}
+                  No worries, it happens. Tap the button to choose a new one.
+{{ end }}
+                </td>
+              </tr>
+              <tr>
+                <td align="center" style="padding:0 0 26px;">
+                  <!-- The pink sticker button: thick white edge, uneven corners, a soft lift -->
+                  <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td style="border-radius:8px 26px 12px 22px;background:#D34471;border:4px solid #FFFFFF;box-shadow:0 0 0 1px rgba(30,26,48,.10),2px 3px 4px rgba(30,26,48,.22);">
+                        <a class="sticker" href="{{ .ConfirmationURL }}" style="display:inline-block;padding:14px 28px;font-family:Nunito,'Trebuchet MS',Arial,sans-serif;font-size:16px;line-height:20px;font-weight:800;color:#FFFFFF;text-decoration:none;border-radius:8px 26px 12px 22px;">
+{{ if and .Data.language (eq .Data.language "sr") }}Izaberi novu lozinku{{ else }}Choose a new password{{ end }}
+                        </a>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td align="center" style="font-size:13px;line-height:20px;font-weight:600;color:#63586B;">
+{{ if and .Data.language (eq .Data.language "sr") }}
+                  Ovo nije bio tvoj zahtev? Slobodno zanemari ovaj email. Lozinka ostaje ista.
+{{ else }}
+                  Didn't ask for this? You can ignore this email. Your password stays the same.
+{{ end }}
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <!-- Signed with the logo -->
+        <tr>
+          <td align="center" style="padding:26px 0 0;">
+            <a href="https://www.pichigoose.com" style="text-decoration:none;"><img src="https://www.pichigoose.com/email/logo.png" width="96" height="72" alt="Pichigoose" style="display:block;border:0;margin:0 auto;"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>
