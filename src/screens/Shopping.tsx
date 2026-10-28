@@ -55,7 +55,6 @@ export function ShoppingScreen() {
   const [listName, setListName] = useState('')
   const [editing, setEditing] = useState<Item | null>(null)
   const [itemName, setItemName] = useState('')
-  const [itemNote, setItemNote] = useState('')
 
   // The add field opens only when someone taps +.
   const [adding, setAdding] = useState(() => Boolean(params.get('add')))
@@ -154,7 +153,6 @@ export function ShoppingScreen() {
           style={{ flex: 1, minWidth: 0, fontSize: desktop ? 18 : 17 }}
           onClick={() => {
             setItemName(x.name)
-            setItemNote(x.note ?? '')
             setEditing(x)
           }}
         >
@@ -382,7 +380,7 @@ export function ShoppingScreen() {
           id="item-form"
           onSubmit={(e) => {
             e.preventDefault()
-            if (editing && itemName.trim()) db.update('list_items', editing.id, { name: itemName.trim(), note: itemNote.trim() || null })
+            if (editing && itemName.trim()) db.update('list_items', editing.id, { name: itemName.trim() })
             setEditing(null)
           }}
           style={{ display: 'flex', flexDirection: 'column', gap: 14 }}
@@ -392,12 +390,6 @@ export function ShoppingScreen() {
               {t('shopping.itemName')}
             </label>
             <input id="item-name" className="input" value={itemName} onChange={(e) => setItemName(e.target.value)} />
-          </div>
-          <div>
-            <label className="label" htmlFor="item-note">
-              {t('shopping.itemNote')}
-            </label>
-            <input id="item-note" className="input" placeholder={t('shopping.itemNotePlaceholder')} value={itemNote} onChange={(e) => setItemNote(e.target.value)} />
           </div>
         </form>
         {editing && (
