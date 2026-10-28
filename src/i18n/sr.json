@@ -96,7 +96,7 @@
     "money": "Novac"
   },
   "home": {
-    "hi": "ćao {{name}}!",
+    "hi": "Ćao {{name}}!",
     "newsAdded": "{{name}}: {{item}} na listi.",
     "newsTodos_one": "Danas imaš {{count}} zadatak.",
     "newsTodos_few": "Danas imaš {{count}} zadatka.",

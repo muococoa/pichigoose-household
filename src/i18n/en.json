@@ -94,7 +94,7 @@
     "money": "Money"
   },
   "home": {
-    "hi": "hi {{name}}!",
+    "hi": "Hi {{name}}!",
     "newsAdded": "{{name}} added {{item}}.",
     "newsTodos_one": "You have {{count}} to-do today.",
     "newsTodos_other": "You have {{count}} to-dos today.",

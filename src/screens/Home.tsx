@@ -107,10 +107,11 @@ export function HomeScreen() {
         <div key="news" style={{ display: 'flex', gap: 12, alignItems: 'flex-start', marginTop: -4 }}>
           <PichiStamp />
           <div style={{ position: 'relative', flex: 1, background: '#FFFFFF', borderRadius: '14px 16px 14px 4px', padding: '12px 14px', boxShadow: '2px 3px 0 rgba(30,26,48,.10)', marginTop: 6 }}>
-            <Hand size={22} lineHeight={24} color="#A8335A">
+            {/* The greeting leads; the news sits a step smaller under it. */}
+            <Hand size={27} lineHeight={30} color="#A8335A">
               {t('home.hi', { name: profile?.display_name ?? '' })}
             </Hand>
-            <div style={{ fontSize: 15, lineHeight: '21px', fontWeight: 600, marginTop: 2 }}>{news}</div>
+            <div style={{ fontSize: 14, lineHeight: '20px', fontWeight: 600, marginTop: 2, color: '#463D50' }}>{news}</div>
           </div>
         </div>
       )
