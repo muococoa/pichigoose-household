@@ -15,7 +15,7 @@ import {
 import { recentlyDone, toggleItem, toggleTodo } from '../data/actions'
 import { Screen } from '../components/Shell'
 import { Avatar, NobodyAvatar } from '../components/Avatar'
-import { Check, Hand, Struck, PichiStamp, Sheet, Tape, tilt, type TapeKind } from '../components/Scrapbook'
+import { Check, Hand, Struck, Tick, PichiStamp, Sheet, Tape, tilt, type TapeKind } from '../components/Scrapbook'
 import { InkChevron, PencilIcon, PlusIcon } from '../components/Icons'
 import { MyHouseholds } from './MyHouseholds'
 import { daysFromToday, dueLabel, fromDateString } from '../lib/time'
@@ -126,27 +126,35 @@ export function HomeScreen() {
             {openTodos.slice(0, 3).map((x) => {
               const who = person(x.assignee_id)
               return (
-                <div key={x.id} className="ln">
-                  <Check checked={false} onChange={() => toggleTodo(x, me)} label={x.title} rotate={tilt(x.id)} />
-                  <span style={{ flex: 1, minWidth: 0 }}>
-                    {x.title}
-                    {x.due_date && <div className="cap">{dueLabel(x.due_date, i18n.language)}</div>}
-                  </span>
-                  {who ? <Avatar avatar={who.avatar} label={who.display_name} /> : <NobodyAvatar />}
-                </div>
+                <Tick key={x.id} checked={false} onCommit={() => toggleTodo(x, me)}>
+                  {(on, toggle) => (
+                    <div className={`ln${on ? ' row-done' : ''}`}>
+                      <Check checked={on} onToggle={toggle} label={x.title} rotate={tilt(x.id)} />
+                      <span style={{ flex: 1, minWidth: 0 }}>
+                        <Struck on={on}>{x.title}</Struck>
+                        {x.due_date && <div className="cap">{dueLabel(x.due_date, i18n.language)}</div>}
+                      </span>
+                      <span className={`av-fade${on ? ' done' : ''}`}>{who ? <Avatar avatar={who.avatar} label={who.display_name} /> : <NobodyAvatar />}</span>
+                    </div>
+                  )}
+                </Tick>
               )
             })}
             {doneTodos.slice(0, 2).map((x) => {
               const who = person(x.done_by ?? x.assignee_id)
               return (
-                <div key={`done-${x.id}`} className="ln row-done">
-                  <Check checked onChange={() => toggleTodo(x, me)} label={x.title} rotate={tilt(x.id)} />
-                  <span style={{ flex: 1, minWidth: 0 }}>
-                    <Struck on>{x.title}</Struck>
-                    {x.due_date && <div className="cap">{dueLabel(x.due_date, i18n.language)}</div>}
-                  </span>
-                  <span className="av-done" style={{ display: 'flex' }}>{who ? <Avatar avatar={who.avatar} label={who.display_name} /> : <NobodyAvatar />}</span>
-                </div>
+                <Tick key={`done-${x.id}`} checked onCommit={() => toggleTodo(x, me)}>
+                  {(on, toggle) => (
+                    <div className={`ln${on ? ' row-done' : ''}`}>
+                      <Check checked={on} onToggle={toggle} label={x.title} rotate={tilt(x.id)} />
+                      <span style={{ flex: 1, minWidth: 0 }}>
+                        <Struck on={on}>{x.title}</Struck>
+                        {x.due_date && <div className="cap">{dueLabel(x.due_date, i18n.language)}</div>}
+                      </span>
+                      <span className={`av-fade${on ? ' done' : ''}`}>{who ? <Avatar avatar={who.avatar} label={who.display_name} /> : <NobodyAvatar />}</span>
+                    </div>
+                  )}
+                </Tick>
               )
             })}
             {!openTodos.length && !doneTodos.length && <Empty>{t('home.noTodos')}</Empty>}
@@ -167,11 +175,21 @@ export function HomeScreen() {
             {toBuy.slice(0, 3).map((x) => {
               const who = person(x.added_by)
               return (
-                <div key={x.id} className="ln">
-                  <Check checked={false} onChange={() => toggleItem(x, me)} label={x.name} rotate={tilt(x.id)} />
-                  <span style={{ flex: 1, minWidth: 0 }}>{x.name}</span>
-                  {who && <Avatar avatar={who.avatar} label={who.display_name} />}
-                </div>
+                <Tick key={x.id} checked={false} onCommit={() => toggleItem(x, me)}>
+                  {(on, toggle) => (
+                    <div className={`ln${on ? ' row-done' : ''}`}>
+                      <Check checked={on} onToggle={toggle} label={x.name} rotate={tilt(x.id)} />
+                      <span style={{ flex: 1, minWidth: 0 }}>
+                        <Struck on={on}>{x.name}</Struck>
+                      </span>
+                      {who && (
+                        <span className={`av-fade${on ? ' done' : ''}`}>
+                          <Avatar avatar={who.avatar} label={who.display_name} />
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </Tick>
               )
             })}
             {!toBuy.length && <Empty>{t('home.noItems')}</Empty>}

@@ -107,8 +107,30 @@ export function Box({ checked, rotate = 0 }: { checked: boolean; rotate?: number
   )
 }
 
-// How long the pen stroke takes before the row moves (to Bought, or to the bottom).
-const TICK_MS = 300
+// How long the tick plays in place (check, strike, fade) before the row moves to its new spot.
+const TICK_MS = 550
+
+/**
+ * Ticking starts on the tap, in both directions: the check, the strikethrough and the fade all
+ * play right where the row is. The change is saved once they finish, and only then does the row
+ * move (to Bought, to the bottom, or under Done). Tapping again before then cancels it.
+ */
+export function Tick({ checked, onCommit, children }: { checked: boolean; onCommit: () => void; children: (on: boolean, toggle: () => void) => ReactNode }) {
+  const [shown, setShown] = useState<boolean | null>(null)
+  const timer = useRef<number | undefined>(undefined)
+  const on = shown ?? checked
+  function toggle() {
+    const next = !on
+    setShown(next)
+    window.clearTimeout(timer.current)
+    timer.current = window.setTimeout(() => {
+      if (next !== checked) onCommit()
+      setShown(null)
+    }, TICK_MS)
+  }
+  useEffect(() => () => window.clearTimeout(timer.current), [])
+  return <>{children(on, toggle)}</>
+}
 
 /**
  * Tracks which labels (like "This week" or "Done") just appeared or just went away,
@@ -138,24 +160,11 @@ export function useArrivals(keys: string[]) {
   return { arrived, leaving }
 }
 
-/** A tappable checkbox. The check is drawn like a pen mark first, then the change is saved. */
-export function Check({ checked, onChange, label, rotate }: { checked: boolean; onChange: () => void; label: string; rotate?: number }) {
-  const [shown, setShown] = useState<boolean | null>(null)
-  const busy = useRef(false)
-  function tap() {
-    if (busy.current) return
-    busy.current = true
-    setShown(!checked)
-    window.setTimeout(() => {
-      onChange()
-      setShown(null)
-      busy.current = false
-    }, TICK_MS)
-  }
-  const on = shown ?? checked
+/** A tappable checkbox. */
+export function Check({ checked, onToggle, label, rotate }: { checked: boolean; onToggle: () => void; label: string; rotate?: number }) {
   return (
-    <button type="button" className="check-btn" role="checkbox" aria-checked={on} aria-label={label} onClick={tap}>
-      <Box checked={on} rotate={rotate} />
+    <button type="button" className="check-btn" role="checkbox" aria-checked={checked} aria-label={label} onClick={onToggle}>
+      <Box checked={checked} rotate={rotate} />
     </button>
   )
 }

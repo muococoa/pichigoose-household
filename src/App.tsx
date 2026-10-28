@@ -1,5 +1,5 @@
-import { useEffect, type ReactNode } from 'react'
-import { BrowserRouter, Navigate, Route, Routes, useParams } from 'react-router-dom'
+import { useEffect, useLayoutEffect, useRef, type ReactNode } from 'react'
+import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigationType, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { AuthProvider, useAuth } from './auth'
 import { isConfigured } from './lib/supabase'
@@ -65,6 +65,31 @@ function LanguageSync() {
   return null
 }
 
+const TABS = ['/', '/shopping', '/todos', '/notes']
+
+/**
+ * Which way the next screen slides in, like a new sheet of paper. Forward slides in from the right;
+ * going back (or to a tab on the left) slides in from the left. The first screen doesn't slide.
+ */
+function SlideDirection() {
+  const location = useLocation()
+  const type = useNavigationType()
+  const last = useRef<string | null>(null)
+  useLayoutEffect(() => {
+    const from = last.current
+    const to = location.pathname
+    last.current = to
+    let nav = 'none'
+    if (from !== null && from !== to) {
+      const a = TABS.indexOf(from)
+      const b = TABS.indexOf(to)
+      nav = type === 'POP' || (a >= 0 && b >= 0 && b < a) ? 'back' : 'forward'
+    }
+    document.documentElement.dataset.nav = nav
+  }, [location.pathname, type])
+  return null
+}
+
 function NotConfigured() {
   return (
     <Screen>
@@ -82,6 +107,7 @@ export default function App() {
       <BrowserRouter>
         <InkFilter />
         <LanguageSync />
+        <SlideDirection />
         <Routes>
           <Route path="/signup" element={<SignedOut><AuthScreen mode="signup" /></SignedOut>} />
           <Route path="/login" element={<SignedOut><AuthScreen mode="login" /></SignedOut>} />

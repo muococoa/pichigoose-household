@@ -7,7 +7,7 @@ import { useHousehold, useItems, useLists, type Item, type List } from '../data/
 import { recentlyBought, toggleItem } from '../data/actions'
 import { Screen } from '../components/Shell'
 import { Avatar } from '../components/Avatar'
-import { Check, Hand, Struck, useArrivals, PichiStamp, Sheet, Stamp, STAMP_COLORS, showToast, tilt, type TapeKind } from '../components/Scrapbook'
+import { Check, Hand, Struck, Tick, useArrivals, PichiStamp, Sheet, Stamp, STAMP_COLORS, showToast, tilt, type TapeKind } from '../components/Scrapbook'
 import { BackIcon, PlusIcon, ShareIcon } from '../components/Icons'
 import { ago } from '../lib/time'
 
@@ -138,8 +138,10 @@ export function ShoppingScreen() {
   function row(x: Item, isBought: boolean) {
     const who = person(x.added_by)
     return (
-      <div key={x.id} className={`ln${isBought ? ' row-done' : ''}`} style={{ height: isBought ? 48 : 64 }}>
-        <Check checked={isBought} onChange={() => toggleItem(x, me)} label={x.name} rotate={tilt(x.id)} />
+      <Tick key={x.id} checked={isBought} onCommit={() => toggleItem(x, me)}>
+        {(on, toggle) => (
+      <div className={`ln${on ? ' row-done' : ''}`} style={{ height: isBought ? 48 : 64 }}>
+        <Check checked={on} onToggle={toggle} label={x.name} rotate={tilt(x.id)} />
         <button
           type="button"
           style={{ flex: 1, minWidth: 0, fontSize: 17 }}
@@ -149,7 +151,7 @@ export function ShoppingScreen() {
             setEditing(x)
           }}
         >
-          <Struck on={isBought}>{x.name}</Struck>
+          <Struck on={on}>{x.name}</Struck>
           {!isBought && (
             <div className="cap">
               {x.note ? `${x.note} · ` : ''}
@@ -157,15 +159,14 @@ export function ShoppingScreen() {
             </div>
           )}
         </button>
-        {who &&
-          (isBought ? (
-            <span className="av-done" style={{ display: 'flex' }}>
-              <Avatar avatar={who.avatar} label={who.display_name} />
-            </span>
-          ) : (
+        {who && (
+          <span className={`av-fade${on ? ' done' : ''}`}>
             <Avatar avatar={who.avatar} label={who.display_name} />
-          ))}
+          </span>
+        )}
       </div>
+        )}
+      </Tick>
     )
   }
 

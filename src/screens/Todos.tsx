@@ -7,7 +7,7 @@ import { useHousehold, useTodos, type Profile, type Todo } from '../data/hooks'
 import { recentlyDone, toggleTodo } from '../data/actions'
 import { Screen } from '../components/Shell'
 import { Avatar, NobodyAvatar } from '../components/Avatar'
-import { Check, Hand, Struck, useArrivals, Sheet, Stamp, STAMP_COLORS, tilt } from '../components/Scrapbook'
+import { Check, Hand, Struck, Tick, useArrivals, Sheet, Stamp, STAMP_COLORS, tilt } from '../components/Scrapbook'
 import { ChevronDown, PlusIcon } from '../components/Icons'
 import { MyHouseholds } from './MyHouseholds'
 import { addDays, capitalize, daysFromToday, dueLabel, fromDateString, toDateString, weekdayName } from '../lib/time'
@@ -146,16 +146,20 @@ export function TodosScreen() {
               const who = person(x.assignee_id)
               const done = Boolean(x.done_at)
               return (
-                <div key={x.id} className={`ln${done ? ' row-done' : ''}`} style={{ minHeight: 64 }}>
-                  <Check checked={done} onChange={() => toggleTodo(x, me)} label={x.title} rotate={tilt(x.id)} />
-                  <button type="button" onClick={() => setEditing(x)} style={{ flex: 1, minWidth: 0, fontSize: 17, padding: '8px 0' }}>
-                    <Struck on={done}>{x.title}</Struck>
-                    {detail(x) && <div className="cap">{detail(x)}</div>}
-                  </button>
-                  <span className={done ? 'av-done' : undefined} style={{ display: 'flex' }}>
-                    {who ? <Avatar avatar={who.avatar} label={who.display_name} /> : <NobodyAvatar />}
-                  </span>
-                </div>
+                <Tick key={x.id} checked={done} onCommit={() => toggleTodo(x, me)}>
+                  {(on, toggle) => (
+                    <div className={`ln${on ? ' row-done' : ''}`} style={{ minHeight: 64 }}>
+                      <Check checked={on} onToggle={toggle} label={x.title} rotate={tilt(x.id)} />
+                      <button type="button" onClick={() => setEditing(x)} style={{ flex: 1, minWidth: 0, fontSize: 17, padding: '8px 0' }}>
+                        <Struck on={on}>{x.title}</Struck>
+                        {detail(x) && <div className="cap">{detail(x)}</div>}
+                      </button>
+                      <span className={`av-fade${on ? ' done' : ''}`}>
+                        {who ? <Avatar avatar={who.avatar} label={who.display_name} /> : <NobodyAvatar />}
+                      </span>
+                    </div>
+                  )}
+                </Tick>
               )
             })}
           </section>
