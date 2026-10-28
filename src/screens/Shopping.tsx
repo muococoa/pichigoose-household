@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
+import { useMemo, useRef, useState, type FormEvent } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
@@ -54,9 +54,8 @@ export function ShoppingScreen() {
   const [itemName, setItemName] = useState('')
   const [itemNote, setItemNote] = useState('')
 
-  useEffect(() => {
-    if (params.get('add')) inputRef.current?.focus()
-  }, [params])
+  // The add field opens only when someone taps +.
+  const [adding, setAdding] = useState(() => Boolean(params.get('add')))
 
   const toBuy = useMemo(() => items.rows.filter((x) => !x.checked_at).sort((a, b) => b.created_at.localeCompare(a.created_at)), [items.rows])
   const bought = useMemo(
@@ -164,16 +163,21 @@ export function ShoppingScreen() {
   }
 
   return (
-    <Screen
-      footer={
+    <Screen tabbar>
+      {adding ? (
         <form
           onSubmit={add}
           style={{
-            position: 'relative',
-            zIndex: 5,
+            position: 'fixed',
+            left: 0,
+            right: 0,
+            bottom: 'var(--tabbar)',
+            maxWidth: 430,
+            margin: '0 auto',
+            zIndex: 6,
             background: '#FFFDF8',
             boxShadow: '0 -6px 14px rgba(30,26,48,.08)',
-            padding: '16px 20px calc(max(var(--bottom), 20px) + 20px) 20px',
+            padding: '14px 20px 14px 20px',
             display: 'flex',
             gap: 12,
             alignItems: 'flex-start',
@@ -183,18 +187,38 @@ export function ShoppingScreen() {
             ref={inputRef}
             className="input"
             style={{ flex: 1 }}
+            autoFocus
             placeholder={t('shopping.addItem')}
             aria-label={t('shopping.addItem')}
             value={text}
             enterKeyHint="done"
             onChange={(e) => setText(e.target.value)}
+            onBlur={() => {
+              // Close the field again when it's left empty.
+              if (!text.trim()) setAdding(false)
+            }}
           />
-          <button type="submit" className="stk prim round" aria-label={t('shopping.addButton')} style={{ width: 54, height: 54, transform: 'rotate(-4deg)', marginTop: -1 }}>
+          <button
+            type="submit"
+            className="stk prim round"
+            aria-label={t('shopping.addButton')}
+            onPointerDown={(e) => e.preventDefault()}
+            style={{ width: 54, height: 54, transform: 'rotate(-4deg)', marginTop: -1 }}
+          >
             <PlusIcon />
           </button>
         </form>
-      }
-    >
+      ) : (
+        <button
+          type="button"
+          className="stk prim round"
+          aria-label={t('shopping.addButton')}
+          onClick={() => setAdding(true)}
+          style={{ position: 'fixed', right: 'max(20px, calc(50vw - 195px))', bottom: 'calc(var(--tabbar) + 20px)', zIndex: 6, transform: 'rotate(-4deg)' }}
+        >
+          <PlusIcon />
+        </button>
+      )}
       <div style={{ padding: 'calc(var(--top) + 8px) 22px 0 40px', display: 'flex', flexDirection: 'column', gap: 14 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: -10 }}>
           <button type="button" aria-label={t('common.back')} onClick={() => navigate('/')} style={{ color: '#1E1A30', display: 'flex' }}>
@@ -247,7 +271,7 @@ export function ShoppingScreen() {
         </div>
       </div>
 
-      <div style={{ padding: '26px 22px 24px 40px' }}>
+      <div style={{ padding: `26px 22px ${adding ? 110 : 24}px 40px` }}>
         {toBuy.map((x) => row(x, false))}
         {items.loaded && !toBuy.length && (
           <div className="row" style={{ gap: 14, padding: '10px 0 6px' }}>
