@@ -100,7 +100,13 @@ export function HomeScreen() {
     [todos.rows],
   )
   const todayCount = openTodos.filter((x) => x.due_date && daysFromToday(fromDateString(x.due_date)) <= 0).length
-  const toBuy = useMemo(() => items.rows.filter((x) => !x.checked_at).sort((a, b) => b.created_at.localeCompare(a.created_at)), [items.rows])
+  // In the lists' own order (Groceries first, then the rest as arranged), newest first within a list.
+  const listPos = (id: string) => lists.rows.find((l) => l.id === id)?.position ?? 99
+  const toBuy = useMemo(
+    () => items.rows.filter((x) => !x.checked_at).sort((a, b) => listPos(a.list_id) - listPos(b.list_id) || b.created_at.localeCompare(a.created_at)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [items.rows, lists.rows],
+  )
   const pinnedNotes = useMemo(
     () => [...notes.rows].sort((a, b) => Number(b.pinned) - Number(a.pinned) || b.updated_at.localeCompare(a.updated_at)),
     [notes.rows],

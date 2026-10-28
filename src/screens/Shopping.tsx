@@ -10,6 +10,9 @@ import { Avatar } from '../components/Avatar'
 import { Check, Hand, Struck, Tick, useArrivals, EmptyState, Sheet, Stamp, STAMP_COLORS, showToast, tilt, type TapeKind } from '../components/Scrapbook'
 import { BackIcon, PlusIcon, ShareIcon } from '../components/Icons'
 import { ago } from '../lib/time'
+import { DndContext, MouseSensor, TouchSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core'
+import { SortableContext, arrayMove, horizontalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import { useDesktop } from '../lib/desktop'
 import { CommentCount, Comments, useCommentCounts } from '../components/Comments'
 
@@ -101,6 +104,14 @@ export function ShoppingScreen() {
     })
     setText('')
     inputRef.current?.focus()
+  }
+
+  // Lists keep the order people give them (shared by the household). Groceries always stays first.
+  function reorderLists(ids: string[]) {
+    ids.forEach((id, position) => {
+      const l = sortedLists.find((x) => x.id === id)
+      if (l && l.position !== position) db.update('lists', id, { position })
+    })
   }
 
   function addList(e: FormEvent) {
@@ -231,33 +242,7 @@ export function ShoppingScreen() {
           </button>
         </div>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', rowGap: 12 }}>
-          {sortedLists.map((l, i) => {
-            const on = l.id === list?.id
-            return (
-              <button
-                key={l.id}
-                type="button"
-                className={TAB_TAPES[i % TAB_TAPES.length]}
-                aria-pressed={on}
-                onClick={() => pick(l)}
-                style={{
-                  position: 'relative',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  height: 30,
-                  padding: '0 14px',
-                  fontSize: 14,
-                  color: on ? '#1E1A30' : '#63586B',
-                  fontWeight: on ? 800 : 700,
-                  transform: `rotate(${i % 2 ? 1.5 : -2}deg)`,
-                  boxShadow: on ? '1px 2px 0 rgba(30,26,48,.12)' : undefined,
-                  opacity: on ? 1 : 0.75,
-                }}
-              >
-                {l.name}
-              </button>
-            )
-          })}
+          <ListTabs lists={sortedLists} current={list?.id ?? null} onPick={pick} onReorder={reorderLists} />
           <button
             type="button"
             onClick={() => setNewList('')}
@@ -408,5 +393,77 @@ export function ShoppingScreen() {
         </div>
       </Sheet>
     </Screen>
+  )
+}
+
+/** The washi-tape tabs for the lists. Hold and drag a tab to move it (on a phone, press and hold first).
+ *  The first list, Groceries, always stays first. */
+function ListTabs({ lists, current, onPick, onReorder }: { lists: List[]; current: string | null; onPick: (l: List) => void; onReorder: (ids: string[]) => void }) {
+  const first = lists[0]
+  const rest = lists.slice(1)
+  const sensors = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 6 } }),
+  )
+  function end(e: DragEndEvent) {
+    if (!e.over || e.active.id === e.over.id) return
+    const ids = rest.map((l) => l.id)
+    const next = arrayMove(ids, ids.indexOf(e.active.id as string), ids.indexOf(e.over.id as string))
+    onReorder([first.id, ...next])
+  }
+  if (!first) return null
+  return (
+    <>
+      <ListTab l={first} i={0} on={first.id === current} onPick={onPick} />
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={end}>
+        <SortableContext items={rest.map((l) => l.id)} strategy={horizontalListSortingStrategy}>
+          {rest.map((l, k) => (
+            <SortableTab key={l.id} l={l} i={k + 1} on={l.id === current} onPick={onPick} />
+          ))}
+        </SortableContext>
+      </DndContext>
+    </>
+  )
+}
+
+function SortableTab(props: { l: List; i: number; on: boolean; onPick: (l: List) => void }) {
+  const { listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: props.l.id })
+  return (
+    <span
+      ref={setNodeRef}
+      {...listeners}
+      style={{ display: 'inline-flex', transform: CSS.Translate.toString(transform), transition, zIndex: isDragging ? 3 : undefined, cursor: isDragging ? 'grabbing' : undefined, touchAction: 'manipulation' }}
+    >
+      <ListTab {...props} lifted={isDragging} />
+    </span>
+  )
+}
+
+function ListTab({ l, i, on, onPick, lifted }: { l: List; i: number; on: boolean; onPick: (l: List) => void; lifted?: boolean }) {
+  return (
+    <button
+      type="button"
+      className={TAB_TAPES[i % TAB_TAPES.length]}
+      aria-pressed={on}
+      onClick={() => onPick(l)}
+      style={{
+        position: 'relative',
+        display: 'inline-flex',
+        alignItems: 'center',
+        height: 30,
+        padding: '0 14px',
+        fontSize: 14,
+        color: on ? '#1E1A30' : '#63586B',
+        fontWeight: on ? 800 : 700,
+        transform: lifted ? 'rotate(-4deg) scale(1.06)' : `rotate(${i % 2 ? 1.5 : -2}deg)`,
+        boxShadow: lifted ? '3px 6px 10px rgba(30,26,48,.22)' : on ? '1px 2px 0 rgba(30,26,48,.12)' : undefined,
+        opacity: on || lifted ? 1 : 0.75,
+        userSelect: 'none',
+        WebkitUserSelect: 'none',
+        WebkitTouchCallout: 'none',
+      }}
+    >
+      {l.name}
+    </button>
   )
 }
