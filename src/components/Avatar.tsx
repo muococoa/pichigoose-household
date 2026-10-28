@@ -126,7 +126,7 @@ const SPOTS: Record<string, { hat: Spot; bow: Spot; flower: Spot }> = {
   marshmallow: { hat: [20, 9.6, -6], bow: [25.4, 11.8, 30], flower: [14.6, 11.8, 0] },
   toast: { hat: [20, 9.8, -6], bow: [27, 10.4, 22], flower: [12.6, 11, 0] },
   cloud: { hat: [17.4, 11.6, -10], bow: [24.8, 16.2, 22], flower: [12.6, 18.6, 0] },
-  frog: { hat: [20, 16.4, -6], bow: [27.6, 12.4, 28], flower: [12.4, 12.4, 0] },
+  frog: { hat: [20, 13.2, -4], bow: [27.6, 12.4, 28], flower: [12.4, 12.4, 0] },
   cat: { hat: [20, 14, -6], bow: [27, 12.6, 24], flower: [13, 12.6, 0] },
 }
 
@@ -198,13 +198,20 @@ export function Avatar({ avatar, size = 34, label, className = 'av', style }: Pr
   const face = FACES[character]
   const big = size >= 80
   const maskId = `ink-${useId().replace(/[^a-zA-Z0-9]/g, '')}`
+  const accessory = avatar?.accessory ?? null
+  // The frog's party hat sits behind its eyes, peeking out between them.
+  const behind = character === 'frog' && accessory === 'hat'
+  const extra = (
+    <g className="acc">
+      <Accessory kind={accessory} face={face} character={character} />
+    </g>
+  )
   const drawing = (
     <>
+      {behind && extra}
       <Body character={character} />
       <FaceMarks {...face} />
-      <g className="acc">
-        <Accessory kind={avatar?.accessory ?? null} face={face} character={character} />
-      </g>
+      {!behind && extra}
     </>
   )
   // The ink patch tile is 420 px on screen, like on the headlines, whatever the avatar's size.
