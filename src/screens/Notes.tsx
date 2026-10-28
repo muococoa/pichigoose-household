@@ -13,10 +13,12 @@ import { ago } from '../lib/time'
 import { useDesktop } from '../lib/desktop'
 import { CommentCount, Comments, useCommentCounts } from '../components/Comments'
 
-const NOTE_COLORS = ['n-sage', 'n-butter', 'n-mist', 'n-blush', 'n-peach', 'n-lilac']
+// No sage: the notes card on Home is sage, and a sage note on it would disappear.
+const NOTE_COLORS = ['n-butter', 'n-mist', 'n-blush', 'n-peach', 'n-lilac']
 const PIN_TAPES: TapeKind[] = ['tm', 'tp', 'tdots', 'ty', 'tblocks', 'tcheck']
 
-function colorOf(id: string) {
+/** Each note keeps one color everywhere: Home, the Notes grid and the editor. */
+export function colorOf(id: string) {
   return NOTE_COLORS[Math.abs(Math.round(tilt(id, 50) + 50)) % NOTE_COLORS.length]
 }
 

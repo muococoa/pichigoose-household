@@ -268,6 +268,22 @@ export function PoseStamp({
   )
 }
 
+/** A paper clip holding a small note to the one behind it. Drawn as a loop of metal wire. */
+export function PaperClip({ side = 'right', style }: { side?: 'left' | 'right'; style?: CSSProperties }) {
+  return (
+    <svg viewBox="0 0 16 40" width="14" height="36" aria-hidden className={`paper-clip${side === 'left' ? ' left' : ''}`} style={style}>
+      <path
+        d="M10.5 12V29.5a3.5 3.5 0 0 1-7 0V7.5a5 5 0 0 1 10 0V31a6.2 6.2 0 0 1-12.4 0V14"
+        fill="none"
+        stroke="#8F8A99"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path d="M10.5 12V29.5a3.5 3.5 0 0 1-7 0V7.5a5 5 0 0 1 10 0" fill="none" stroke="#FFFFFF" strokeOpacity=".55" strokeWidth=".8" strokeLinecap="round" transform="translate(-.6 -.4)" />
+    </svg>
+  )
+}
+
 /** Pichi as a polaroid, held up with tape. */
 export function PichiPolaroid({ width = 150, rotate = -3, tape = 'tp' as TapeKind }) {
   return (

@@ -140,3 +140,8 @@
 
 .cap { font-size: 12px; line-height: 16px; font-weight: 600; color: #63586B }
 .ln { display: flex; align-items: center; gap: 12px; font-size: 16px; line-height: 24px; font-weight: 600; color: #1E1A30 }
+
+/* The paper clip holds the small note to the paper behind it: it slides over the note's side edge near
+   the bottom, half on the note and half on the paper, clear of the text. Every other note uses the left side. */
+.paper-clip { position: absolute; bottom: 10px; right: -9px; transform: rotate(84deg); z-index: 2; filter: drop-shadow(1px 1px 0 rgba(30, 26, 48, .18)) }
+.paper-clip.left { right: auto; left: -9px; transform: rotate(-96deg) }

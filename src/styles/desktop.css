@@ -95,3 +95,10 @@
 @media (min-width: 1024px) {
   .sheet-actions { bottom: -28px; margin: 0 -28px -28px; padding: 12px 28px 28px }
 }
+
+@media (min-width: 1024px) {
+  /* Moving notes on Home: grab cursor, nothing gets selected, the carried note lifts and tilts. */
+  .drag-slot { cursor: grab; user-select: none; -webkit-user-select: none; touch-action: none }
+  .drag-lifted { cursor: grabbing; transform: rotate(-3deg) scale(1.02); filter: drop-shadow(6px 14px 14px rgba(30, 26, 48, .24)) }
+  .drop-here { position: absolute; inset: 0; border: 2.5px dashed #C9C0CF; border-radius: 4px; display: grid; place-items: center }
+}

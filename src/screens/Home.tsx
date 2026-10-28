@@ -16,11 +16,12 @@ import {
 import { recentlyDone, toggleItem, toggleTodo } from '../data/actions'
 import { Floating, Screen } from '../components/Shell'
 import { Avatar, NobodyAvatar } from '../components/Avatar'
-import { Check, Hand, Struck, Tick, PichiStamp, Tape, tilt, type TapeKind } from '../components/Scrapbook'
+import { Check, Hand, PaperClip, Struck, Tick, PichiStamp, Tape, tilt, type TapeKind } from '../components/Scrapbook'
 import { InkChevron, PencilIcon, PlusIcon } from '../components/Icons'
 import { MyHouseholds } from './MyHouseholds'
 import { PendingInvites } from './Invite'
 import { AddSheet } from './AddSheet'
+import { colorOf } from './Notes'
 import { AskName, madeFromEmail } from './AskName'
 import { ago, daysFromToday, dueLabel, fromDateString } from '../lib/time'
 import { useDesktop } from '../lib/desktop'
@@ -28,13 +29,8 @@ import { DragBoard } from '../components/DragBoard'
 import { CommentCount, useCommentCounts } from '../components/Comments'
 import { db } from '../data/store'
 
-// Desktop: the small notes inside the notes section, each its own color and tape.
-const MINI: { note: string; tape: TapeKind; rotate: number }[] = [
-  { note: 'n-butter', tape: 'tp', rotate: -2 },
-  { note: 'n-mist', tape: 'ty', rotate: 2 },
-  { note: 'n-blush', tape: 'tm', rotate: 1 },
-  { note: 'n-lilac', tape: 'tdots', rotate: -1.5 },
-]
+// Desktop: the small notes inside the notes section, each a little tilted and held with a paper clip.
+const MINI_TILT = [-2, 2, 1, -1.5]
 
 // Each section is a sticky note in its own pastel, held by its own tape.
 const LOOK: Record<Section, { note: string; tape: TapeKind; tapeStyle: React.CSSProperties; rotate: number }> = {
@@ -263,20 +259,22 @@ export function HomeScreen() {
         <NoteHead title={t('home.notes')} to="/notes" right={t('common.seeAll')} />
         {desktop ? (
           // Desktop: the notes as small sticky notes, two across.
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 22, paddingTop: 6 }}>
             {pinnedNotes.slice(0, 4).map((n, i) => {
-              const mini = MINI[i % MINI.length]
               const by = person(n.updated_by)
               return (
                 <Link
                   key={n.id}
                   to={`/notes/${n.id}`}
-                  className={`note ${mini.note}`}
-                  style={{ display: 'block', padding: '14px 14px 12px', transform: `rotate(${mini.rotate}deg)`, boxShadow: '1px 2px 0 rgba(30,26,48,.12)', minWidth: 0 }}
+                  className={`note ${colorOf(n.id)}`}
+                  style={{ display: 'block', padding: '16px 18px 18px', minHeight: 104, transform: `rotate(${MINI_TILT[i % MINI_TILT.length]}deg)`, boxShadow: '1px 2px 0 rgba(30,26,48,.14)', minWidth: 0 }}
                 >
-                  <Tape kind={mini.tape} style={{ top: -8, left: '30%', width: 46, height: 16, transform: 'rotate(-4deg)' }} />
-                  <div style={{ fontSize: 16, lineHeight: '21px', fontWeight: 800, color: '#1E1A30', overflowWrap: 'anywhere' }}>{n.title || t('notes.untitled')}</div>
-                  <div className="cap">{n.pinned ? t('notes.pinned') : `${by?.display_name ?? ''} · ${ago(n.updated_at, i18n.language)}`}</div>
+                  <PaperClip side={i % 2 ? 'right' : 'left'} />
+                  <div style={{ fontSize: 17, lineHeight: '22px', fontWeight: 800, color: '#1E1A30', overflowWrap: 'anywhere' }}>{n.title || t('notes.untitled')}</div>
+                  <div className="cap" style={{ marginTop: 4 }}>
+                    {n.pinned ? t('notes.pinned') : `${by?.display_name ?? ''} · ${ago(n.updated_at, i18n.language)}`}
+                    <CommentCount n={commentsOn(n.id)} />
+                  </div>
                 </Link>
               )
             })}
