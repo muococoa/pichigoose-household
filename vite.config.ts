@@ -6,6 +6,20 @@ import { resolve } from 'node:path'
 
 // Chat apps don't run the app's code when they show a link preview, so join links get their own
 // copy of the page with the "Join my household!" image. vercel.json sends /join/... to it.
+// Every build gets its own id. The app compares it with /version.json on the server to know when a
+// newer version is out, even when a phone's home screen app misses the normal update check.
+const BUILD_ID = String(Date.now())
+
+function buildVersion() {
+  return {
+    name: 'build-version',
+    apply: 'build' as const,
+    generateBundle(this: { emitFile: (f: { type: 'asset'; fileName: string; source: string }) => void }) {
+      this.emitFile({ type: 'asset', fileName: 'version.json', source: JSON.stringify({ build: BUILD_ID }) })
+    },
+  }
+}
+
 function joinPreview() {
   return {
     name: 'join-preview',
@@ -35,7 +49,9 @@ function joinPreview() {
 
 // https://vite.dev/config/
 export default defineConfig({
+  define: { __BUILD_ID__: JSON.stringify(BUILD_ID) },
   plugins: [
+    buildVersion(),
     react(),
     joinPreview(),
     VitePWA({
