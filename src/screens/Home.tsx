@@ -50,7 +50,7 @@ function NoteHead({ title, right, to }: { title: string; right: string; to: stri
       <Hand size={desktop ? 34 : 30} lineHeight={desktop ? 36 : 32}>
         {title}
       </Hand>
-      <Link to={to} className="cap" style={{ color: '#A8335A', fontWeight: 800 }}>
+      <Link to={to} className="cap" style={{ color: 'var(--hero-dark)', fontWeight: 800 }}>
         {right}
       </Link>
     </div>
@@ -177,7 +177,7 @@ export function HomeScreen() {
             }}
           >
             {/* The greeting leads; the news sits a step smaller under it. */}
-            <Hand size={desktop ? 31 : 27} lineHeight={desktop ? 34 : 30} color="#A8335A">
+            <Hand size={desktop ? 31 : 27} lineHeight={desktop ? 34 : 30} color="var(--hero-dark)">
               {t('home.hi', { name: profile?.display_name ?? '' })}
             </Hand>
             <div style={{ fontSize: desktop ? 16 : 14, lineHeight: desktop ? '22px' : '20px', fontWeight: 600, marginTop: 2, color: '#463D50' }}>{news}</div>

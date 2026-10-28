@@ -11,6 +11,7 @@ import { Hand } from '../components/Scrapbook'
 import { BackIcon } from '../components/Icons'
 import { LangSwitch } from '../components/LangSwitch'
 import { useDesktop } from '../lib/desktop'
+import { THEMES, applyTheme } from '../lib/theme'
 
 type Step = 'character' | 'color' | 'extra'
 const STEPS: Step[] = ['character', 'color', 'extra']
@@ -100,7 +101,7 @@ export function ProfileScreen() {
               {count > 0 && (
                 <div className="row" style={{ justifyContent: 'center', gap: 6, marginTop: 10 }} aria-hidden>
                   {Array.from({ length: count }, (_, i) => (
-                    <span key={i} style={{ width: i === at ? 18 : 8, height: 8, borderRadius: 4, background: i === at ? '#A8335A' : '#CBC2CC' }} />
+                    <span key={i} style={{ width: i === at ? 18 : 8, height: 8, borderRadius: 4, background: i === at ? 'var(--hero-dark)' : '#CBC2CC' }} />
                   ))}
                 </div>
               )}
@@ -287,7 +288,7 @@ export function ProfileScreen() {
         {count > 0 && (
           <div className="row" style={{ justifyContent: 'center', gap: 6, marginTop: 10 }} aria-hidden>
             {Array.from({ length: count }, (_, i) => (
-              <span key={i} style={{ width: i === at ? 18 : 8, height: 8, borderRadius: 4, background: i === at ? '#A8335A' : '#CBC2CC' }} />
+              <span key={i} style={{ width: i === at ? 18 : 8, height: 8, borderRadius: 4, background: i === at ? 'var(--hero-dark)' : '#CBC2CC' }} />
             ))}
           </div>
         )}
@@ -330,6 +331,7 @@ export function ProfileScreen() {
 export function SettingsScreen() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const me = useMe()
   const profile = useMyProfile()
   const email = useAuth().session?.user.email ?? ''
 
@@ -365,6 +367,41 @@ export function SettingsScreen() {
           <div className="row" style={{ justifyContent: 'space-between', marginTop: 8 }}>
             <span className="body">{t('settings.appLanguage')}</span>
             <LangSwitch />
+          </div>
+        </section>
+
+        <section>
+          <Hand size={30} lineHeight={32}>
+            {t('settings.theme')}
+          </Hand>
+          <div className="row" style={{ justifyContent: 'space-between', marginTop: 8, gap: 12, flexWrap: 'wrap' }}>
+            <span className="body">{t('settings.appColor')}</span>
+            <div role="radiogroup" aria-label={t('settings.appColor')} className="row" style={{ gap: 12 }}>
+              {THEMES.map((th) => {
+                const on = (profile?.theme ?? 'pichigoose') === th.id
+                return (
+                  <button
+                    key={th.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={on}
+                    aria-label={t(`settings.themes.${th.id}`)}
+                    title={t(`settings.themes.${th.id}`)}
+                    onClick={() => {
+                      applyTheme(th.id)
+                      db.update('profiles', me, { theme: th.id })
+                    }}
+                    style={{
+                      width: 38,
+                      height: 38,
+                      borderRadius: '50%',
+                      background: th.hex,
+                      boxShadow: on ? '0 0 0 3px #FFFFFF, 0 0 0 5px #1E1A30' : '0 0 0 2px #FFFFFF, 1px 2px 2px 1px rgba(30,26,48,.15)',
+                    }}
+                  />
+                )
+              })}
+            </div>
           </div>
         </section>
 

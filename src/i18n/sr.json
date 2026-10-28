@@ -264,7 +264,15 @@
     "changeCharacter": "Izmeni lik",
     "language": "Jezik",
     "appLanguage": "Jezik aplikacije",
-    "logOut": "Odjavi se"
+    "logOut": "Odjavi se",
+    "theme": "Tema",
+    "appColor": "Boja aplikacije",
+    "themes": {
+      "pichigoose": "Roze",
+      "blue": "Plava",
+      "green": "Zelena",
+      "orange": "Narandžasta"
+    }
   },
   "invite": {
     "title": "Pozovi nekoga",

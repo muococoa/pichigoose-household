@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { AuthProvider, useAuth } from './auth'
 import { isConfigured } from './lib/supabase'
 import { setLanguage } from './i18n'
+import { applyTheme } from './lib/theme'
 import { useHousehold, useMyProfile } from './data/hooks'
 import { InkFilter, ToastHost } from './components/Scrapbook'
 import { Framed, Screen } from './components/Shell'
@@ -65,6 +66,10 @@ function LanguageSync() {
   useEffect(() => {
     if (profile?.language && profile.language !== i18n.language) setLanguage(profile.language)
   }, [profile?.language, i18n.language])
+  // The theme color follows the profile too.
+  useEffect(() => {
+    if (profile) applyTheme(profile.theme)
+  }, [profile?.theme])
   return null
 }
 

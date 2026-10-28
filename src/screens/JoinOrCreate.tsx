@@ -56,7 +56,7 @@ function Radio({ on }: { on: boolean }) {
         flex: 'none',
       }}
     >
-      {on && <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#D34471' }} />}
+      {on && <span style={{ width: 12, height: 12, borderRadius: '50%', background: 'var(--hero)' }} />}
     </span>
   )
 }

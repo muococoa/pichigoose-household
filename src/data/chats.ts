@@ -36,8 +36,9 @@ export function useChats() {
   }, [messages.rows, reads.rows, people, me, membership?.joined_at])
 }
 
+/** Unread messages in the household chat, for the badge on the Messages tab. */
 export function useUnreadTotal() {
-  return useChats().reduce((n, c) => n + c.unread, 0)
+  return useChats().find((c) => c.key === 'household')?.unread ?? 0
 }
 
 /** While a chat is open, keep it marked as read. */

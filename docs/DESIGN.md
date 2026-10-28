@@ -104,7 +104,7 @@ These stay **clean on purpose,** so anything you tap or type into reads right aw
 ## 13. Not yet (don't build)
 
 - Dark mode, which will be dark paper.
-- Themes, so the app doesn't have to be pink.
+- Themes: done as a theme color in Settings (Pink, Blue, Green, Orange), saved per person in `profiles.theme`. The hero color, its dark, the margin line and the active tab follow it; errors stay pink-red and violet stays the people color in every theme.
 - Sticky-note colors per person.
 - The pressed state for stickers.
 - Doodles in the margin.

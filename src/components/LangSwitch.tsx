@@ -43,7 +43,7 @@ export function LangSwitch() {
             fontWeight: 800,
             fontSize: 14,
             textAlign: 'center',
-            background: current === lang ? '#A8335A' : 'transparent',
+            background: current === lang ? 'var(--hero-dark)' : 'transparent',
             color: current === lang ? '#FFFFFF' : '#463D50',
           }}
         >

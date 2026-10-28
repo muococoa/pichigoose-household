@@ -18,7 +18,7 @@
   .nav { position: relative; display: flex; align-items: center; gap: 14px; height: 44px; padding: 0 12px; font-size: 16px; font-weight: 700; color: #63586B; border-radius: 8px }
   .nav svg { width: 24px; height: 24px; flex: none }
   .nav:hover { color: #1E1A30 }
-  .nav.on { color: #A8335A }
+  .nav.on { color: var(--hero-dark) }
   .nav .tab-icon { position: relative; display: flex }
   .nav .tab-circle { position: absolute; left: 50%; top: 50%; width: 44px; height: 36px; margin: -18px 0 0 -22px; overflow: visible; pointer-events: none; filter: url(#dry-ink) }
 
@@ -28,7 +28,7 @@
   }
   /* Wider ruling (every 36 px) and the margin line further in, at 64 px. */
   .desk > .screen > .scroll {
-    background-image: linear-gradient(90deg, transparent 64px, rgba(211, 68, 113, .22) 64px 66px, transparent 66px), url("../../assets/paper-white.png"), repeating-linear-gradient(#FFFDF8 0 35px, #E6DFE3 35px 36px);
+    background-image: linear-gradient(90deg, transparent 64px, var(--margin) 64px 66px, transparent 66px), url("../../assets/paper-white.png"), repeating-linear-gradient(#FFFDF8 0 35px, #E6DFE3 35px 36px);
     background-position: 0 0, 0 0, 0 10px;
   }
   .desk > .screen > .margin { left: 64px }

@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
 import { db } from '../data/store'
@@ -7,8 +7,8 @@ import { useHousehold, type Message, type Profile } from '../data/hooks'
 import { useChats, useMarkRead, type Chat } from '../data/chats'
 import { Screen } from '../components/Shell'
 import { Avatar } from '../components/Avatar'
-import { EmptyState, Hand, Stamp, STAMP_COLORS } from '../components/Scrapbook'
-import { BackIcon, HomeIcon, SendIcon } from '../components/Icons'
+import { Stamp, STAMP_COLORS } from '../components/Scrapbook'
+import { HomeIcon, SendIcon } from '../components/Icons'
 import { useDesktop } from '../lib/desktop'
 import { PersonLink } from './Person'
 
@@ -48,46 +48,6 @@ function GroupAvatar({ size = 48 }: { size?: number }) {
 
 function chatName(chat: Chat, householdName: string) {
   return chat.person ? chat.person.display_name : householdName
-}
-
-/** WhatsApp-style list of chats: the household's group chat first, then a private chat with each person. */
-function ChatList({ active }: { active?: string | null }) {
-  const { t } = useTranslation()
-  const me = useMe()
-  const { household, name, people } = useHousehold()
-  const chats = useChats()
-  const { when } = useTimeLabels()
-  const householdName = household ? name(household) : ''
-  return (
-    <div className="chat-list">
-      {chats.map((c) => {
-        const author = c.last && c.last.author_id !== me ? people.find((p) => p.id === c.last!.author_id) : null
-        const preview = c.last
-          ? `${c.last.author_id === me ? `${t('messages.you')}: ` : c.key === 'household' && author ? `${author.display_name}: ` : ''}${c.last.body}`
-          : t('messages.none')
-        return (
-          <Link key={c.key} to={`/messages/${c.key}`} className={`chat-row${active === c.key ? ' on' : ''}`} aria-current={active === c.key ? 'page' : undefined}>
-            {c.person ? <Avatar avatar={c.person.avatar} size={48} /> : <GroupAvatar />}
-            <span className="grow" style={{ minWidth: 0 }}>
-              <span className="row" style={{ gap: 8 }}>
-                <span className="chat-name">{chatName(c, householdName)}</span>
-                <span style={{ flex: 1 }} />
-                {c.last && <span className={`chat-time${c.unread ? ' unread' : ''}`}>{when(c.last.created_at)}</span>}
-              </span>
-              <span className="row" style={{ gap: 8, marginTop: 2 }}>
-                <span className="chat-preview">{preview}</span>
-                {c.unread > 0 && (
-                  <span className="unread-badge" aria-label={t('messages.unread', { count: c.unread })}>
-                    {c.unread}
-                  </span>
-                )}
-              </span>
-            </span>
-          </Link>
-        )
-      })}
-    </div>
-  )
 }
 
 /** Speech bubbles grouped into runs: the same person, the same day, a few minutes apart. */
@@ -137,7 +97,6 @@ function Bubbles({ messages, group }: { messages: Message[]; group: boolean }) {
 function Conversation({ chatKey, header }: { chatKey: string; header?: boolean }) {
   const { t } = useTranslation()
   const me = useMe()
-  const navigate = useNavigate()
   const { household, name, people } = useHousehold()
   const chats = useChats()
   const chat = chats.find((c) => c.key === chatKey)
@@ -193,9 +152,6 @@ function Conversation({ chatKey, header }: { chatKey: string; header?: boolean }
     <div className="conversation">
       {header && (
         <div className="chat-header">
-          <button type="button" className="chat-back" aria-label={t('common.back')} onClick={() => navigate('/messages')}>
-            <BackIcon />
-          </button>
           {chat.person ? (
             <PersonLink id={chat.person.id}>
               <Avatar avatar={chat.person.avatar} size={38} />
@@ -238,57 +194,28 @@ function Conversation({ chatKey, header }: { chatKey: string; header?: boolean }
   )
 }
 
-/** Desktop: the chat list on the left, the open chat on the right. */
-function Split({ chatKey }: { chatKey: string | null }) {
-  const { t } = useTranslation()
-  return (
-    <Screen wide>
-      <div className="chat-split">
-        <div className="chat-split-list">
-          <Hand as="h1" style={{ margin: '0 0 14px' }}>
-            {t('messages.title')}
-          </Hand>
-          <ChatList active={chatKey} />
-        </div>
-        <div className="chat-split-main">
-          {chatKey ? (
-            <Conversation key={chatKey} chatKey={chatKey} header />
-          ) : (
-            <EmptyState pose="honk" color="#D6C8E6" zoom={1.05} rotate={2}>
-              {t('messages.pick')}
-            </EmptyState>
-          )}
-        </div>
-      </div>
-    </Screen>
-  )
-}
-
-/** The Messages tab: the list of chats. */
+/** The Messages tab: the household's chat, for everyone in it. (Private chats and groups can come later.) */
 export function MessagesScreen() {
-  const { t } = useTranslation()
   const desktop = useDesktop()
-  if (desktop) return <Split chatKey={null} />
+  if (desktop) {
+    return (
+      <Screen wide>
+        <div className="chat-split">
+          <div className="chat-split-main">
+            <Conversation chatKey="household" header />
+          </div>
+        </div>
+      </Screen>
+    )
+  }
   return (
-    <Screen tabbar>
-      <div style={{ padding: 'calc(var(--top) + 10px) 22px 0 40px' }}>
-        <Hand as="h1" style={{ margin: '0 0 14px' }}>
-          {t('messages.title')}
-        </Hand>
-        <ChatList />
-      </div>
+    <Screen tabbar className="chat-screen chat-tab">
+      <Conversation chatKey="household" header />
     </Screen>
   )
 }
 
-/** One open chat. On a phone it takes the whole screen, like WhatsApp. */
+/** Old links to a single chat open the household chat. */
 export function ChatScreen() {
-  const { chat } = useParams()
-  const desktop = useDesktop()
-  if (desktop) return <Split chatKey={chat ?? null} />
-  return (
-    <Screen className="chat-screen">
-      <Conversation chatKey={chat ?? 'household'} header />
-    </Screen>
-  )
+  return <Navigate to="/messages" replace />
 }

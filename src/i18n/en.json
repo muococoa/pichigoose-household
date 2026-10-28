@@ -260,7 +260,15 @@
     "changeCharacter": "Change character",
     "language": "Language",
     "appLanguage": "App language",
-    "logOut": "Log out"
+    "logOut": "Log out",
+    "theme": "Theme",
+    "appColor": "App color",
+    "themes": {
+      "pichigoose": "Pink",
+      "blue": "Blue",
+      "green": "Green",
+      "orange": "Orange"
+    }
   },
   "invite": {
     "title": "Invite someone",

@@ -86,7 +86,7 @@ export function Hand({ children, size = 42, lineHeight, color, as: Tag = 'span',
   )
 }
 
-export const STAMP_COLORS = { nora: '#A8335A', claude: '#63586B', locked: '#4E6B39', draft: '#8C5A3C', open: '#3B6FA0' }
+export const STAMP_COLORS = { nora: 'var(--hero-dark)', claude: '#63586B', locked: '#4E6B39', draft: '#8C5A3C', open: '#3B6FA0' }
 
 /** A stamp label. `motion` "in" stamps it down hard, "out" fades it away. */
 export function Stamp({ children, color = STAMP_COLORS.locked, rotate = -3, motion }: { children: string; color?: string; rotate?: number; motion?: 'in' | 'out' }) {
@@ -115,7 +115,7 @@ export function CheckMark({ on = true }: { on?: boolean }) {
       <path
         d="M5 15.5 C7 17, 9 19.8, 10.6 22.4 C13.5 15, 17.5 9, 24 3.5"
         fill="none"
-        stroke="#D34471"
+        style={{ stroke: 'var(--hero)' }}
         strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
