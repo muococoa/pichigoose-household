@@ -140,7 +140,7 @@ export function ArrangeHomeScreen() {
             {others.length === 1 ? t('arrange.intro', { name: others[0].display_name }) : t('arrange.introAlone')}
           </div>
         </div>
-        <div ref={listRef} style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 6, position: 'relative' }}>
+        <div ref={listRef} data-nobounce style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 6, position: 'relative' }}>
           {shown.map((s) => {
             const look = LOOK[s.section]
             const lifted = dragging === s.section

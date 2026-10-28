@@ -1,7 +1,9 @@
 /* App shell and the clean parts (inputs, sheets). The scrapbook parts live in scrapbook.css. */
 
 *, *::before, *::after { box-sizing: border-box }
-html, body { margin: 0; height: 100%; background: #FFFDF8; -webkit-tap-highlight-color: transparent; overscroll-behavior: none }
+/* The page itself never scrolls (no stray few pixels when the browser's address bar changes height).
+   Only the paper inside each screen scrolls, and it bounces at the ends (src/lib/bounce.ts). */
+html, body { margin: 0; height: 100%; overflow: hidden; background: #FFFDF8; -webkit-tap-highlight-color: transparent; overscroll-behavior: none }
 body { font-family: Nunito, sans-serif; color: #2E2638; -webkit-font-smoothing: antialiased }
 button { font: inherit; color: inherit; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; text-align: inherit }
 button:focus-visible, a:focus-visible { outline: 2px solid #8466B8; outline-offset: 2px }
@@ -25,12 +27,13 @@ html[data-nav="back"] .screen > .scroll { animation: sheet-in-left .35s cubic-be
 
 /* A full-height screen of notebook paper. */
 .screen { min-height: 100dvh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden }
-.screen > .scroll { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; position: relative; z-index: 2 }
+.screen > .scroll { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; overscroll-behavior: none; position: relative; z-index: 2 }
 .pad { padding: 0 22px 0 40px }
 .top { padding-top: calc(var(--top) + 8px) }
 .with-tabbar .scroll { padding-bottom: calc(var(--tabbar) + 24px) }
-/* Home: room under the last note so it can scroll up above the round + button. */
-.home.with-tabbar .scroll { padding-bottom: calc(var(--tabbar) + 104px) }
+/* Screens with the round + button: room under the last thing on the page (the button's height plus a gap),
+   so everything can scroll up above the button and nothing stays hidden under it. */
+.has-fab.with-tabbar .scroll { padding-bottom: calc(var(--tabbar) + 104px) }
 .tabbar { height: var(--tabbar) }
 
 .row { display: flex; align-items: center }

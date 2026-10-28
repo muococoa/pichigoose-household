@@ -13,7 +13,7 @@ import {
   type Section,
 } from '../data/hooks'
 import { recentlyDone, toggleItem, toggleTodo } from '../data/actions'
-import { Screen } from '../components/Shell'
+import { Floating, Screen } from '../components/Shell'
 import { Avatar, NobodyAvatar } from '../components/Avatar'
 import { Check, Hand, Struck, Tick, PichiStamp, Tape, tilt, type TapeKind } from '../components/Scrapbook'
 import { InkChevron, PencilIcon, PlusIcon } from '../components/Icons'
@@ -294,7 +294,7 @@ export function HomeScreen() {
   }
 
   return (
-    <Screen tabbar className="home">
+    <Screen tabbar className="has-fab">
       <div style={{ padding: '10px 22px 0 40px', paddingTop: 'calc(var(--top) + 10px)', display: 'flex', flexDirection: 'column', gap: 22 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ minWidth: 0 }}>
@@ -324,6 +324,7 @@ export function HomeScreen() {
         {layout.map((s) => section(s.section))}
       </div>
 
+      <Floating>
       <button
         type="button"
         className="stk prim round fab"
@@ -333,6 +334,7 @@ export function HomeScreen() {
       >
         <PlusIcon />
       </button>
+      </Floating>
 
       <MyHouseholds open={switching} onClose={() => setSwitching(false)} />
       <AddSheet open={adding} onClose={() => setAdding(false)} />

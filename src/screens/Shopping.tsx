@@ -5,7 +5,7 @@ import { useMe } from '../auth'
 import { db } from '../data/store'
 import { useHousehold, useItems, useLists, type Item, type List } from '../data/hooks'
 import { recentlyBought, toggleItem } from '../data/actions'
-import { Screen } from '../components/Shell'
+import { Floating, Screen } from '../components/Shell'
 import { Avatar } from '../components/Avatar'
 import { Check, Hand, Struck, Tick, useArrivals, PichiStamp, Sheet, Stamp, STAMP_COLORS, showToast, tilt, type TapeKind } from '../components/Scrapbook'
 import { BackIcon, PlusIcon, ShareIcon } from '../components/Icons'
@@ -173,10 +173,11 @@ export function ShoppingScreen() {
   }
 
   return (
-    <Screen tabbar wide>
+    <Screen tabbar wide className="has-fab">
       {/* One + sticker that turns into the add bar. Closed, it floats above the tab bar.
           Tapped, it settles into the bar while the field grows out of it. Phone only. */}
       {!desktop && (
+      <Floating>
       <form onSubmit={add} className={`add-bar${adding ? ' open' : ''}`}>
         <input
           ref={inputRef}
@@ -209,6 +210,7 @@ export function ShoppingScreen() {
           <PlusIcon />
         </button>
       </form>
+      </Floating>
       )}
       <div style={{ padding: 'calc(var(--top) + 8px) 22px 0 40px', display: 'flex', flexDirection: 'column', gap: desktop ? 18 : 14 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: desktop ? 0 : -10 }}>
@@ -306,7 +308,7 @@ export function ShoppingScreen() {
           </div>
         </div>
       ) : (
-      <div style={{ padding: `26px 22px ${adding ? 110 : 24}px 40px` }}>
+      <div style={{ padding: '26px 22px 0 40px' }}>
         {toBuy.map((x) => row(x, false))}
         {items.loaded && !toBuy.length && (
           <div className="row" style={{ gap: 14, padding: '10px 0 6px' }}>

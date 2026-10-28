@@ -5,7 +5,7 @@ import { useMe } from '../auth'
 import { db } from '../data/store'
 import { useHousehold, useTodos, type Profile, type Todo } from '../data/hooks'
 import { recentlyDone, toggleTodo } from '../data/actions'
-import { Screen } from '../components/Shell'
+import { Floating, Screen } from '../components/Shell'
 import { Avatar, NobodyAvatar } from '../components/Avatar'
 import { Check, Hand, Struck, Tick, useArrivals, Sheet, Stamp, STAMP_COLORS, tilt } from '../components/Scrapbook'
 import { ChevronDown, PlusIcon } from '../components/Icons'
@@ -93,7 +93,7 @@ export function TodosScreen() {
   }
 
   return (
-    <Screen tabbar>
+    <Screen tabbar className="has-fab">
       <div style={{ padding: 'calc(var(--top) + 10px) 22px 0 40px' }}>
         <div className="row" style={{ justifyContent: 'space-between', gap: 10 }}>
           <Hand as="h1" style={{ margin: 0 }}>
@@ -172,6 +172,7 @@ export function TodosScreen() {
         )}
       </div>
 
+      <Floating>
       <button
         type="button"
         className="stk prim round fab"
@@ -181,6 +182,7 @@ export function TodosScreen() {
       >
         <PlusIcon />
       </button>
+      </Floating>
 
       <MyHouseholds open={switching} onClose={() => setSwitching(false)} />
       {editing && hid && <TodoSheet key={editing === 'new' ? 'new' : editing.id} todo={editing === 'new' ? null : editing} householdId={hid} people={people} onClose={() => setEditing(null)} />}

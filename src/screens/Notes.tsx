@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
 import { db } from '../data/store'
 import { useHousehold, useNotes, type Note } from '../data/hooks'
-import { Screen } from '../components/Shell'
+import { Floating, Screen } from '../components/Shell'
 import { Avatar } from '../components/Avatar'
 import { Hand, Menu, Sheet, Stamp, STAMP_COLORS, Tape, tilt, type TapeKind } from '../components/Scrapbook'
 import { BackIcon, ChevronDown, CloseIcon, DotsIcon, PlusIcon, SearchIcon } from '../components/Icons'
@@ -100,7 +100,7 @@ export function NotesScreen() {
   }
 
   return (
-    <Screen tabbar wide={desktop}>
+    <Screen tabbar wide={desktop} className="has-fab">
       <div style={{ padding: 'calc(var(--top) + 10px) 22px 0 40px', marginRight: panel ? 400 : 0 }}>
         <div className="row" style={{ justifyContent: 'space-between', gap: 10 }}>
           <Hand as="h1" style={{ margin: 0 }}>
@@ -147,6 +147,7 @@ export function NotesScreen() {
         )}
       </div>
 
+      <Floating>
       <button
         type="button"
         className="stk prim round fab"
@@ -160,6 +161,7 @@ export function NotesScreen() {
       >
         <PlusIcon />
       </button>
+      </Floating>
       <MyHouseholds open={switching} onClose={() => setSwitching(false)} />
       {panel && (
         <aside className="note-panel" aria-label={t('notes.title')}>

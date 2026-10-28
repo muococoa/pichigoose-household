@@ -1,10 +1,12 @@
-import { createContext, useContext, useEffect, useState, useSyncExternalStore, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import { NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { BasketIcon, HomeIcon, NoteIcon, TodoIcon } from './Icons'
 import { Stamp, STAMP_COLORS } from './Scrapbook'
 import { useOutboxCount } from '../data/store'
 import { useDesktop } from '../lib/desktop'
+import { useBounce } from '../lib/bounce'
 import { Sidebar } from './Sidebar'
 
 /** Screens inside a household. On desktop they sit on the notebook page next to the sidebar. */
@@ -16,6 +18,8 @@ type ScreenProps = { children: ReactNode; tabbar?: boolean; footer?: ReactNode; 
 export function Screen({ children, tabbar, footer, className = '', wide, center }: ScreenProps) {
   const desktop = useDesktop()
   const framed = useContext(Framed)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  useBounce(scrollRef)
   if (desktop && framed) {
     // Desktop: sidebar on the left, the notebook page fills the rest. Screens not laid out
     // for desktop yet keep a comfortable reading width instead of stretching.
@@ -23,7 +27,7 @@ export function Screen({ children, tabbar, footer, className = '', wide, center 
       <div className="desk">
         <Sidebar />
         <div className={`screen scr page ${className}`}>
-          <div className="scroll scr">
+          <div className="scroll scr" ref={scrollRef}>
             <div className={`desk-content${wide ? ' wide' : ''}${center ? ' center' : ''}`}>{children}</div>
           </div>
           {footer && <div className={`desk-footer${wide ? ' wide' : ''}`}>{footer}</div>}
@@ -37,7 +41,7 @@ export function Screen({ children, tabbar, footer, className = '', wide, center 
     return (
       <div className="desk solo">
         <div className={`screen scr page ${className}`}>
-          <div className="scroll scr">
+          <div className="scroll scr" ref={scrollRef}>
             <div className={`solo-content${wide ? ' wide' : ''}`}>{children}</div>
           </div>
           {footer && <div className="solo-content">{footer}</div>}
@@ -49,7 +53,7 @@ export function Screen({ children, tabbar, footer, className = '', wide, center 
   return (
     <div className={`screen scr ${tabbar ? 'with-tabbar' : ''} ${className}`}>
       <div className="margin" />
-      <div className="scroll scr">{children}</div>
+      <div className="scroll scr" ref={scrollRef}>{children}</div>
       {footer}
       {tabbar && <TabBar />}
       <OfflineBadge />
@@ -113,4 +117,10 @@ function OfflineBadge() {
       </Stamp>
     </div>
   )
+}
+
+/** Things fixed to the screen (the round +, the add bar) live outside the scrolling paper,
+ *  so they stay put when the paper bounces at the ends. */
+export function Floating({ children }: { children: ReactNode }) {
+  return createPortal(children, document.body)
 }
