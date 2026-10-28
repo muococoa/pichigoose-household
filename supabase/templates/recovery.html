@@ -13,13 +13,14 @@
   @media (max-width: 560px) { .card { padding: 28px 22px 26px !important; } .headline { width: 240px !important; } }
 </style>
 </head>
-<body style="margin:0;padding:0;background:#F6F0E8;">
+<body style="margin:0;padding:0;background:#F6F0E8 url('https://www.pichigoose.com/email/paper-lined.jpg') repeat;">
 {{ if and .Data.language (eq .Data.language "sr") }}
 <div style="display:none;max-height:0;overflow:hidden;">Dodirni dugme i izaberi novu lozinku.</div>
 {{ else }}
 <div style="display:none;max-height:0;overflow:hidden;">Tap the button to choose a new password.</div>
 {{ end }}
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F6F0E8;">
+<!-- Lined notebook paper with fibers behind everything. Clients without background images show the plain tan. -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#F6F0E8" background="https://www.pichigoose.com/email/paper-lined.jpg" style="background:#F6F0E8 url('https://www.pichigoose.com/email/paper-lined.jpg') repeat;">
   <tr>
     <td align="center" style="padding:28px 12px 36px;">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px;">
@@ -31,7 +32,7 @@
         </tr>
         <!-- The note -->
         <tr>
-          <td class="card" style="background:#FFFDF8;border-radius:6px;padding:36px 40px 32px;box-shadow:2px 3px 0 rgba(30,26,48,.13);font-family:Nunito,'Trebuchet MS',Arial,sans-serif;color:#2E2638;">
+          <td class="card" bgcolor="#FFFDF8" background="https://www.pichigoose.com/email/paper.jpg" style="background:#FFFDF8 url('https://www.pichigoose.com/email/paper.jpg') repeat;border-radius:6px;padding:36px 40px 32px;box-shadow:2px 3px 0 rgba(30,26,48,.13);font-family:Nunito,'Trebuchet MS',Arial,sans-serif;color:#2E2638;">
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
               <tr>
                 <td align="center" style="padding-bottom:6px;">
