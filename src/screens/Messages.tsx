@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
 import { db } from '../data/store'
@@ -8,7 +8,7 @@ import { useChats, useMarkRead, type Chat } from '../data/chats'
 import { Screen } from '../components/Shell'
 import { Avatar } from '../components/Avatar'
 import { Stamp, STAMP_COLORS } from '../components/Scrapbook'
-import { HomeIcon, SendIcon } from '../components/Icons'
+import { BackIcon, HomeIcon, SendIcon } from '../components/Icons'
 import { useDesktop } from '../lib/desktop'
 import { PersonLink } from './Person'
 
@@ -94,9 +94,10 @@ function Bubbles({ messages, group }: { messages: Message[]; group: boolean }) {
 }
 
 /** One chat: the bubbles, with the writing field pinned under them. */
-function Conversation({ chatKey, header }: { chatKey: string; header?: boolean }) {
+function Conversation({ chatKey, header, back }: { chatKey: string; header?: boolean; back?: boolean }) {
   const { t } = useTranslation()
   const me = useMe()
+  const navigate = useNavigate()
   const { household, name, people } = useHousehold()
   const chats = useChats()
   const chat = chats.find((c) => c.key === chatKey)
@@ -152,6 +153,11 @@ function Conversation({ chatKey, header }: { chatKey: string; header?: boolean }
     <div className="conversation">
       {header && (
         <div className="chat-header">
+          {back && (
+            <button type="button" className="chat-back" aria-label={t('common.back')} onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))}>
+              <BackIcon />
+            </button>
+          )}
           {chat.person ? (
             <PersonLink id={chat.person.id}>
               <Avatar avatar={chat.person.avatar} size={38} />
@@ -209,8 +215,9 @@ export function MessagesScreen() {
     )
   }
   return (
-    <Screen tabbar className="chat-screen chat-tab">
-      <Conversation chatKey="household" header />
+    // On a phone the chat takes the whole screen, like WhatsApp: no bottom menu until you go back.
+    <Screen className="chat-screen">
+      <Conversation chatKey="household" header back />
     </Screen>
   )
 }
