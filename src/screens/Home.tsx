@@ -313,7 +313,7 @@ export function HomeScreen() {
     // then the sections as sticky notes on a board, three across, in this person's own order.
     const board = layout.filter((s) => s.section !== 'news')
     return (
-      <Screen wide>
+      <Screen wide doodle="run">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 26, paddingTop: 'var(--top)', paddingRight: 22, paddingLeft: 40 }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 24 }}>
             {layout.some((s) => s.section === 'news') && section('news')}
@@ -334,7 +334,7 @@ export function HomeScreen() {
   }
 
   return (
-    <Screen tabbar className="has-fab">
+    <Screen tabbar className="has-fab" doodle="honk">
       <div style={{ padding: '10px 22px 0 40px', paddingTop: 'calc(var(--top) + 10px)', display: 'flex', flexDirection: 'column', gap: 22 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ minWidth: 0 }}>

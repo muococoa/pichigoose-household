@@ -121,6 +121,22 @@ textarea.input { height: auto; padding: 12px 16px; resize: none }
 .comment-count { display: inline-flex; align-items: center; gap: 3px; margin-left: 8px; font-size: 13px; font-weight: 800; color: #63586B; vertical-align: -3px }
 .comment-count svg { display: block }
 
+/* Pichi doodles on the empty paper. The page becomes a column at least as tall as the screen; the spot
+   takes whatever room is left at the bottom and only shows the doodle when there's enough of it. */
+.paper-col { display: flex; flex-direction: column; min-height: 100% }
+.paper-col > .paper-col { flex: 1 0 auto; min-height: 0 }
+.doodle-spot { flex: 1 0 0; min-height: 0; position: relative; container-type: size; pointer-events: none }
+.doodle { display: none; position: absolute; left: 50%; bottom: 6px; flex-direction: column; align-items: center; color: #1D2FA7; opacity: .82; mix-blend-mode: multiply; transform: translateX(-50%) rotate(-2deg) }
+.doodle img { display: block; height: 150px; width: auto; max-width: 70cqw; object-fit: contain; margin-bottom: -9px; user-select: none }
+.doodle svg { display: block; width: min(220px, 80cqw); height: auto; filter: url(#dry-ink) }
+@container (min-height: 200px) { .doodle { display: flex } }
+/* Phone pages with the round +: the bottom strip kept free for the + has room in the middle, so the doodle
+   stands down there, clear of the button on the right, and needs much less free paper above it. */
+.with-tabbar.has-fab .doodle { bottom: -108px }
+.with-tabbar.has-fab .doodle img { height: 130px }
+.with-tabbar.has-fab .doodle svg { width: 160px }
+@container (min-height: 36px) { .with-tabbar.has-fab .doodle { display: flex } }
+
 /* Switching a filter: the old list fades out quickly (ease-in), the new one fades in and settles (kinetic ease-out). */
 .swap-out { opacity: 0; transform: translateY(4px); transition: opacity .17s cubic-bezier(.55, 0, 1, .45), transform .17s cubic-bezier(.55, 0, 1, .45) }
 .swap-in { animation: swap-in .45s cubic-bezier(.16, 1, .3, 1) }

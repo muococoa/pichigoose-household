@@ -9,6 +9,11 @@ import poseStandRight from '../../assets/pichi/stand-right.webp'
 import poseHonk from '../../assets/pichi/honk.webp'
 import poseRun from '../../assets/pichi/run.webp'
 import poseWalk from '../../assets/pichi/walk.webp'
+import doodleStandLeft from '../../assets/pichi/doodle-stand-left.webp'
+import doodleStandRight from '../../assets/pichi/doodle-stand-right.webp'
+import doodleHonk from '../../assets/pichi/doodle-honk.webp'
+import doodleWalk from '../../assets/pichi/doodle-walk.webp'
+import doodleRun from '../../assets/pichi/doodle-run.webp'
 import paperWhite from '../../assets/paper-white.png'
 
 /** Turns any text into a stable number, so each headline and stamp gets its own texture offset. */
@@ -277,6 +282,29 @@ export function EmptyState({ pose, color, zoom = 1, focus = '50% 45%', rotate = 
       <p className="body" style={{ margin: 0, maxWidth: 290, textWrap: 'balance' }}>
         {children}
       </p>
+    </div>
+  )
+}
+
+/** Nora's ballpoint doodles of Pichi, drawn straight on the paper. */
+const DOODLES = { 'stand-left': doodleStandLeft, 'stand-right': doodleStandRight, honk: doodleHonk, walk: doodleWalk, run: doodleRun }
+export type DoodlePose = keyof typeof DOODLES
+
+/**
+ * Fills the empty paper at the bottom of a page with a doodle of Pichi standing on a squiggly ground
+ * line, in the same ballpoint ink. It only shows when there's real room left; on a full page it stays
+ * hidden, so it never pushes anything down (see .doodle-spot in app.css).
+ */
+export function DoodleSpot({ pose }: { pose: DoodlePose }) {
+  return (
+    <div className="doodle-spot" aria-hidden>
+      <div className="doodle">
+        <img src={DOODLES[pose]} alt="" draggable={false} />
+        <svg viewBox="0 0 240 22" width="240" height="22">
+          <path d="M6 13c18-5 30 4 48 1s26-7 44-3 30 6 50 1 30-6 46-2 22 4 40 1" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+          <path d="M62 15l-3 5M70 14l2 5M166 12l-2 5M174 12l3 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+        </svg>
+      </div>
     </div>
   )
 }

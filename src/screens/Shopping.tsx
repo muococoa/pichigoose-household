@@ -176,7 +176,7 @@ export function ShoppingScreen() {
   }
 
   return (
-    <Screen tabbar wide className="has-fab">
+    <Screen tabbar wide className="has-fab" doodle={toBuy.length ? 'stand-left' : undefined}>
       {/* One + sticker that turns into the add bar. Closed, it floats above the tab bar.
           Tapped, it settles into the bar while the field grows out of it. Phone only. */}
       {!desktop && (

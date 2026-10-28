@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import { NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { BasketIcon, HomeIcon, InkCircle, NoteIcon, TodoIcon } from './Icons'
-import { Stamp, STAMP_COLORS } from './Scrapbook'
+import { DoodleSpot, Stamp, STAMP_COLORS, type DoodlePose } from './Scrapbook'
 import { flush, refetchAll, useOutboxCount } from '../data/store'
 import { useDesktop } from '../lib/desktop'
 import { useBounce } from '../lib/bounce'
@@ -12,10 +12,19 @@ import { Sidebar } from './Sidebar'
 /** Screens inside a household. On desktop they sit on the notebook page next to the sidebar. */
 export const Framed = createContext(false)
 
-type ScreenProps = { children: ReactNode; tabbar?: boolean; footer?: ReactNode; className?: string; wide?: boolean; center?: boolean }
+type ScreenProps = { children: ReactNode; tabbar?: boolean; footer?: ReactNode; className?: string; wide?: boolean; center?: boolean; doodle?: DoodlePose }
 
 /** A screen of notebook paper with the red margin. */
-export function Screen({ children, tabbar, footer, className = '', wide, center }: ScreenProps) {
+export function Screen({ children, tabbar, footer, className = '', wide, center, doodle }: ScreenProps) {
+  // A doodle of Pichi in the empty paper at the bottom, when the page asks for one.
+  const page = doodle ? (
+    <div className="paper-col">
+      {children}
+      <DoodleSpot pose={doodle} />
+    </div>
+  ) : (
+    children
+  )
   const desktop = useDesktop()
   const framed = useContext(Framed)
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -29,7 +38,7 @@ export function Screen({ children, tabbar, footer, className = '', wide, center 
         <Sidebar />
         <div className={`screen scr page ${className}`}>
           <div className="scroll scr" ref={scrollRef}>
-            <div className={`desk-content${wide ? ' wide' : ''}${center ? ' center' : ''}`}>{children}</div>
+            <div className={`desk-content${wide ? ' wide' : ''}${center ? ' center' : ''}${doodle ? ' paper-col' : ''}`}>{page}</div>
           </div>
           {footer && <div className={`desk-footer${wide ? ' wide' : ''}`}>{footer}</div>}
           <OfflineBadge />
@@ -55,7 +64,7 @@ export function Screen({ children, tabbar, footer, className = '', wide, center 
     <div className={`screen scr ${tabbar ? 'with-tabbar' : ''} ${className}`}>
       <div className="margin" />
       <PullInk ref={inkRef} />
-      <div className="scroll scr" ref={scrollRef}>{children}</div>
+      <div className="scroll scr" ref={scrollRef}>{page}</div>
       {footer}
       {tabbar && <TabBar />}
       <OfflineBadge />

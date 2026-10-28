@@ -6,7 +6,7 @@ import { db } from '../data/store'
 import { useHousehold, useNotes, type Note } from '../data/hooks'
 import { Floating, Screen } from '../components/Shell'
 import { Avatar } from '../components/Avatar'
-import { EmptyState, Hand, Menu, Sheet, Stamp, STAMP_COLORS, Tape, tilt, type TapeKind } from '../components/Scrapbook'
+import { DoodleSpot, EmptyState, Hand, Menu, Sheet, Stamp, STAMP_COLORS, Tape, tilt, type TapeKind } from '../components/Scrapbook'
 import { BackIcon, ChevronDown, CloseIcon, DotsIcon, PlusIcon, SearchIcon } from '../components/Icons'
 import { MyHouseholds } from './MyHouseholds'
 import { ago } from '../lib/time'
@@ -105,7 +105,7 @@ export function NotesScreen() {
   }
 
   return (
-    <Screen tabbar wide={desktop} className="has-fab">
+    <Screen tabbar wide={desktop} className="has-fab" doodle={found.length ? 'stand-right' : undefined}>
       <div style={{ padding: 'calc(var(--top) + 10px) 22px 0 40px', marginRight: panel ? 400 : 0 }}>
         <div className="row" style={{ justifyContent: 'space-between', gap: 10 }}>
           <Hand as="h1" style={{ margin: 0 }}>
@@ -357,6 +357,8 @@ function NoteEditor({ panel, noteId, onClose }: { panel?: boolean; noteId?: stri
             <Comments target={{ note_id: note.id }} />
           </div>
         )}
+        {/* The side panel's empty paper under the comments. */}
+        {panel && <DoodleSpot pose="walk" />}
       </div>
 
       <Sheet small open={moving} onClose={() => setMoving(false)} title={t('notes.moveTitle')}>

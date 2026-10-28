@@ -115,7 +115,7 @@ export function TodosScreen() {
   }
 
   return (
-    <Screen tabbar className="has-fab">
+    <Screen tabbar className="has-fab" doodle={groups.length ? 'walk' : undefined}>
       <div style={{ padding: 'calc(var(--top) + 10px) 22px 0 40px' }}>
         <div className="row" style={{ justifyContent: 'space-between', gap: 10 }}>
           <Hand as="h1" style={{ margin: 0 }}>
