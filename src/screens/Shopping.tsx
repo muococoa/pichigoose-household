@@ -121,7 +121,7 @@ export function ShoppingScreen() {
 
   async function share() {
     if (!list) return
-    const body = [`${list.name}:`, ...toBuy.map((x) => `- ${x.name}${x.note ? ` (${x.note})` : ''}`)].join('\n')
+    const body = [`${list.name}:`, ...toBuy.map((x) => `- ${x.name}`)].join('\n')
     if (navigator.share) {
       try {
         await navigator.share({ title: list.name, text: body })
@@ -160,7 +160,6 @@ export function ShoppingScreen() {
           <CommentCount n={commentsOn(x.id)} />
           {!isBought && (
             <div className="cap" style={desktop ? { fontSize: 13 } : undefined}>
-              {x.note ? `${x.note} · ` : ''}
               {t('shopping.addedBy', { name: who?.display_name ?? t('common.someone'), when: ago(x.created_at, i18n.language) })}
             </div>
           )}
