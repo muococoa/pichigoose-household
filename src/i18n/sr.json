@@ -37,6 +37,8 @@
     "sendLink": "Pošalji mi link",
     "setPassword": "Sačuvaj novu lozinku",
     "errors": {
+      "emailMissing": "Unesi svoj email.",
+      "passwordMissing": "Unesi lozinku.",
       "invalid": "Email i lozinka se ne poklapaju.",
       "taken": "Već postoji nalog sa ovim emailom. Prijavi se.",
       "weak": "Lozinka treba da ima bar 6 znakova.",
@@ -59,6 +61,7 @@
     "namePlaceholder": "Naša kuća",
     "create": "Napravi",
     "firstList": "Namirnice",
+    "addressMissing": "Unesi adresu od tri reči.",
     "notFound": "Nema te adrese. Proveri tri reči."
   },
   "created": {

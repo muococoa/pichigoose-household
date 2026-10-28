@@ -35,6 +35,8 @@
     "sendLink": "Send me a link",
     "setPassword": "Save new password",
     "errors": {
+      "emailMissing": "Add your email.",
+      "passwordMissing": "Add your password.",
       "invalid": "That email and password don't match.",
       "taken": "There's already an account with this email. Log in instead.",
       "weak": "Use at least 6 characters for your password.",
@@ -57,6 +59,7 @@
     "namePlaceholder": "Our home",
     "create": "Create",
     "firstList": "Groceries",
+    "addressMissing": "Add the three-word address.",
     "notFound": "We couldn't find that address. Check the three words."
   },
   "created": {

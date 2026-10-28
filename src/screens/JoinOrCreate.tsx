@@ -7,6 +7,7 @@ import { setCurrentHousehold, useHousehold } from '../data/hooks'
 import { Screen } from '../components/Shell'
 import { Hand, Tape } from '../components/Scrapbook'
 import { BackIcon } from '../components/Icons'
+import { FieldError } from '../components/FieldError'
 
 const PENDING_KEY = 'pichigoose.joinAddress'
 
@@ -61,8 +62,14 @@ export function JoinOrCreateScreen() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
 
+  const [addressErr, setAddressErr] = useState('')
+
   async function join(e: FormEvent) {
     e.preventDefault()
+    if (!address.trim()) {
+      setAddressErr(t('join.addressMissing'))
+      return
+    }
     setBusy(true)
     setError('')
     const { data, error } = await supabase.rpc('join_household', { address, label })
@@ -117,7 +124,7 @@ export function JoinOrCreateScreen() {
             <Radio on={mode === 'join'} />
           </button>
           {mode === 'join' && (
-            <form onSubmit={join} style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 14, position: 'relative', zIndex: 1 }}>
+            <form noValidate onSubmit={join} style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 14, position: 'relative', zIndex: 1 }}>
               <div>
                 <label className="label" htmlFor="label">
                   {t('join.whatCall')}
@@ -131,14 +138,19 @@ export function JoinOrCreateScreen() {
                 <input
                   id="address"
                   className="input"
-                  required
                   autoCapitalize="none"
                   autoCorrect="off"
                   spellCheck={false}
                   placeholder={t('join.addressPlaceholder')}
                   value={address}
-                  onChange={(e) => setAddress(e.target.value)}
+                  aria-invalid={Boolean(addressErr)}
+                  aria-describedby={addressErr ? 'address-err' : undefined}
+                  onChange={(e) => {
+                    setAddress(e.target.value)
+                    setAddressErr('')
+                  }}
                 />
+                {addressErr && <FieldError id="address-err">{addressErr}</FieldError>}
                 <p className="cap" style={{ margin: '8px 0 0' }}>
                   {t('join.orLink')}
                 </p>

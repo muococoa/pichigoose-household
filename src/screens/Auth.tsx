@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase'
 import { Screen } from '../components/Shell'
 import { PichiPolaroid } from '../components/Scrapbook'
 import { LangSwitch } from '../components/LangSwitch'
+import { FieldError } from '../components/FieldError'
 import logo from '../../assets/logo-pichigoose.png'
 
 type Mode = 'signup' | 'login' | 'reset'
@@ -28,9 +29,24 @@ export function AuthScreen({ mode }: { mode: Mode }) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [info, setInfo] = useState('')
+  const [fieldErr, setFieldErr] = useState<{ email?: string; password?: string }>({})
+
+  function check() {
+    const next: { email?: string; password?: string } = {}
+    const mail = email.trim()
+    if (!mail) next.email = t('auth.errors.emailMissing')
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) next.email = t('auth.errors.email')
+    if (mode !== 'reset') {
+      if (!password) next.password = t('auth.errors.passwordMissing')
+      else if (mode === 'signup' && password.length < 6) next.password = t('auth.errors.weak')
+    }
+    setFieldErr(next)
+    return !next.email && !next.password
+  }
 
   async function submit(e: FormEvent) {
     e.preventDefault()
+    if (!check()) return
     setBusy(true)
     setError('')
     setInfo('')
@@ -76,7 +92,7 @@ export function AuthScreen({ mode }: { mode: Mode }) {
           </p>
         </div>
 
-        <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 26 }}>
+        <form noValidate onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 26 }}>
           <div>
             <label className="label" htmlFor="email">
               {t('auth.email')}
@@ -87,11 +103,16 @@ export function AuthScreen({ mode }: { mode: Mode }) {
               type="email"
               autoComplete="email"
               inputMode="email"
-              required
               placeholder={t('auth.emailPlaceholder')}
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              aria-invalid={Boolean(fieldErr.email)}
+              aria-describedby={fieldErr.email ? 'email-err' : undefined}
+              onChange={(e) => {
+                setEmail(e.target.value)
+                setFieldErr((f) => ({ ...f, email: undefined }))
+              }}
             />
+            {fieldErr.email && <FieldError id="email-err">{fieldErr.email}</FieldError>}
           </div>
           {mode !== 'reset' && (
             <div>
@@ -103,12 +124,16 @@ export function AuthScreen({ mode }: { mode: Mode }) {
                 className="input"
                 type="password"
                 autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-                required
-                minLength={6}
                 placeholder="••••••••"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                aria-invalid={Boolean(fieldErr.password)}
+                aria-describedby={fieldErr.password ? 'password-err' : undefined}
+                onChange={(e) => {
+                  setPassword(e.target.value)
+                  setFieldErr((f) => ({ ...f, password: undefined }))
+                }}
               />
+              {fieldErr.password && <FieldError id="password-err">{fieldErr.password}</FieldError>}
             </div>
           )}
           {error && (
@@ -165,6 +190,10 @@ export function NewPasswordScreen() {
 
   async function submit(e: FormEvent) {
     e.preventDefault()
+    if (password.length < 6) {
+      setError(t(password ? 'auth.errors.weak' : 'auth.errors.passwordMissing'))
+      return
+    }
     setBusy(true)
     const { error } = await supabase.auth.updateUser({ password })
     setBusy(false)
@@ -174,7 +203,7 @@ export function NewPasswordScreen() {
 
   return (
     <Screen>
-      <form className="pad top" onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 16, paddingTop: 'calc(var(--top) + 60px)' }}>
+      <form className="pad top" noValidate onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 16, paddingTop: 'calc(var(--top) + 60px)' }}>
         <label className="label" htmlFor="new-password">
           {t('auth.newPassword')}
         </label>
@@ -183,12 +212,15 @@ export function NewPasswordScreen() {
           className="input"
           type="password"
           autoComplete="new-password"
-          minLength={6}
-          required
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? 'new-password-err' : undefined}
+          onChange={(e) => {
+            setPassword(e.target.value)
+            setError('')
+          }}
         />
-        {error && <p className="err">{error}</p>}
+        {error && <FieldError id="new-password-err">{error}</FieldError>}
         <button type="submit" className="stk prim" disabled={busy} style={{ width: '100%' }}>
           {t('auth.setPassword')}
         </button>
