@@ -7,12 +7,13 @@ import { Sheet } from '../components/Scrapbook'
 import { FieldError } from '../components/FieldError'
 
 /** New accounts start with a name made from the email ("Eleonora.Vojnovic"). That one doesn't count. */
-function madeFromEmail(name: string, email: string) {
+export function madeFromEmail(name: string, email: string) {
   return name.trim().toLowerCase() === email.split('@')[0].toLowerCase()
 }
 
-/** "What do we call you?" Asked right before joining a household, so the others see a real name. */
-export function AskName({ open, onClose, onJoin }: { open: boolean; onClose: () => void; onJoin: () => void }) {
+/** "What do we call you?" Asked right before joining a household, so the others see a real name.
+ *  Also asked once on Home for anyone who joined before this existed (button: Save). */
+export function AskName({ open, onClose, onJoin, save }: { open: boolean; onClose: () => void; onJoin: () => void; save?: boolean }) {
   const { t } = useTranslation()
   const me = useMe()
   const email = useAuth().session?.user.email ?? ''
@@ -60,7 +61,7 @@ export function AskName({ open, onClose, onJoin }: { open: boolean; onClose: () 
           {err && <FieldError id="your-name-err">{err}</FieldError>}
         </div>
         <button type="submit" className="stk violet" style={{ width: '100%', transform: 'rotate(-1deg)' }}>
-          {t('join.join')}
+          {save ? t('common.save') : t('join.join')}
         </button>
       </form>
     </Sheet>

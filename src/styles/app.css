@@ -29,6 +29,8 @@ html[data-nav="back"] .screen > .scroll { animation: sheet-in-left .35s cubic-be
 .pad { padding: 0 22px 0 40px }
 .top { padding-top: calc(var(--top) + 8px) }
 .with-tabbar .scroll { padding-bottom: calc(var(--tabbar) + 24px) }
+/* Home: room under the last note so it can scroll up above the round + button. */
+.home.with-tabbar .scroll { padding-bottom: calc(var(--tabbar) + 104px) }
 .tabbar { height: var(--tabbar) }
 
 .row { display: flex; align-items: center }

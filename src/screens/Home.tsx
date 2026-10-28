@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useMe } from '../auth'
+import { useAuth, useMe } from '../auth'
 import {
   DEFAULT_LAYOUT,
   useHousehold,
@@ -20,6 +20,7 @@ import { InkChevron, PencilIcon, PlusIcon } from '../components/Icons'
 import { MyHouseholds } from './MyHouseholds'
 import { PendingInvites } from './Invite'
 import { AddSheet } from './AddSheet'
+import { AskName, madeFromEmail } from './AskName'
 import { ago, daysFromToday, dueLabel, fromDateString } from '../lib/time'
 import { useDesktop } from '../lib/desktop'
 
@@ -72,6 +73,10 @@ export function HomeScreen() {
   const desktop = useDesktop()
   const [switching, setSwitching] = useState(false)
   const [adding, setAdding] = useState(false)
+  // Still called by the name made from the email? Ask once, the same way joining does now.
+  const email = useAuth().session?.user.email ?? ''
+  const [askedName, setAskedName] = useState(false)
+  const needsName = Boolean(profile && email && madeFromEmail(profile.display_name, email))
 
   const person = (id: string | null) => people.find((p) => p.id === id)
 
@@ -283,12 +288,13 @@ export function HomeScreen() {
             {board.map((s) => section(s.section))}
           </div>
         </div>
+        <AskName save open={needsName && !askedName} onClose={() => setAskedName(true)} onJoin={() => {}} />
       </Screen>
     )
   }
 
   return (
-    <Screen tabbar>
+    <Screen tabbar className="home">
       <div style={{ padding: '10px 22px 0 40px', paddingTop: 'calc(var(--top) + 10px)', display: 'flex', flexDirection: 'column', gap: 22 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ minWidth: 0 }}>
@@ -330,6 +336,7 @@ export function HomeScreen() {
 
       <MyHouseholds open={switching} onClose={() => setSwitching(false)} />
       <AddSheet open={adding} onClose={() => setAdding(false)} />
+      <AskName save open={needsName && !askedName} onClose={() => setAskedName(true)} onJoin={() => {}} />
     </Screen>
   )
 }
