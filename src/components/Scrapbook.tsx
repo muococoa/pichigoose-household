@@ -62,11 +62,15 @@ export function Hand({ children, size = 42, lineHeight, color, as: Tag = 'span',
 
 export const STAMP_COLORS = { nora: '#A8335A', claude: '#63586B', locked: '#4E6B39', draft: '#8C5A3C', open: '#3B6FA0' }
 
-export function Stamp({ children, color = STAMP_COLORS.locked, rotate = -3 }: { children: string; color?: string; rotate?: number }) {
+/** A stamp label. `motion` "in" stamps it down hard, "out" fades it away. */
+export function Stamp({ children, color = STAMP_COLORS.locked, rotate = -3, motion }: { children: string; color?: string; rotate?: number; motion?: 'in' | 'out' }) {
   const s = seed(children)
   const pos = `-${s % 260}px -${(s >> 8) % 260}px`
   return (
-    <span className="stamp" style={{ color, transform: `rotate(${rotate}deg)`, WebkitMaskPosition: pos, maskPosition: pos }}>
+    <span
+      className={`stamp${motion ? ` stamp-${motion}` : ''}`}
+      style={{ color, '--r': `${rotate}deg`, transform: 'rotate(var(--r))', WebkitMaskPosition: pos, maskPosition: pos } as CSSProperties}
+    >
       {children}
     </span>
   )
@@ -105,6 +109,34 @@ export function Box({ checked, rotate = 0 }: { checked: boolean; rotate?: number
 
 // How long the pen stroke takes before the row moves (to Bought, or to the bottom).
 const TICK_MS = 300
+
+/**
+ * Tracks which labels (like "This week" or "Done") just appeared or just went away,
+ * so they can stamp in and fade out. Nothing animates on the first render.
+ */
+export function useArrivals(keys: string[]) {
+  const prev = useRef<string[] | null>(null)
+  const [arrived, setArrived] = useState<string[]>([])
+  const [leaving, setLeaving] = useState<string[]>([])
+  const joined = keys.join('|')
+  useEffect(() => {
+    const before = prev.current
+    prev.current = keys
+    if (!before) return
+    const added = keys.filter((k) => !before.includes(k))
+    const removed = before.filter((k) => !keys.includes(k))
+    if (added.length) setArrived(added)
+    if (removed.length) setLeaving(removed)
+    const timer = window.setTimeout(() => {
+      setArrived([])
+      setLeaving([])
+    }, 320)
+    return () => window.clearTimeout(timer)
+    // The joined string says everything about the keys.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [joined])
+  return { arrived, leaving }
+}
 
 /** A tappable checkbox. The check is drawn like a pen mark first, then the change is saved. */
 export function Check({ checked, onChange, label, rotate }: { checked: boolean; onChange: () => void; label: string; rotate?: number }) {

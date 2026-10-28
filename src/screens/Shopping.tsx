@@ -7,7 +7,7 @@ import { useHousehold, useItems, useLists, type Item, type List } from '../data/
 import { recentlyBought, toggleItem } from '../data/actions'
 import { Screen } from '../components/Shell'
 import { Avatar } from '../components/Avatar'
-import { Check, Hand, Struck, PichiStamp, Sheet, Stamp, STAMP_COLORS, showToast, tilt, type TapeKind } from '../components/Scrapbook'
+import { Check, Hand, Struck, useArrivals, PichiStamp, Sheet, Stamp, STAMP_COLORS, showToast, tilt, type TapeKind } from '../components/Scrapbook'
 import { BackIcon, PlusIcon, ShareIcon } from '../components/Icons'
 import { ago } from '../lib/time'
 
@@ -67,6 +67,8 @@ export function ShoppingScreen() {
     () => items.rows.filter((x) => recentlyBought(x)).sort((a, b) => (b.checked_at ?? '').localeCompare(a.checked_at ?? '')),
     [items.rows],
   )
+
+  const { arrived } = useArrivals(bought.length ? ['bought'] : [])
 
   const person = (id: string | null) => people.find((p) => p.id === id)
 
@@ -136,7 +138,7 @@ export function ShoppingScreen() {
   function row(x: Item, isBought: boolean) {
     const who = person(x.added_by)
     return (
-      <div key={x.id} className="ln row-in" style={isBought ? { height: 48, color: '#857A8C' } : { height: 64 }}>
+      <div key={x.id} className={`ln${isBought ? ' row-done' : ''}`} style={{ height: isBought ? 48 : 64 }}>
         <Check checked={isBought} onChange={() => toggleItem(x, me)} label={x.name} rotate={tilt(x.id)} />
         <button
           type="button"
@@ -157,7 +159,7 @@ export function ShoppingScreen() {
         </button>
         {who &&
           (isBought ? (
-            <span style={{ opacity: 0.6, display: 'flex' }}>
+            <span className="av-done" style={{ display: 'flex' }}>
               <Avatar avatar={who.avatar} label={who.display_name} />
             </span>
           ) : (
@@ -267,7 +269,7 @@ export function ShoppingScreen() {
         {bought.length > 0 && (
           <>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '22px 0 4px' }}>
-              <Stamp color={STAMP_COLORS.locked}>{t('shopping.bought')}</Stamp>
+              <Stamp color={STAMP_COLORS.locked} motion={arrived.length ? 'in' : undefined}>{t('shopping.bought')}</Stamp>
               <span className="cap">{t('common.items', { count: bought.length })}</span>
             </div>
             {bought.map((x) => row(x, true))}

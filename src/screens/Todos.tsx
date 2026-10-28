@@ -7,12 +7,13 @@ import { useHousehold, useTodos, type Profile, type Todo } from '../data/hooks'
 import { recentlyDone, toggleTodo } from '../data/actions'
 import { Screen } from '../components/Shell'
 import { Avatar, NobodyAvatar } from '../components/Avatar'
-import { Check, Hand, Struck, Sheet, Stamp, STAMP_COLORS, tilt } from '../components/Scrapbook'
+import { Check, Hand, Struck, useArrivals, Sheet, Stamp, STAMP_COLORS, tilt } from '../components/Scrapbook'
 import { ChevronDown, PlusIcon } from '../components/Icons'
 import { MyHouseholds } from './MyHouseholds'
 import { addDays, capitalize, daysFromToday, dueLabel, fromDateString, toDateString, weekdayName } from '../lib/time'
 
 type Group = 'today' | 'thisWeek' | 'later' | 'noDate' | 'done'
+const ORDER: Group[] = ['today', 'thisWeek', 'later', 'noDate', 'done']
 const GROUP_COLOR: Record<Group, string> = {
   today: STAMP_COLORS.nora,
   thisWeek: STAMP_COLORS.open,
@@ -66,8 +67,7 @@ export function TodosScreen() {
   }, [todos.rows, filter, me])
 
   const groups = useMemo(() => {
-    const order: Group[] = ['today', 'thisWeek', 'later', 'noDate', 'done']
-    return order
+    return ORDER
       .map((g) => ({
         g,
         rows: visible
@@ -76,6 +76,8 @@ export function TodosScreen() {
       }))
       .filter((x) => x.rows.length)
   }, [visible])
+
+  const { arrived, leaving } = useArrivals(groups.map((x) => x.g))
 
   const person = (id: string | null) => people.find((p) => p.id === id)
 
@@ -118,10 +120,25 @@ export function TodosScreen() {
           </div>
         )}
 
-        {groups.map(({ g, rows }) => (
+        {ORDER.filter((g) => leaving.includes(g) || groups.some((x) => x.g === g)).map((g) => {
+          const rows = groups.find((x) => x.g === g)?.rows ?? []
+          if (!rows.length) {
+            // A label that just emptied fades out in place, taking no room, so the label stamped
+            // in after it lands on the same spot and nothing jumps.
+            return (
+              <div key={g} style={{ position: 'relative', height: 0 }} aria-hidden>
+                <div style={{ position: 'absolute', top: 22, left: 0 }}>
+                  <Stamp color={GROUP_COLOR[g]} rotate={g === 'today' ? -3 : 2} motion="out">
+                    {t(`todos.${g}`)}
+                  </Stamp>
+                </div>
+              </div>
+            )
+          }
+          return (
           <section key={g} style={{ marginTop: 22 }}>
             <div style={{ marginBottom: 4 }}>
-              <Stamp color={GROUP_COLOR[g]} rotate={g === 'today' ? -3 : 2}>
+              <Stamp color={GROUP_COLOR[g]} rotate={g === 'today' ? -3 : 2} motion={arrived.includes(g) ? 'in' : undefined}>
                 {t(`todos.${g}`)}
               </Stamp>
             </div>
@@ -129,20 +146,21 @@ export function TodosScreen() {
               const who = person(x.assignee_id)
               const done = Boolean(x.done_at)
               return (
-                <div key={x.id} className="ln row-in" style={{ minHeight: 64, color: done ? '#857A8C' : undefined }}>
+                <div key={x.id} className={`ln${done ? ' row-done' : ''}`} style={{ minHeight: 64 }}>
                   <Check checked={done} onChange={() => toggleTodo(x, me)} label={x.title} rotate={tilt(x.id)} />
                   <button type="button" onClick={() => setEditing(x)} style={{ flex: 1, minWidth: 0, fontSize: 17, padding: '8px 0' }}>
                     <Struck on={done}>{x.title}</Struck>
                     {detail(x) && <div className="cap">{detail(x)}</div>}
                   </button>
-                  <span style={{ opacity: done ? 0.6 : 1, display: 'flex' }}>
+                  <span className={done ? 'av-done' : undefined} style={{ display: 'flex' }}>
                     {who ? <Avatar avatar={who.avatar} label={who.display_name} /> : <NobodyAvatar />}
                   </span>
                 </div>
               )
             })}
           </section>
-        ))}
+          )
+        })}
         {todos.loaded && !groups.length && (
           <p className="body" style={{ marginTop: 28 }}>
             {t('todos.empty')}

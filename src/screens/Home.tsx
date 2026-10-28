@@ -126,7 +126,7 @@ export function HomeScreen() {
             {openTodos.slice(0, 3).map((x) => {
               const who = person(x.assignee_id)
               return (
-                <div key={x.id} className="ln row-in">
+                <div key={x.id} className="ln">
                   <Check checked={false} onChange={() => toggleTodo(x, me)} label={x.title} rotate={tilt(x.id)} />
                   <span style={{ flex: 1, minWidth: 0 }}>
                     {x.title}
@@ -139,13 +139,13 @@ export function HomeScreen() {
             {doneTodos.slice(0, 2).map((x) => {
               const who = person(x.done_by ?? x.assignee_id)
               return (
-                <div key={`done-${x.id}`} className="ln row-in" style={{ color: '#857A8C' }}>
+                <div key={`done-${x.id}`} className="ln row-done">
                   <Check checked onChange={() => toggleTodo(x, me)} label={x.title} rotate={tilt(x.id)} />
                   <span style={{ flex: 1, minWidth: 0 }}>
                     <Struck on>{x.title}</Struck>
                     {x.due_date && <div className="cap">{dueLabel(x.due_date, i18n.language)}</div>}
                   </span>
-                  <span style={{ opacity: 0.6, display: 'flex' }}>{who ? <Avatar avatar={who.avatar} label={who.display_name} /> : <NobodyAvatar />}</span>
+                  <span className="av-done" style={{ display: 'flex' }}>{who ? <Avatar avatar={who.avatar} label={who.display_name} /> : <NobodyAvatar />}</span>
                 </div>
               )
             })}
