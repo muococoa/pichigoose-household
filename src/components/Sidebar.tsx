@@ -1,11 +1,10 @@
 import { useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useHousehold, useMyProfile } from '../data/hooks'
 import { Avatar } from './Avatar'
 import { Hand, Tape } from './Scrapbook'
 import { BasketIcon, ChevronDown, HomeIcon, NoteIcon, PlusIcon, TodoIcon } from './Icons'
-import { MyHouseholds } from '../screens/MyHouseholds'
 import { AddSheet } from '../screens/AddSheet'
 import logo from '../../assets/logo-pichigoose.png'
 
@@ -14,7 +13,7 @@ export function Sidebar() {
   const { t } = useTranslation()
   const profile = useMyProfile()
   const { household, people, name } = useHousehold()
-  const [switching, setSwitching] = useState(false)
+  const navigate = useNavigate()
   const [adding, setAdding] = useState(false)
 
   // Money comes in phase 3 and stays hidden until then.
@@ -31,7 +30,7 @@ export function Sidebar() {
       <Link to="/" style={{ display: 'block' }}>
         <img src={logo} alt="Pichigoose" style={{ width: 150, height: 'auto', display: 'block', margin: '6px 0 0 6px' }} />
       </Link>
-      <button type="button" className="hhbox" onClick={() => setSwitching(true)} aria-label={t('home.switch')}>
+      <button type="button" className="hhbox" onClick={() => navigate('/households')} aria-label={t('home.switch')}>
         <span style={{ display: 'flex', alignItems: 'center', gap: 2, color: '#1E1A30', minWidth: 0 }}>
           <Hand size={34} lineHeight={36}>
             {household ? name(household) : ''}
@@ -64,7 +63,6 @@ export function Sidebar() {
           </span>
         </span>
       </Link>
-      <MyHouseholds open={switching} onClose={() => setSwitching(false)} />
       <AddSheet open={adding} onClose={() => setAdding(false)} />
     </aside>
   )

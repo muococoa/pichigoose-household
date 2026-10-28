@@ -5,13 +5,13 @@ import { useMe } from '../auth'
 import { db } from '../data/store'
 import { setCurrentHousehold, useHousehold, type Household } from '../data/hooks'
 import { Avatar } from '../components/Avatar'
-import { Menu, Sheet } from '../components/Scrapbook'
+import { Hand, Menu, Sheet } from '../components/Scrapbook'
 import { DotsIcon, SmallCheck } from '../components/Icons'
 import { copyText, joinLink } from '../lib/share'
 import { InviteSheet } from './Invite'
 
 /** The sheet that opens from the household name on Home. */
-export function MyHouseholds({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function MyHouseholds({ open, onClose, page }: { open: boolean; onClose: () => void; page?: boolean }) {
   const { t } = useTranslation()
   const me = useMe()
   const navigate = useNavigate()
@@ -24,6 +24,7 @@ export function MyHouseholds({ open, onClose }: { open: boolean; onClose: () => 
   function pick(h: Household) {
     setCurrentHousehold(h.id)
     onClose()
+    if (page) navigate('/')
   }
 
   function rename() {
@@ -45,6 +46,120 @@ export function MyHouseholds({ open, onClose }: { open: boolean; onClose: () => 
   }
 
   const leavingAlone = leaving ? peopleIn(leaving.id).length <= 1 : false
+
+  const sheets = (
+    <>
+
+      <InviteSheet household={inviting} onClose={() => setInviting(null)} />
+
+      <Sheet small open={Boolean(renaming)} onClose={() => setRenaming(null)} title={t('households.renameTitle')}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            rename()
+          }}
+          style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
+        >
+          <input className="input" autoFocus value={label} onChange={(e) => setLabel(e.target.value)} aria-label={t('households.renameTitle')} />
+          <button type="submit" className="stk prim" style={{ width: '100%' }}>
+            {t('common.save')}
+          </button>
+        </form>
+      </Sheet>
+
+      <Sheet small open={Boolean(leaving)} onClose={() => setLeaving(null)} title={leaving ? t('households.leaveTitle', { name: name(leaving) }) : ''}>
+        <p className="body" style={{ margin: '0 0 20px' }}>
+          {leavingAlone ? t('households.leaveLast') : t('households.leaveText')}
+        </p>
+        <div className="row" style={{ gap: 12 }}>
+          <button type="button" className="stk sec" style={{ flex: 1 }} onClick={() => setLeaving(null)}>
+            {t('households.stay')}
+          </button>
+          <button type="button" className="stk prim" style={{ flex: 1 }} onClick={leave}>
+            {t('households.leave')}
+          </button>
+        </div>
+      </Sheet>
+    </>
+  )
+
+  if (page) {
+    // Desktop (D8): the households as cards in a grid, with Join and Create new at the top.
+    return (
+      <>
+        <div style={{ padding: 'var(--top) 22px 32px 40px' }}>
+          <div className="row" style={{ gap: 12 }}>
+            <Hand as="h1" style={{ margin: 0, flex: 'none' }}>
+              {t('households.title')}
+            </Hand>
+            <span style={{ flex: 1 }} />
+            <button type="button" className="stk sec" style={{ transform: 'rotate(-1deg)' }} onClick={() => navigate('/welcome')}>
+              {t('households.join')}
+            </button>
+            <button type="button" className="stk prim" style={{ transform: 'rotate(1deg)' }} onClick={() => navigate('/welcome?mode=create')}>
+              {t('households.createNew')}
+            </button>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 26, marginTop: 30, alignItems: 'start' }}>
+            {households.map((h, i) => {
+              const people = peopleIn(h.id)
+              const isCurrent = h.id === current?.id
+              return (
+                <div
+                  key={h.id}
+                  style={{
+                    position: 'relative',
+                    background: '#FFFFFF',
+                    borderRadius: '10px 16px 12px 14px',
+                    padding: '18px 18px 16px',
+                    transform: `rotate(${i % 2 ? 0.8 : -0.8}deg)`,
+                    boxShadow: isCurrent ? 'inset 0 0 0 2px #1E1A30, 2px 3px 0 rgba(30,26,48,.10)' : '0 0 0 1px rgba(30,26,48,.08), 2px 3px 0 rgba(30,26,48,.08)',
+                  }}
+                >
+                  <div className="row" style={{ gap: 8, alignItems: 'flex-start' }}>
+                    <button type="button" className="grow" onClick={() => pick(h)} style={{ minWidth: 0 }}>
+                      <div style={{ fontSize: 20, lineHeight: '26px', fontWeight: 800, color: '#1E1A30' }}>{name(h)}</div>
+                      <div className="cap" style={{ fontSize: 14, marginTop: 2 }}>
+                        {people.map((p) => p.display_name).join(', ')}
+                      </div>
+                    </button>
+                    {isCurrent && (
+                      <span style={{ color: '#1E1A30', display: 'flex' }} aria-label="✓">
+                        <SmallCheck />
+                      </span>
+                    )}
+                        <Menu
+                          label={t('common.more')}
+                          items={[
+                            {
+                              label: t('households.rename'),
+                              onClick: () => {
+                                setLabel(name(h))
+                                setRenaming(h)
+                              },
+                            },
+                            { label: t('households.invite'), onClick: () => setInviting(h) },
+                            { label: t('households.copyAddress'), onClick: () => copyText(joinLink(h.address), t('common.copied')) },
+                            { label: t('households.leave'), onClick: () => setLeaving(h), danger: true },
+                          ]}
+                        >
+                          <DotsIcon />
+                        </Menu>
+                  </div>
+                  <button type="button" onClick={() => pick(h)} className="row" style={{ marginTop: 14 }} aria-hidden tabIndex={-1}>
+                    {people.slice(0, 5).map((p, k) => (
+                      <Avatar key={p.id} avatar={p.avatar} size={30} style={{ marginLeft: k ? -8 : 0 }} />
+                    ))}
+                  </button>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+        {sheets}
+      </>
+    )
+  }
 
   return (
     <>
@@ -127,37 +242,7 @@ export function MyHouseholds({ open, onClose }: { open: boolean; onClose: () => 
           </button>
         </div>
       </Sheet>
-
-      <InviteSheet household={inviting} onClose={() => setInviting(null)} />
-
-      <Sheet small open={Boolean(renaming)} onClose={() => setRenaming(null)} title={t('households.renameTitle')}>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault()
-            rename()
-          }}
-          style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
-        >
-          <input className="input" autoFocus value={label} onChange={(e) => setLabel(e.target.value)} aria-label={t('households.renameTitle')} />
-          <button type="submit" className="stk prim" style={{ width: '100%' }}>
-            {t('common.save')}
-          </button>
-        </form>
-      </Sheet>
-
-      <Sheet small open={Boolean(leaving)} onClose={() => setLeaving(null)} title={leaving ? t('households.leaveTitle', { name: name(leaving) }) : ''}>
-        <p className="body" style={{ margin: '0 0 20px' }}>
-          {leavingAlone ? t('households.leaveLast') : t('households.leaveText')}
-        </p>
-        <div className="row" style={{ gap: 12 }}>
-          <button type="button" className="stk sec" style={{ flex: 1 }} onClick={() => setLeaving(null)}>
-            {t('households.stay')}
-          </button>
-          <button type="button" className="stk prim" style={{ flex: 1 }} onClick={leave}>
-            {t('households.leave')}
-          </button>
-        </div>
-      </Sheet>
+      {sheets}
     </>
   )
 }
