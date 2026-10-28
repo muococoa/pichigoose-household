@@ -4,7 +4,7 @@ import { NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { BasketIcon, HomeIcon, NoteIcon, TodoIcon } from './Icons'
 import { Stamp, STAMP_COLORS } from './Scrapbook'
-import { useOutboxCount } from '../data/store'
+import { flush, refetchAll, useOutboxCount } from '../data/store'
 import { useDesktop } from '../lib/desktop'
 import { useBounce } from '../lib/bounce'
 import { Sidebar } from './Sidebar'
@@ -19,7 +19,8 @@ export function Screen({ children, tabbar, footer, className = '', wide, center 
   const desktop = useDesktop()
   const framed = useContext(Framed)
   const scrollRef = useRef<HTMLDivElement>(null)
-  useBounce(scrollRef)
+  const inkRef = useRef<HTMLDivElement>(null)
+  useBounce(scrollRef, inkRef, refresh)
   if (desktop && framed) {
     // Desktop: sidebar on the left, the notebook page fills the rest. Screens not laid out
     // for desktop yet keep a comfortable reading width instead of stretching.
@@ -53,6 +54,7 @@ export function Screen({ children, tabbar, footer, className = '', wide, center 
   return (
     <div className={`screen scr ${tabbar ? 'with-tabbar' : ''} ${className}`}>
       <div className="margin" />
+      <PullInk ref={inkRef} />
       <div className="scroll scr" ref={scrollRef}>{children}</div>
       {footer}
       {tabbar && <TabBar />}
@@ -86,6 +88,31 @@ export function TabBar() {
         </NavLink>
       ))}
     </nav>
+  )
+}
+
+/** Pull to refresh: send anything waiting on this phone, then load everything new. */
+async function refresh() {
+  await flush()
+  await refetchAll()
+}
+
+/** The ink circle that draws itself behind the paper while you pull down, and spins while refreshing. */
+function PullInk({ ref }: { ref: React.Ref<HTMLDivElement> }) {
+  return (
+    <div className="pull-ink" ref={ref} aria-hidden>
+      <svg viewBox="0 0 46 38" width="40" height="34">
+        <path
+          d="M30.5 4.2C21 1.6 7.6 4.6 4.3 14.2 1.4 23 9.6 33.4 22.6 33.9 35.2 34.4 43 26.4 41.6 17.2 40.4 9.6 32.6 4.6 23.2 4.4 19.6 4.3 16.4 5.2 14.2 6.4"
+          pathLength={1}
+          fill="none"
+          stroke="#A8335A"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </div>
   )
 }
 

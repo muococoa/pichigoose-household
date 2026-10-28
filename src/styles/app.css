@@ -25,6 +25,13 @@ html[data-nav="back"] .screen > .scroll { animation: sheet-in-left .35s cubic-be
 @keyframes sheet-in-right { from { transform: translateX(28%); opacity: .4; box-shadow: -10px 0 24px rgba(30, 26, 48, .12) } }
 @keyframes sheet-in-left { from { transform: translateX(-28%); opacity: .4; box-shadow: 10px 0 24px rgba(30, 26, 48, .12) } }
 
+/* Pull to refresh: the ink circle waits behind the top of the paper. */
+.pull-ink { position: absolute; top: calc(var(--top) + 6px); left: 50%; margin-left: -20px; z-index: 1; opacity: 0; pointer-events: none; filter: url(#dry-ink); --drawn: 1 }
+.pull-ink svg { display: block; overflow: visible }
+.pull-ink path { stroke-dasharray: 1; stroke-dashoffset: var(--drawn) }
+.pull-ink.spinning svg { animation: ink-spin .7s linear infinite }
+@keyframes ink-spin { to { transform: rotate(360deg) } }
+
 /* A full-height screen of notebook paper. */
 .screen { min-height: 100dvh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden }
 .screen > .scroll { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; overscroll-behavior: none; position: relative; z-index: 2 }

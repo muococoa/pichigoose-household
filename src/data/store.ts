@@ -249,8 +249,8 @@ function refetchTable(table: string) {
   for (const def of defs.values()) if (def.table === table) void refetch(def)
 }
 
-export function refetchAll() {
-  for (const def of defs.values()) void refetch(def)
+export function refetchAll(): Promise<void> {
+  return Promise.all([...defs.values()].map((def) => refetch(def))).then(() => undefined)
 }
 
 // ---------------------------------------------------------------------------
