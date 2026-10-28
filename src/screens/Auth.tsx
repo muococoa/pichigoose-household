@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
@@ -30,6 +30,14 @@ export function AuthScreen({ mode }: { mode: Mode }) {
   const [error, setError] = useState('')
   const [info, setInfo] = useState('')
   const [fieldErr, setFieldErr] = useState<{ email?: string; password?: string }>({})
+
+  // Switching between Log in, Create account and Forgot password keeps what you typed,
+  // but clears the messages until you press the button again.
+  useEffect(() => {
+    setFieldErr({})
+    setError('')
+    setInfo('')
+  }, [mode])
 
   function check() {
     const next: { email?: string; password?: string } = {}
