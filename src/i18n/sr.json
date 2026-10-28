@@ -135,7 +135,13 @@
     "addTodo": "Zadatak",
     "addNote": "Belešku",
     "addSomeone": "Dodaj nekoga u domaćinstvo",
-    "newsCommented": "{{name}}: novi komentar na {{item}}."
+    "newsCommented": "{{name}}: novi komentar na {{item}}.",
+    "pantry": "ostava",
+    "pantryLow_one": "{{count}} pri kraju",
+    "pantryLow_few": "{{count}} pri kraju",
+    "pantryLow_other": "{{count}} pri kraju",
+    "noPantry": "Još ništa na policama.",
+    "newsPichi": "Stavila sam {{item}} na spisak. Skoro je nestalo!"
   },
   "arrange": {
     "title": "Složi svoju početnu",
@@ -170,7 +176,9 @@
     "itemNote": "Napomena",
     "itemNotePlaceholder": "veliko pakovanje",
     "shareTitle": "{{name}}",
-    "emptyAbove": "Lista je još prazna. Dodaj prvu stvar iznad."
+    "emptyAbove": "Lista je još prazna. Dodaj prvu stvar iznad.",
+    "pichiPeeked": "Pichi je provirila: ostalo još {{level}}% · {{when}}",
+    "pichiNoticed": "Pichi je primetila da je skoro nestalo · {{when}}"
   },
   "todos": {
     "title": "Zadaci",
@@ -325,5 +333,43 @@
     "itemsBought": "Kupljeno",
     "notesWritten": "Napisane beleške",
     "comments": "Komentari"
+  },
+  "pantry": {
+    "pantry": "Ostava",
+    "bathroom": "Kupatilski ormarić",
+    "percent": "{{n}}%",
+    "almostOut": "skoro nestalo",
+    "empty": "Prazne police. Dodaj šta držiš kod kuće, a Pichi će paziti na to.",
+    "emptyBathroom": "Još ništa. Dodaj sapun, šampon, sredstva za čišćenje, a Pichi će paziti na njih.",
+    "add": "Dodaj na policu",
+    "addButton": "Stavi na policu",
+    "name": "Šta je to?",
+    "namePlaceholder": "Ovsene pahuljice",
+    "namePlaceholderBathroom": "Šampon",
+    "looksLike": "Izgleda kao",
+    "howFull": "Koliko je puno?",
+    "lowAt": "Pichi ga stavlja na spisak na",
+    "goesOn": "Ide na",
+    "drag": "Koliko je puno. Prevuci gore ili dole.",
+    "dragHint": "prevuci da promeniš",
+    "removed": "{{name}} je skinuto sa police.",
+    "pichiAdded": "Pichi je stavila {{item}} na {{list}}.",
+    "steps": {
+      "full": "Puno",
+      "half": "Pola",
+      "low": "Skoro nestalo",
+      "empty": "Prazno"
+    },
+    "containers": {
+      "jar": "Tegla",
+      "bottle": "Flaša",
+      "box": "Kutija",
+      "bag": "Kesa",
+      "can": "Konzerva",
+      "carton": "Tetrapak",
+      "tube": "Tuba",
+      "pump": "Pumpica",
+      "spray": "Sprej"
+    }
   }
 }

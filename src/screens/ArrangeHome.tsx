@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
 import { db } from '../data/store'
-import { DEFAULT_LAYOUT, useHousehold, type LayoutEntry, type Section } from '../data/hooks'
+import { DEFAULT_LAYOUT, completeLayout, useHousehold, type LayoutEntry, type Section } from '../data/hooks'
 import { Screen } from '../components/Shell'
 import { Box, Hand, Tape, type TapeKind } from '../components/Scrapbook'
 import { GripIcon } from '../components/Icons'
@@ -13,6 +13,7 @@ const LOOK: Record<Section, { note: string; tape: TapeKind; rotate: number; labe
   news: { note: 'n-lilac', tape: 'ttri', rotate: -0.8, label: 'home.news' },
   todos: { note: 'n-blush', tape: 'tdots', rotate: -0.4, label: 'home.todos' },
   shopping: { note: 'n-butter', tape: 'tm', rotate: 0.8, label: 'home.toBuy' },
+  pantry: { note: 'n-sand', tape: 'ty', rotate: -0.6, label: 'home.pantry' },
   money: { note: 'n-mist', tape: 'tblocks', rotate: -0.5, label: 'home.money' },
   notes: { note: 'n-sage', tape: 'tcheck', rotate: 0.6, label: 'home.notes' },
 }
@@ -21,8 +22,7 @@ const LOOK: Record<Section, { note: string; tape: TapeKind; rotate: number; labe
 const LIFT = 'rotate(-3deg) translate(8px,-2px)'
 
 function complete(saved: LayoutEntry[] | undefined) {
-  const base = saved?.length ? saved : DEFAULT_LAYOUT
-  return [...base, ...DEFAULT_LAYOUT.filter((d) => !base.some((s) => s.section === d.section))]
+  return completeLayout(saved)
 }
 
 export function ArrangeHomeScreen() {

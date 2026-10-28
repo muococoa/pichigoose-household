@@ -15,7 +15,7 @@ export type Profile = Row & {
 
 export type Household = Row & { name: string; address: string; secret: string; kind: 'home' | 'event'; created_at: string }
 
-export type Section = 'news' | 'shopping' | 'todos' | 'money' | 'notes'
+export type Section = 'news' | 'shopping' | 'pantry' | 'todos' | 'money' | 'notes'
 export type LayoutEntry = { section: Section; visible: boolean }
 
 export type Member = Row & {
@@ -37,6 +37,28 @@ export type Item = Row & {
   checked_by: string | null
   checked_at: string | null
   position: number
+  /** The pantry thing this is for. Buying it fills it up again. */
+  pantry_item_id?: string | null
+  /** Pichi put it on the list because it was running low. */
+  added_by_pichi?: boolean
+}
+
+export type Place = 'pantry' | 'bathroom'
+export type Container = 'jar' | 'bottle' | 'box' | 'bag' | 'can' | 'carton' | 'tube' | 'pump' | 'spray'
+
+export type PantryItem = Row & {
+  household_id: string
+  place: Place
+  name: string
+  container: Container
+  level: number
+  low_at: number
+  list_id: string | null
+  position: number
+  created_by: string | null
+  created_at: string
+  updated_by: string | null
+  updated_at: string
 }
 
 export type Todo = Row & {
@@ -155,6 +177,21 @@ export function useItemsIn(listIds: string[]) {
           belongs: (r) => ids.includes(r.list_id as string),
           load: () => supabase.from('list_items').select('*').in('list_id', ids),
           realtime: `list_id=in.(${key})`,
+        }
+      : null,
+  )
+}
+
+/** What's on the shelves: the pantry and the bathroom cabinet. */
+export function usePantry(householdId: string | null) {
+  return useCollection<PantryItem>(
+    householdId
+      ? {
+          key: `pantry:${householdId}`,
+          table: 'pantry_items',
+          belongs: (r) => r.household_id === householdId,
+          load: () => supabase.from('pantry_items').select('*').eq('household_id', householdId),
+          realtime: `household_id=eq.${householdId}`,
         }
       : null,
   )
@@ -303,9 +340,23 @@ export function useHousehold() {
   }, [me, saved, households.rows, households.loaded, members.rows, members.loaded, profiles.rows])
 }
 
+/** Someone's own home order, with any section that's new since they arranged it (like the pantry)
+ *  slotted in where it sits by default, right after the section it follows. */
+export function completeLayout(saved: LayoutEntry[] | undefined | null): LayoutEntry[] {
+  if (!saved?.length) return DEFAULT_LAYOUT
+  const out = [...saved]
+  DEFAULT_LAYOUT.forEach((d, i) => {
+    if (out.some((s) => s.section === d.section)) return
+    const before = i > 0 ? out.findIndex((s) => s.section === DEFAULT_LAYOUT[i - 1].section) : -1
+    out.splice(before + 1, 0, d)
+  })
+  return out
+}
+
 export const DEFAULT_LAYOUT: LayoutEntry[] = [
   { section: 'news', visible: true },
   { section: 'shopping', visible: true },
+  { section: 'pantry', visible: true },
   { section: 'todos', visible: true },
   { section: 'money', visible: true },
   { section: 'notes', visible: true },

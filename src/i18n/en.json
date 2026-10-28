@@ -131,7 +131,12 @@
     "addTodo": "A to-do",
     "addNote": "A note",
     "addSomeone": "Add someone to the household",
-    "newsCommented": "{{name}} commented on {{item}}."
+    "newsCommented": "{{name}} commented on {{item}}.",
+    "pantry": "pantry",
+    "pantryLow_one": "{{count}} running low",
+    "pantryLow_other": "{{count}} running low",
+    "noPantry": "Nothing on the shelves yet.",
+    "newsPichi": "I put {{item}} on the list. It's almost out!"
   },
   "arrange": {
     "title": "Arrange your home",
@@ -166,7 +171,9 @@
     "itemNote": "Note",
     "itemNotePlaceholder": "the big bag",
     "shareTitle": "{{name}}",
-    "emptyAbove": "Nothing on the list yet. Add the first thing above."
+    "emptyAbove": "Nothing on the list yet. Add the first thing above.",
+    "pichiPeeked": "Pichi peeked: only {{level}}% left · {{when}}",
+    "pichiNoticed": "Pichi noticed it's almost out · {{when}}"
   },
   "todos": {
     "title": "To-dos",
@@ -319,5 +326,43 @@
     "itemsBought": "Bought",
     "notesWritten": "Notes written",
     "comments": "Comments"
+  },
+  "pantry": {
+    "pantry": "Pantry",
+    "bathroom": "Bathroom cabinet",
+    "percent": "{{n}}%",
+    "almostOut": "almost out",
+    "empty": "Empty shelves. Add what you keep at home, and Pichi will keep an eye on it.",
+    "emptyBathroom": "Nothing here yet. Add soap, shampoo, cleaning things, and Pichi will keep an eye on them.",
+    "add": "Add to the shelf",
+    "addButton": "Put it on the shelf",
+    "name": "What is it?",
+    "namePlaceholder": "Oats",
+    "namePlaceholderBathroom": "Shampoo",
+    "looksLike": "Looks like",
+    "howFull": "How full is it?",
+    "lowAt": "Pichi adds it to the list at",
+    "goesOn": "Goes on",
+    "drag": "How full it is. Drag up or down.",
+    "dragHint": "drag to change",
+    "removed": "{{name}} is off the shelf.",
+    "pichiAdded": "Pichi put {{item}} on {{list}}.",
+    "steps": {
+      "full": "Full",
+      "half": "Half",
+      "low": "Almost out",
+      "empty": "Empty"
+    },
+    "containers": {
+      "jar": "Jar",
+      "bottle": "Bottle",
+      "box": "Box",
+      "bag": "Bag",
+      "can": "Can",
+      "carton": "Carton",
+      "tube": "Tube",
+      "pump": "Pump",
+      "spray": "Spray"
+    }
   }
 }

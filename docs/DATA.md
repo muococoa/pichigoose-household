@@ -16,7 +16,8 @@ Labels used below:
 profiles ──< household_members >── households ──< lists ──< list_items
                                         │
                                         ├──< todos
-                                        └──< notes
+                                        ├──< notes
+                                        └──< pantry_items
 
 profiles ──< money_people ──< money_entries        (money is personal, not per household)
 profiles ──< notifications
@@ -110,6 +111,9 @@ The things to buy (S1, S2, S3).
 | checked_at | timestamptz, nullable | when set, the item moves to "Bought" |
 | position | int | order on the list |
 
+| pantry_item_id | uuid, nullable | the pantry thing it's for. Buying it fills that thing up to 100% again (K5) [Claude] |
+| added_by_pichi | boolean | `true` when Pichi put it on the list because it ran low (K4). Shown with Pichi's face and "Pichi peeked: only 20% left" [Nora] |
+
 - Bought items stay visible under "Bought" so people can undo, then disappear after a while [Claude: after 24 hours].
 - Realtime is on for this table, so a list updates live while someone is in the store (X2).
 
@@ -159,6 +163,27 @@ A short conversation under a shopping item, to-do or note [Nora]. Flat, like a c
 
 Everyone in the household can read and write comments; people can delete only their own. Live updates on.
 
+### pantry_items
+What's on the shelves (K1 to K6) [Nora]: the pantry, and the bathroom cabinet.
+
+| column | type | notes |
+|---|---|---|
+| id | uuid, primary key | |
+| household_id | uuid, references households | |
+| place | text | `'pantry'` or `'bathroom'` (the bathroom cabinet) |
+| name | text | "Oats", 1 to 80 characters |
+| container | text | which drawing it gets: `jar`, `bottle`, `box`, `bag`, `can`, `carton`, `tube`, `pump`, `spray`. The app guesses it from the name [Claude] |
+| level | smallint | how full, 0 to 100 |
+| low_at | smallint | at or below this, Pichi puts it on the shopping list. Default 20 [Claude] |
+| list_id | uuid, nullable | the list Pichi puts it on. Empty: the household's first list [Claude] |
+| position | int | order on the shelves; the app fills each shelf left to right |
+| created_by, updated_by | uuid | |
+| created_at, updated_at | timestamptz | |
+
+- Everyone in the household can read and change everything. Live updates on.
+- When someone lowers the level to `low_at` or below, the app adds a list item with `added_by_pichi = true`, unless one for it is already on the list. Undo removes it [Claude].
+- Deleting a pantry thing keeps its list items; they just lose the link.
+
 ### messages
 Chat, like WhatsApp [Nora]: each household has one group chat for everyone, and each pair of people in it has a private chat.
 
@@ -174,7 +199,7 @@ Chat, like WhatsApp [Nora]: each household has one group chat for everyone, and 
 Group messages: everyone in the household reads them. Private ones: only the two people. You can delete your own. Live updates on.
 
 ### chat_reads
-Where each person stopped reading each chat, for the unread counts. Only you see your own.
+Where each person stopped reading each chat, for the unread counts and the read ticks. Everyone in the household sees the read marks (for the two ticks); only you can set your own.
 
 | column | type | notes |
 |---|---|---|

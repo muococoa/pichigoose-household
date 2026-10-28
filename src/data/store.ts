@@ -326,7 +326,14 @@ function subscribe(listener: () => void) {
 const EMPTY: Row[] = []
 
 export function useCollection<T extends Row = Row>(def: CollectionDef | null): { rows: T[]; loaded: boolean } {
-  if (def) defs.set(def.key, def)
+  if (def) {
+    // Seen for the first time this visit: changes made elsewhere while offline (like Pichi putting
+    // oats on the list from the pantry) show up here right away, not only once there's signal.
+    const cached = !defs.has(def.key) ? state.cache[def.key] : undefined
+    defs.set(def.key, def)
+    const pending = cached ? pendingFor(def.table) : []
+    if (cached && pending.length) setRows(def.key, pending.reduce((rows, op) => applyOp(rows, op, def), cached))
+  }
   const rows = useSyncExternalStore(subscribe, () => (def ? state.cache[def.key] : undefined))
   const key = def?.key
   useEffect(() => {

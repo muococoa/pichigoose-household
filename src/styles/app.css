@@ -324,3 +324,27 @@ html[data-kb="open"] .chat-screen .composer { padding-bottom: 10px }
 /* Profile: what someone has done in the household, as little sticky notes. */
 .person-stats { align-self: stretch; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 18px; margin-top: 30px }
 .person-stats .note { padding: 14px 16px 14px; text-align: left }
+
+/* ---------------------------------------------------------------------------
+   The pantry: drawn shelves with jars, bottles and boxes standing on them, a paper label under each.
+   --------------------------------------------------------------------------- */
+.shelf { position: relative; margin-bottom: 18px }
+.shelf-board { position: absolute; left: -6px; right: -6px; top: calc(var(--thing) - 3px); width: calc(100% + 12px); height: 14px; pointer-events: none }
+.shelf-row { display: grid; column-gap: 6px }
+.shelf-thing { display: flex; flex-direction: column; align-items: center; min-width: 0; background: none; border: 0; padding: 0; color: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent }
+.shelf-thing .thing { height: var(--thing); display: flex; align-items: flex-end; justify-content: center; transition: transform .25s var(--ease-out) }
+.shelf-thing:active .thing { transform: translateY(-3px) rotate(-2deg) }
+@media (hover: hover) { .shelf-thing:hover .thing { transform: translateY(-3px) rotate(-2deg) } }
+/* The label: a small white paper tag, a little crooked, with the name in handwriting. */
+.shelf-label {
+  margin-top: 16px; max-width: 100%; padding: 1px 7px 2px; background: #FFFFFF; border-radius: 2px; box-shadow: 1px 1px 0 rgba(30, 26, 48, .12);
+  font: 700 19px/21px Caveat, cursive; color: #2E2638; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.shelf-label.low { color: var(--hero-dark) }
+.shelf-pct { font: 600 11px/14px Nunito, sans-serif; color: #857A8C; margin-top: 3px }
+.shelf-pct.low { color: var(--hero-dark); font-weight: 800 }
+.thing-pick { display: grid; grid-template-columns: repeat(auto-fill, minmax(58px, 1fr)); gap: 6px }
+.thing-pick button { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 2px 6px; border-radius: 10px 12px 10px 14px; font-size: 12px; font-weight: 700; color: #63586B }
+.thing-pick button[aria-pressed="true"] { background: #FFFFFF; color: #1E1A30; box-shadow: 0 0 0 2px var(--hero), 1px 2px 0 rgba(30, 26, 48, .1) }
+.chips { display: flex; flex-wrap: wrap; gap: 8px }
+.level-drag { touch-action: none; cursor: ns-resize; display: flex; justify-content: center; user-select: none; -webkit-user-select: none }

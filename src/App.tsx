@@ -14,6 +14,7 @@ import { HouseholdCreatedScreen } from './screens/HouseholdCreated'
 import { HomeScreen } from './screens/Home'
 import { ArrangeHomeScreen } from './screens/ArrangeHome'
 import { ShoppingScreen } from './screens/Shopping'
+import { PantryScreen } from './screens/Pantry'
 import { TodosScreen } from './screens/Todos'
 import { NoteScreen, NotesScreen } from './screens/Notes'
 import { ProfileScreen, SettingsScreen } from './screens/Profile'
@@ -128,6 +129,7 @@ export default function App() {
           <Route path="/" element={<Inside><HomeScreen /></Inside>} />
           <Route path="/arrange" element={<Inside><ArrangeHomeScreen /></Inside>} />
           <Route path="/shopping" element={<Inside><ShoppingScreen /></Inside>} />
+          <Route path="/pantry" element={<Inside><PantryScreen /></Inside>} />
           <Route path="/todos" element={<Inside><TodosScreen /></Inside>} />
           <Route path="/notes" element={<Inside><NotesScreen /></Inside>} />
           <Route path="/messages" element={<Inside><MessagesScreen /></Inside>} />

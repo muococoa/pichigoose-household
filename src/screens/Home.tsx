@@ -3,20 +3,21 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth, useMe } from '../auth'
 import {
-  DEFAULT_LAYOUT,
+  completeLayout,
   useHousehold,
   useItemsIn,
   useLists,
   useComments,
   useMyProfile,
   useNotes,
+  usePantry,
   useTodos,
   type Section,
 } from '../data/hooks'
 import { recentlyDone, toggleItem, toggleTodo } from '../data/actions'
 import { Floating, Screen } from '../components/Shell'
 import { Avatar, NobodyAvatar } from '../components/Avatar'
-import { Check, Hand, PaperClip, Struck, Tick, PichiStamp, Tape, tilt, type TapeKind } from '../components/Scrapbook'
+import { Check, Hand, PaperClip, PichiAvatar, Struck, Tick, PichiStamp, Tape, tilt, type TapeKind } from '../components/Scrapbook'
 import { InkChevron, PencilIcon, PlusIcon } from '../components/Icons'
 import { MyHouseholds } from './MyHouseholds'
 import { PendingInvites } from './Invite'
@@ -29,6 +30,7 @@ import { useDesktop } from '../lib/desktop'
 import { DragBoard } from '../components/DragBoard'
 import { CommentCount, useCommentCounts } from '../components/Comments'
 import { db } from '../data/store'
+import { ContainerDrawing, Shelf } from '../components/Containers'
 
 // Desktop: the small notes inside the notes section, each a little tilted and held with a paper clip on the left edge
 // (the bottom right corner is for the comment bubble).
@@ -39,6 +41,7 @@ const LOOK: Record<Section, { note: string; tape: TapeKind; tapeStyle: React.CSS
   news: { note: 'n-lilac', tape: 'ttri', tapeStyle: {}, rotate: 0 },
   todos: { note: 'n-blush', tape: 'tdots', tapeStyle: { top: -10, left: 28, transform: 'rotate(-4deg)' }, rotate: -1 },
   shopping: { note: 'n-butter', tape: 'tm', tapeStyle: { top: -10, right: 34, transform: 'rotate(5deg)' }, rotate: 1 },
+  pantry: { note: 'n-sand', tape: 'ty', tapeStyle: { top: -10, left: 36, transform: 'rotate(-3deg)' }, rotate: -0.8 },
   money: { note: 'n-mist', tape: 'tblocks', tapeStyle: { top: -10, left: '40%', transform: 'rotate(-2deg)' }, rotate: -0.6 },
   notes: { note: 'n-sage', tape: 'tcheck', tapeStyle: { top: -10, left: '30%', transform: 'rotate(3deg)' }, rotate: 0.6 },
 }
@@ -74,6 +77,7 @@ export function HomeScreen() {
   const manyLists = lists.rows.length > 1
   const todos = useTodos(hid)
   const notes = useNotes(hid)
+  const pantry = usePantry(hid)
   const desktop = useDesktop()
   const [switching, setSwitching] = useState(false)
   // Desktop: a note opened from the board, in the side panel.
@@ -108,6 +112,9 @@ export function HomeScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [items.rows, lists.rows],
   )
+  // The pantry note shows what's running out first, from the pantry and the bathroom cabinet.
+  const shelf = useMemo(() => [...pantry.rows].sort((a, b) => a.level - a.low_at - (b.level - b.low_at) || a.name.localeCompare(b.name)), [pantry.rows])
+  const lowCount = pantry.rows.filter((p) => p.level <= p.low_at).length
   const pinnedNotes = useMemo(
     () => [...notes.rows].sort((a, b) => Number(b.pinned) - Number(a.pinned) || b.updated_at.localeCompare(a.updated_at)),
     [notes.rows],
@@ -116,7 +123,7 @@ export function HomeScreen() {
   // Pichi's news. Real notifications arrive in phase 4. Until then she tells you what's new on the list.
   const news = useMemo(() => {
     const fresh = (iso: string) => Date.now() - new Date(iso).getTime() < 2 * 86400000
-    const recent = toBuy.find((x) => x.added_by && x.added_by !== me && fresh(x.created_at))
+    const recent = toBuy.find((x) => x.added_by && x.added_by !== me && !x.added_by_pichi && fresh(x.created_at))
     // Someone commented on something: "Danko commented on šipka za kuhinju."
     const comment = [...comments.rows].reverse().find((c) => c.author_id && c.author_id !== me && fresh(c.created_at))
     if (comment && (!recent || comment.created_at > recent.created_at)) {
@@ -126,6 +133,9 @@ export function HomeScreen() {
         notes.rows.find((x) => x.id === comment.note_id)?.title
       if (thing) return t('home.newsCommented', { name: person(comment.author_id)?.display_name ?? t('common.someone'), item: thing })
     }
+    // Pichi put something on the list herself: she tells you about it.
+    const pichi = toBuy.find((x) => x.added_by_pichi && fresh(x.created_at))
+    if (pichi && (!recent || pichi.created_at > recent.created_at)) return t('home.newsPichi', { item: pichi.name })
     if (recent) return t('home.newsAdded', { name: person(recent.added_by)?.display_name ?? t('common.someone'), item: recent.name })
     const mineToday = openTodos.filter((x) => x.assignee_id === me && x.due_date && daysFromToday(fromDateString(x.due_date)) <= 0).length
     if (mineToday) return t('home.newsTodos', { count: mineToday })
@@ -134,8 +144,7 @@ export function HomeScreen() {
   }, [toBuy, openTodos, me, people, i18n.language, comments.rows])
 
   const fullLayout = useMemo(() => {
-    const saved = membership?.home_layout?.length ? membership.home_layout : DEFAULT_LAYOUT
-    return [...saved, ...DEFAULT_LAYOUT.filter((d) => !saved.some((s) => s.section === d.section))]
+    return completeLayout(membership?.home_layout)
   }, [membership])
   const layout = useMemo(() => fullLayout.filter((s) => s.visible && s.section !== 'money'), [fullLayout])
 
@@ -259,7 +268,11 @@ export function HomeScreen() {
                         {/* Which list it's on, when there's more than one. */}
                         {manyLists && <div className="cap">{listName(x.list_id)}</div>}
                       </span>
-                      {who && (
+                      {x.added_by_pichi ? (
+                        <span className={`av-fade${on ? ' done' : ''}`}>
+                          <PichiAvatar />
+                        </span>
+                      ) : who && (
                         <span className={`av-fade${on ? ' done' : ''}`}>
                           <PersonLink id={who.id}><Avatar avatar={who.avatar} label={who.display_name} /></PersonLink>
                         </span>
@@ -271,6 +284,37 @@ export function HomeScreen() {
             })}
             {!toBuy.length && <Empty>{t('home.noItems')}</Empty>}
           </div>
+        </div>
+      )
+    }
+    if (s === 'pantry') {
+      const per = desktop ? 5 : 4
+      return (
+        <div key="pantry" className={`note ${look.note} note-link`} onClick={open('/pantry')} style={{ transform: `rotate(${look.rotate}deg)` }}>
+          <Tape kind={look.tape} style={look.tapeStyle} />
+          <NoteHead
+            title={t('home.pantry')}
+            to="/pantry"
+            right={lowCount ? `${t('home.pantryLow', { count: lowCount })} · ${t('common.seeAll')}` : t('common.seeAll')}
+          />
+          {shelf.length ? (
+            <div style={{ padding: '10px 6px 0' }}>
+              <Shelf columns={per} height={56}>
+                {shelf.slice(0, per).map((p) => (
+                  <Link key={p.id} to={p.place === 'bathroom' ? '/pantry?place=bathroom' : '/pantry'} className="shelf-thing" aria-label={`${p.name}, ${t('pantry.percent', { n: p.level })}`}>
+                    <span className="thing">
+                      <ContainerDrawing kind={p.container} level={p.level} lowAt={p.low_at} height={56} />
+                    </span>
+                    <span className={`shelf-label${p.level <= p.low_at ? ' low' : ''}`} style={{ fontSize: 17, lineHeight: '19px', marginTop: 14 }}>
+                      {p.name}
+                    </span>
+                  </Link>
+                ))}
+              </Shelf>
+            </div>
+          ) : (
+            <Empty>{t('home.noPantry')}</Empty>
+          )}
         </div>
       )
     }

@@ -273,6 +273,27 @@ export function PoseStamp({
   )
 }
 
+/** Pichi as a small round avatar, for the things she does herself (like putting oats on the list).
+ *  Her painting, cropped to her head, never redrawn. */
+export function PichiAvatar({ size = 34 }: { size?: number }) {
+  return (
+    <span
+      role="img"
+      aria-label="Pichi"
+      className="av"
+      style={{
+        width: size,
+        height: size,
+        backgroundColor: '#F8E6A8',
+        backgroundImage: `url(${POSES.walk})`,
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: '300% auto',
+        backgroundPosition: '57% 1%',
+      }}
+    />
+  )
+}
+
 /** An empty page: Pichi big in her stamp, centered, with the message under it. The stamp grows,
  *  but its frame (wavy edge, white border, ink line) stays the same thickness at any size. */
 export function EmptyState({ pose, color, zoom = 1, focus = '50% 45%', rotate = -3, children }: { pose: Pose; color: string; zoom?: number; focus?: string; rotate?: number; children: ReactNode }) {

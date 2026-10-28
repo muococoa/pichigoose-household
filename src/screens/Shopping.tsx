@@ -3,11 +3,11 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
 import { db } from '../data/store'
-import { useHousehold, useItems, useLists, type Item, type List } from '../data/hooks'
+import { useHousehold, useItems, useLists, usePantry, type Item, type List } from '../data/hooks'
 import { recentlyBought, toggleItem } from '../data/actions'
 import { Floating, Screen } from '../components/Shell'
 import { Avatar } from '../components/Avatar'
-import { Check, Hand, Struck, Tick, useArrivals, EmptyState, Sheet, Stamp, STAMP_COLORS, showToast, tilt, type TapeKind } from '../components/Scrapbook'
+import { Check, Hand, PichiAvatar, Struck, Tick, useArrivals, EmptyState, Sheet, Stamp, STAMP_COLORS, showToast, tilt, type TapeKind } from '../components/Scrapbook'
 import { BackIcon, PlusIcon, ShareIcon } from '../components/Icons'
 import { ago } from '../lib/time'
 import { DndContext, MouseSensor, TouchSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core'
@@ -77,6 +77,8 @@ export function ShoppingScreen() {
   const { arrived } = useArrivals(bought.length ? ['bought'] : [])
 
   const person = (id: string | null) => people.find((p) => p.id === id)
+  // For the things Pichi put on the list: how much is left of them.
+  const pantry = usePantry(hid)
   const commentsOn = useCommentCounts()
 
   function pick(l: List) {
@@ -150,6 +152,13 @@ export function ShoppingScreen() {
     }
   }
 
+  // "Pichi peeked: only 10% left", with how full it is right now.
+  function pichiLine(x: Item) {
+    const when = ago(x.created_at, i18n.language)
+    const thing = pantry.rows.find((p) => p.id === x.pantry_item_id)
+    return thing ? t('shopping.pichiPeeked', { level: thing.level, when }) : t('shopping.pichiNoticed', { when })
+  }
+
   function row(x: Item, isBought: boolean) {
     const who = person(x.added_by)
     return (
@@ -172,11 +181,15 @@ export function ShoppingScreen() {
           <CommentCount n={commentsOn(x.id)} />
           {!isBought && (
             <div className="cap" style={desktop ? { fontSize: 13 } : undefined}>
-              {t('shopping.addedBy', { name: who?.display_name ?? t('common.someone'), when: ago(x.created_at, i18n.language) })}
+              {x.added_by_pichi ? pichiLine(x) : t('shopping.addedBy', { name: who?.display_name ?? t('common.someone'), when: ago(x.created_at, i18n.language) })}
             </div>
           )}
         </button>
-        {who && (
+        {x.added_by_pichi ? (
+          <span className={`av-fade${on ? ' done' : ''}`}>
+            <PichiAvatar />
+          </span>
+        ) : who && (
           <span className={`av-fade${on ? ' done' : ''}`}>
             <PersonLink id={who.id}><Avatar avatar={who.avatar} label={who.display_name} /></PersonLink>
           </span>
