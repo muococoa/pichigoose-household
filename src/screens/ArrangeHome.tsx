@@ -7,6 +7,7 @@ import { DEFAULT_LAYOUT, useHousehold, type LayoutEntry, type Section } from '..
 import { Screen } from '../components/Shell'
 import { Box, Hand, Tape, type TapeKind } from '../components/Scrapbook'
 import { GripIcon } from '../components/Icons'
+import { useDesktop } from '../lib/desktop'
 
 const LOOK: Record<Section, { note: string; tape: TapeKind; rotate: number; label: string }> = {
   news: { note: 'n-lilac', tape: 'ttri', rotate: -0.8, label: 'home.news' },
@@ -34,6 +35,7 @@ export function ArrangeHomeScreen() {
   const listRef = useRef<HTMLDivElement>(null)
   const refs = useRef<Partial<Record<Section, HTMLDivElement | null>>>({})
   const drag = useRef({ grab: 0, top: 0 })
+  const desktop = useDesktop()
 
   // Money arrives in phase 3, so its note isn't shown here yet. It keeps its place in the saved order.
   const shown = order.filter((s) => s.section !== 'money')
@@ -99,6 +101,21 @@ export function ArrangeHomeScreen() {
   function done() {
     if (household) db.update('household_members', { household_id: household.id, user_id: me }, { home_layout: order })
     navigate('/')
+  }
+
+  if (desktop) {
+    return (
+      <Screen wide>
+        <ArrangeBoard
+          order={order}
+          setOrder={setOrder}
+          toggle={toggle}
+          intro={others.length === 1 ? t('arrange.intro', { name: others[0].display_name }) : t('arrange.introAlone')}
+          onReset={() => setOrder(DEFAULT_LAYOUT)}
+          onDone={done}
+        />
+      </Screen>
+    )
   }
 
   return (
@@ -180,5 +197,180 @@ export function ArrangeHomeScreen() {
         </div>
       </div>
     </Screen>
+  )
+}
+
+type BoardProps = {
+  order: LayoutEntry[]
+  setOrder: (next: LayoutEntry[]) => void
+  toggle: (section: Section) => void
+  intro: string
+  onReset: () => void
+  onDone: () => void
+}
+
+/** Desktop (D4): arranging happens in place. The board's notes, three across, are dragged around;
+ *  the picked-up note lifts and tilts, and a dashed "drop it here" shows where it will land. */
+function ArrangeBoard({ order, setOrder, toggle, intro, onReset, onDone }: BoardProps) {
+  const { t } = useTranslation()
+  const [dragging, setDragging] = useState<Section | null>(null)
+  const refs = useRef<Partial<Record<Section, HTMLDivElement | null>>>({})
+  const drag = useRef({ x: 0, y: 0 })
+  const [slot, setSlot] = useState<{ left: number; top: number; width: number; height: number } | null>(null)
+  const shown = order.filter((s) => s.section !== 'money')
+
+  // Keep the lifted note under the pointer, wherever its slot is now.
+  function place() {
+    if (!dragging) return
+    const el = refs.current[dragging]
+    if (!el) return
+    el.style.transform = `translate(${drag.current.x - el.offsetLeft}px, ${drag.current.y - el.offsetTop}px) rotate(-3deg)`
+    setSlot((old) =>
+      old && old.left === el.offsetLeft && old.top === el.offsetTop ? old : { left: el.offsetLeft, top: el.offsetTop, width: el.offsetWidth, height: el.offsetHeight },
+    )
+  }
+
+  useLayoutEffect(() => {
+    place()
+  })
+
+  const grab = useRef({ dx: 0, dy: 0 })
+
+  function down(e: PointerEvent<HTMLDivElement>, section: Section) {
+    if ((e.target as HTMLElement).closest('button')) return
+    const el = refs.current[section]
+    const board = el?.offsetParent as HTMLElement | null
+    if (!el || !board) return
+    e.currentTarget.setPointerCapture(e.pointerId)
+    const r = board.getBoundingClientRect()
+    grab.current = { dx: e.clientX - r.left - el.offsetLeft, dy: e.clientY - r.top - el.offsetTop }
+    drag.current = { x: el.offsetLeft, y: el.offsetTop }
+    setDragging(section)
+  }
+
+  function move(e: PointerEvent<HTMLDivElement>) {
+    if (!dragging) return
+    const el = refs.current[dragging]
+    const board = el?.offsetParent as HTMLElement | null
+    if (!el || !board) return
+    const r = board.getBoundingClientRect()
+    drag.current = { x: e.clientX - r.left - grab.current.dx, y: e.clientY - r.top - grab.current.dy }
+    // The note goes before every note whose middle it has passed, reading left to right, then down.
+    const cx = drag.current.x + el.offsetWidth / 2
+    const cy = drag.current.y + el.offsetHeight / 2
+    const rest = shown.filter((s) => s.section !== dragging)
+    const index = rest.filter((s) => {
+      const o = refs.current[s.section]
+      if (!o) return false
+      const ox = o.offsetLeft + o.offsetWidth / 2
+      const oy = o.offsetTop + o.offsetHeight / 2
+      if (oy < cy - o.offsetHeight / 2) return true
+      if (oy > cy + o.offsetHeight / 2) return false
+      return ox < cx
+    }).length
+    const current = shown.findIndex((s) => s.section === dragging)
+    if (index !== current) {
+      const nextShown = [...rest.slice(0, index), shown[current], ...rest.slice(index)]
+      const moneyAt = order.findIndex((s) => s.section === 'money')
+      if (moneyAt >= 0) nextShown.splice(Math.min(moneyAt, nextShown.length), 0, order[moneyAt])
+      setOrder(nextShown)
+    } else {
+      place()
+    }
+  }
+
+  function up() {
+    if (!dragging) return
+    const el = refs.current[dragging]
+    if (el) el.style.transform = ''
+    setDragging(null)
+    setSlot(null)
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 26, padding: 'var(--top) 22px 0 40px' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
+        <div style={{ flex: 1 }}>
+          <Hand as="h1" size={52} lineHeight={56} style={{ margin: 0 }}>
+            {t('arrange.title')}
+          </Hand>
+          <div style={{ fontSize: 17, lineHeight: '24px', fontWeight: 600, marginTop: 8 }}>{intro}</div>
+        </div>
+        <button type="button" className="stk sec" style={{ transform: 'rotate(-1deg)', marginTop: 8 }} onClick={onReset}>
+          {t('arrange.reset')}
+        </button>
+        <button type="button" className="stk prim" style={{ transform: 'rotate(1.5deg)', marginTop: 8, padding: '0 34px' }} onClick={onDone}>
+          {t('arrange.done')}
+        </button>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 30, marginTop: 6, position: 'relative' }}>
+        {slot && (
+          <div
+            aria-hidden
+            style={{ position: 'absolute', left: slot.left, top: slot.top, width: slot.width, height: slot.height, border: '2.5px dashed #C9C0CF', borderRadius: 4, display: 'grid', placeItems: 'center' }}
+          >
+            <Hand size={26} lineHeight={28} color="#857A8C">
+              {t('arrange.dropHere')}
+            </Hand>
+          </div>
+        )}
+        {shown.map((s) => {
+          const look = LOOK[s.section]
+          const lifted = dragging === s.section
+          const label = t(look.label)
+          return (
+            <div
+              key={s.section}
+              ref={(el) => {
+                refs.current[s.section] = el
+              }}
+              className={`note ${look.note}`}
+              onPointerDown={(e) => down(e, s.section)}
+              onPointerMove={move}
+              onPointerUp={up}
+              onPointerCancel={up}
+              aria-label={t('arrange.drag', { name: label })}
+              style={{
+                minHeight: 150,
+                padding: 22,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                touchAction: 'none',
+                cursor: lifted ? 'grabbing' : 'grab',
+                userSelect: 'none',
+                boxShadow: lifted ? '6px 14px 18px rgba(30,26,48,.22)' : '2px 3px 0 rgba(30,26,48,.12)',
+                opacity: s.visible ? 1 : 0.55,
+                transform: lifted ? undefined : `rotate(${look.rotate}deg)`,
+                zIndex: lifted ? 3 : undefined,
+                transition: lifted ? 'box-shadow .15s' : 'transform .2s var(--ease-out), box-shadow .15s',
+              }}
+            >
+              <Tape kind={look.tape} style={{ top: -10, left: 30, width: 70, height: 20, transform: 'rotate(-4deg)' }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                <GripIcon />
+                <Hand size={34} lineHeight={36} style={{ flex: 1 }}>
+                  {label}
+                </Hand>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={s.visible}
+                aria-label={label}
+                onClick={() => toggle(s.section)}
+                style={{ alignSelf: 'flex-end', display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, fontWeight: 700, color: '#63586B', padding: '8px 0', margin: '-8px 0' }}
+              >
+                {s.visible ? t('arrange.shown') : t('arrange.hidden')}
+                <Box checked={s.visible} rotate={2} />
+              </button>
+            </div>
+          )
+        })}
+      </div>
+      <div className="cap" style={{ fontSize: 14 }}>
+        {t('arrange.hiddenNoteDesktop')}
+      </div>
+    </div>
   )
 }

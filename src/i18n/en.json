@@ -128,7 +128,9 @@
     "hiddenNote": "Hidden sections are still in the tabs below.",
     "reset": "Reset",
     "done": "Done",
-    "drag": "Drag to move {{name}}"
+    "drag": "Drag to move {{name}}",
+    "dropHere": "drop it here",
+    "hiddenNoteDesktop": "Hidden sections are still in the sidebar."
   },
   "shopping": {
     "title": "Shopping",

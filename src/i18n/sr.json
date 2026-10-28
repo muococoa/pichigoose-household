@@ -132,7 +132,9 @@
     "hiddenNote": "Skriveni delovi su i dalje u tabovima ispod.",
     "reset": "Vrati",
     "done": "Gotovo",
-    "drag": "Prevuci {{name}}"
+    "drag": "Prevuci {{name}}",
+    "dropHere": "spusti ovde",
+    "hiddenNoteDesktop": "Skriveni delovi su i dalje u bočnom meniju."
   },
   "shopping": {
     "title": "Kupovina",
