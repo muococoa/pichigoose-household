@@ -17,6 +17,7 @@ import { TodosScreen } from './screens/Todos'
 import { NoteScreen, NotesScreen } from './screens/Notes'
 import { ProfileScreen, SettingsScreen } from './screens/Profile'
 import { HouseholdsScreen } from './screens/Households'
+import { PersonScreen } from './screens/Person'
 
 /** Blank notebook paper while things load. */
 function Paper() {
@@ -127,6 +128,7 @@ export default function App() {
           <Route path="/profile" element={<Inside><ProfileScreen /></Inside>} />
           <Route path="/settings" element={<Inside><SettingsScreen /></Inside>} />
           <Route path="/households" element={<Inside><HouseholdsScreen /></Inside>} />
+          <Route path="/people/:id" element={<Inside><PersonScreen /></Inside>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         <ToastHost />

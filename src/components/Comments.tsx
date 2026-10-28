@@ -6,6 +6,7 @@ import { useComments, useHousehold, type Comment } from '../data/hooks'
 import { ago } from '../lib/time'
 import { Avatar } from './Avatar'
 import { CloseIcon } from './Icons'
+import { PersonLink } from '../screens/Person'
 
 /** What a comment is about: one shopping item, to-do or note. */
 export type CommentTarget = { item_id: string } | { todo_id: string } | { note_id: string }
@@ -92,7 +93,9 @@ export function Comments({ target }: { target: CommentTarget }) {
         const who = people.find((p) => p.id === c.author_id)
         return (
           <div key={c.id} className="comment">
-            <Avatar avatar={who?.avatar} size={28} />
+            <PersonLink id={who?.id}>
+              <Avatar avatar={who?.avatar} size={28} />
+            </PersonLink>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div className="cap" style={{ fontSize: 13 }}>
                 <b style={{ color: '#1E1A30', fontWeight: 800 }}>{who?.display_name ?? t('common.someone')}</b> · {ago(c.created_at, i18n.language)}

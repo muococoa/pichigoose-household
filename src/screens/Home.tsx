@@ -21,6 +21,7 @@ import { InkChevron, PencilIcon, PlusIcon } from '../components/Icons'
 import { MyHouseholds } from './MyHouseholds'
 import { PendingInvites } from './Invite'
 import { AddSheet } from './AddSheet'
+import { PersonLink } from './Person'
 import { NotePanel, colorOf } from './Notes'
 import { AskName, madeFromEmail } from './AskName'
 import { ago, daysFromToday, dueLabel, fromDateString } from '../lib/time'
@@ -206,7 +207,7 @@ export function HomeScreen() {
                         <CommentCount n={commentsOn(x.id)} />
                         {x.due_date && <div className="cap">{dueLabel(x.due_date, i18n.language)}</div>}
                       </span>
-                      <span className={`av-fade${on ? ' done' : ''}`}>{who ? <Avatar avatar={who.avatar} label={who.display_name} /> : <NobodyAvatar />}</span>
+                      <span className={`av-fade${on ? ' done' : ''}`}>{who ? <PersonLink id={who.id}><Avatar avatar={who.avatar} label={who.display_name} /></PersonLink> : <NobodyAvatar />}</span>
                     </div>
                   )}
                 </Tick>
@@ -224,7 +225,7 @@ export function HomeScreen() {
                         <CommentCount n={commentsOn(x.id)} />
                         {x.due_date && <div className="cap">{dueLabel(x.due_date, i18n.language)}</div>}
                       </span>
-                      <span className={`av-fade${on ? ' done' : ''}`}>{who ? <Avatar avatar={who.avatar} label={who.display_name} /> : <NobodyAvatar />}</span>
+                      <span className={`av-fade${on ? ' done' : ''}`}>{who ? <PersonLink id={who.id}><Avatar avatar={who.avatar} label={who.display_name} /></PersonLink> : <NobodyAvatar />}</span>
                     </div>
                   )}
                 </Tick>
@@ -260,7 +261,7 @@ export function HomeScreen() {
                       </span>
                       {who && (
                         <span className={`av-fade${on ? ' done' : ''}`}>
-                          <Avatar avatar={who.avatar} label={who.display_name} />
+                          <PersonLink id={who.id}><Avatar avatar={who.avatar} label={who.display_name} /></PersonLink>
                         </span>
                       )}
                     </div>

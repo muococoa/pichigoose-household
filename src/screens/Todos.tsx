@@ -10,6 +10,7 @@ import { Avatar, NobodyAvatar } from '../components/Avatar'
 import { Check, Hand, Struck, Tick, useArrivals, EmptyState, Sheet, Stamp, STAMP_COLORS, tilt } from '../components/Scrapbook'
 import { ChevronDown, PlusIcon } from '../components/Icons'
 import { MyHouseholds } from './MyHouseholds'
+import { PersonLink } from './Person'
 import { CommentCount, Comments, useCommentCounts } from '../components/Comments'
 import { addDays, capitalize, daysFromToday, dueLabel, fromDateString, toDateString, weekdayName } from '../lib/time'
 
@@ -179,7 +180,7 @@ export function TodosScreen() {
                         {detail(x) && <div className="cap">{detail(x)}</div>}
                       </button>
                       <span className={`av-fade${on ? ' done' : ''}`}>
-                        {who ? <Avatar avatar={who.avatar} label={who.display_name} /> : <NobodyAvatar />}
+                        {who ? <PersonLink id={who.id}><Avatar avatar={who.avatar} label={who.display_name} /></PersonLink> : <NobodyAvatar />}
                       </span>
                     </div>
                   )}

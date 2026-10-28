@@ -14,6 +14,7 @@ import { DndContext, MouseSensor, TouchSensor, closestCenter, useSensor, useSens
 import { SortableContext, arrayMove, horizontalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useDesktop } from '../lib/desktop'
+import { PersonLink } from './Person'
 import { CommentCount, Comments, useCommentCounts } from '../components/Comments'
 
 const TAB_TAPES: TapeKind[] = ['tp', 'tm', 'ty', 'tb', 'tdots', 'tblocks', 'ttri', 'tcheck']
@@ -177,7 +178,7 @@ export function ShoppingScreen() {
         </button>
         {who && (
           <span className={`av-fade${on ? ' done' : ''}`}>
-            <Avatar avatar={who.avatar} label={who.display_name} />
+            <PersonLink id={who.id}><Avatar avatar={who.avatar} label={who.display_name} /></PersonLink>
           </span>
         )}
       </div>
