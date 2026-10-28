@@ -69,7 +69,8 @@ Eight patterns in `tokens.json` under `washi.patterns`: stripes in pink, yellow,
 - Each avatar is a character with a face: an object, an animal or food (onigiri, lemon, mug...). It sits on a pastel circle.
 - Sizes: 34 px in rows, 40 px in the header.
 - They look like stickers: a 2 px white edge and a small shadow (`shadow.avatar`).
-- **Lines are 2 px at every size.** The line weight never scales with the avatar. Nora asked for this so avatars, checkboxes and icons all match.
+- **Lines are 2 px in rows and headers** (avatars under 80 px). The line weight doesn't scale there, so avatars, checkboxes and icons all match. Nora asked for this.
+- **Big avatars (80 px and up, like the avatar builder)** keep the same line weight relative to the drawing as a 34 px avatar, and are inked like the headlines: the dry-ink brush on the edges and the patchy ink mask, so lines are 50 to 100% opaque in patches. Extras (bow, hat, flower, glasses) use slightly lighter lines. Nora asked for this in October 2026.
 - Faded (60% opacity) on bought or done items.
 - The avatar builder (WF14) is a carousel: Character, then Color, then Accessory.
 

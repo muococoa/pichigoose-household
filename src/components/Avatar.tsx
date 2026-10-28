@@ -1,3 +1,5 @@
+import { useId } from 'react'
+import inkPatch from '../../assets/ink-patch.png'
 // Avatars: a character with a face on a pastel circle.
 // The onigiri, lemon, mug and marshmallow come from the hi-fi screens. The toast, cloud, frog,
 // cat and the accessories are Claude's drafts for Nora to review.
@@ -114,14 +116,34 @@ function Body({ character }: { character: string }) {
   }
 }
 
-function Accessory({ kind, face }: { kind: string | null; face: Face }) {
+// Where each extra sits on each character, so it rests on the head instead of floating above it.
+// hat: middle of the top edge. bow and flower: on the outline, top right and top left.
+type Spot = [number, number, number] // x, y, tilt in degrees
+const SPOTS: Record<string, { hat: Spot; bow: Spot; flower: Spot }> = {
+  onigiri: { hat: [20, 9.6, -6], bow: [24.6, 12.6, 30], flower: [15.4, 12.8, 0] },
+  lemon: { hat: [15.6, 11.6, -14], bow: [27.6, 13.4, 28], flower: [12.4, 14, 0] },
+  mug: { hat: [16.8, 13.4, -8], bow: [24.4, 13.2, 18], flower: [12.2, 13.6, 0] },
+  marshmallow: { hat: [20, 9.6, -6], bow: [25.4, 11.8, 30], flower: [14.6, 11.8, 0] },
+  toast: { hat: [20, 9.8, -6], bow: [27, 10.4, 22], flower: [12.6, 11, 0] },
+  cloud: { hat: [17.4, 11.6, -10], bow: [24.8, 16.2, 22], flower: [12.6, 18.6, 0] },
+  frog: { hat: [20, 16.4, -6], bow: [27.6, 12.4, 28], flower: [12.4, 12.4, 0] },
+  cat: { hat: [20, 14, -6], bow: [27, 12.6, 24], flower: [13, 12.6, 0] },
+}
+
+const PETALS = [0, 72, 144, 216, 288].map((a) => [Math.cos(((a - 90) * Math.PI) / 180) * 2.4, Math.sin(((a - 90) * Math.PI) / 180) * 2.4])
+
+function Accessory({ kind, face, character }: { kind: string | null; face: Face; character: string }) {
   const [x1, x2, y] = face.eyes
+  const spots = SPOTS[character] ?? SPOTS.onigiri
+  const at = ([sx, sy, r]: Spot) => `translate(${sx} ${sy}) rotate(${r})`
   switch (kind) {
     case 'bow':
+      // Two rounded loops, a knot and two short tails.
       return (
-        <g transform="translate(27 9) rotate(18)">
-          <path d="M0 0-5-3.2v6.4ZM0 0l5-3.2v6.4Z" fill="#D34471" {...line} strokeLinejoin="round" />
-          <circle r="1.4" fill="#D34471" {...line} />
+        <g transform={at(spots.bow)}>
+          <path d="M-.4 1.2-2 4.6M.4 1.2 2 4.6" fill="none" {...line} strokeLinecap="round" />
+          <path d="M0 0C-1.4-3.4-6-3.4-5.6.2-5.2 3.2-1.4 2.2 0 0ZM0 0C1.4-3.4 6-3.4 5.6.2 5.2 3.2 1.4 2.2 0 0Z" fill="#D34471" {...line} strokeLinejoin="round" />
+          <circle r="1.5" fill="#A8335A" {...line} />
         </g>
       )
     case 'glasses':
@@ -129,23 +151,32 @@ function Accessory({ kind, face }: { kind: string | null; face: Face }) {
         <g>
           <circle cx={x1} cy={y} r="3.4" fill="rgba(255,255,255,.35)" {...line} />
           <circle cx={x2} cy={y} r="3.4" fill="rgba(255,255,255,.35)" {...line} />
-          <path d={`M${x1 + 3.4} ${y}h${x2 - x1 - 6.8}`} fill="none" {...line} />
+          <path d={`M${x1 + 3.4} ${y}q${(x2 - x1 - 6.8) / 2} -1.2 ${x2 - x1 - 6.8} 0`} fill="none" {...line} strokeLinecap="round" />
         </g>
       )
     case 'flower':
+      // Petals drawn twice: once with the outline, then once more on top without it,
+      // so only the outer edge of the flower is inked.
       return (
-        <g transform="translate(11.5 10.5)">
-          {[0, 72, 144, 216, 288].map((a) => (
-            <circle key={a} cx={Math.cos((a * Math.PI) / 180) * 2.6} cy={Math.sin((a * Math.PI) / 180) * 2.6} r="2" fill="#FFFDF8" {...line} />
+        <g transform={at(spots.flower)}>
+          {PETALS.map(([px, py]) => (
+            <circle key={`o${px}`} cx={px} cy={py} r="1.9" fill="#FFFDF8" {...line} />
           ))}
-          <circle r="1.5" fill="#F2A03D" />
+          {PETALS.map(([px, py]) => (
+            <circle key={`f${px}`} cx={px} cy={py} r="1.9" fill="#FFFDF8" />
+          ))}
+          <circle r="1.4" fill="#F2A03D" {...line} />
         </g>
       )
     case 'hat':
+      // A party hat whose base rests on the head, with dots and a pompom.
       return (
-        <g transform="translate(20 3.5) rotate(-12)">
-          <path d="M0-1.5 5 8H-5Z" fill="#8466B8" {...line} strokeLinejoin="round" />
-          <circle cy="-2" r="1.6" fill="#F2A03D" />
+        <g transform={`${at(spots.hat)} scale(.8)`}>
+          <path d="M0-9.4C1.5-6 3.1-2.9 4.8.4 1.7 1.3-1.7 1.3-4.8.4-3.1-2.9-1.5-6 0-9.4Z" fill="#8466B8" {...line} strokeLinejoin="round" />
+          <circle cx="-.9" cy="-3.6" r=".7" fill="#F8E6A8" />
+          <circle cx="1.6" cy="-1.2" r=".7" fill="#F8E6A8" />
+          <circle cx="-1.8" cy="-.4" r=".7" fill="#F8E6A8" />
+          <circle cy="-9.6" r="1.6" fill="#F2A03D" {...line} />
         </g>
       )
     default:
@@ -165,9 +196,22 @@ export function Avatar({ avatar, size = 34, label, className = 'av', style }: Pr
   const character = avatar?.character && FACES[avatar.character] ? avatar.character : 'onigiri'
   const color = COLOR_HEX[avatar?.color ?? ''] ?? COLOR_HEX.blush
   const face = FACES[character]
+  const big = size >= 80
+  const maskId = `ink-${useId().replace(/[^a-zA-Z0-9]/g, '')}`
+  const drawing = (
+    <>
+      <Body character={character} />
+      <FaceMarks {...face} />
+      <g className="acc">
+        <Accessory kind={avatar?.accessory ?? null} face={face} character={character} />
+      </g>
+    </>
+  )
+  // The ink patch tile is 420 px on screen, like on the headlines, whatever the avatar's size.
+  const tile = (420 * 40) / size
   return (
     <svg
-      className={className}
+      className={`${className}${big ? ' av-big' : ''}`}
       viewBox="0 0 40 40"
       width={size}
       height={size}
@@ -177,9 +221,21 @@ export function Avatar({ avatar, size = 34, label, className = 'av', style }: Pr
       aria-hidden={label ? undefined : true}
     >
       <circle cx="20" cy="20" r="20" fill={color} />
-      <Body character={character} />
-      <FaceMarks {...face} />
-      <Accessory kind={avatar?.accessory ?? null} face={face} />
+      {big ? (
+        // Big avatars get the headline ink: the drawing without lines underneath, then the full
+        // drawing on top through the patchy ink mask, so the lines are 50 to 100% opaque in patches.
+        <g className="av-ink">
+          <defs>
+            <mask id={maskId} maskUnits="userSpaceOnUse" x="-4" y="-4" width="48" height="48" style={{ maskType: 'alpha' }}>
+              <image href={inkPatch} x={-tile * 0.31} y={-tile * 0.22} width={tile} height={tile} preserveAspectRatio="none" />
+            </mask>
+          </defs>
+          <g className="av-base">{drawing}</g>
+          <g mask={`url(#${maskId})`}>{drawing}</g>
+        </g>
+      ) : (
+        drawing
+      )}
     </svg>
   )
 }

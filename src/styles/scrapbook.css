@@ -99,6 +99,16 @@
 /* Avatars: lines stay 2 px at every size */
 .av { width: 34px; height: 34px; flex: none; display: block; border-radius: 50%; box-shadow: 0 0 0 2px #FFFFFF, 1px 2px 2px 1px rgba(30, 26, 48, .15) }
 
+/* Big avatars (the builder, 80 px and up): lines keep the same weight relative to the drawing as
+   in a 34 px row (2 px there), and get the dry-ink brush. Small avatars keep exact 2 px lines. */
+.av-big [vector-effect] { vector-effect: none }
+.av-big [stroke-width="2"] { stroke-width: 2.35 }
+.av-big [stroke-width="1.6"] { stroke-width: 1.9 }
+.av-big .av-ink { filter: url(#ink-avatar) }
+.av-big .av-base [stroke] { stroke: none }
+/* Extras are small details: lighter lines when big, so they don't turn into ink blots. */
+.av-big .acc [stroke-width="2"] { stroke-width: 1.55 }
+
 /* Pichi's postage stamp */
 .postage {
   flex: none; padding: 7px;

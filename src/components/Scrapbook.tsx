@@ -29,6 +29,21 @@ export function InkFilter() {
           <feMergeNode in="edge" />
         </feMerge>
       </filter>
+      {/* The same dry-ink brush for big avatars. Values are in avatar units (a 40-unit circle), so
+          at about 190 px each unit is 4.75 px and the brush matches the headline's grain. */}
+      <filter id="ink-avatar" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency="3.6" numOctaves="2" seed="7" result="n" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="0.32" xChannelSelector="R" yChannelSelector="G" result="rough" />
+        <feMorphology in="rough" operator="erode" radius="0.12" result="core" />
+        <feComponentTransfer in="n" result="spk">
+          <feFuncA type="discrete" tableValues="0 0 1 1 1 1" />
+        </feComponentTransfer>
+        <feComposite in="rough" in2="spk" operator="in" result="edge" />
+        <feMerge>
+          <feMergeNode in="core" />
+          <feMergeNode in="edge" />
+        </feMerge>
+      </filter>
     </svg>
   )
 }

@@ -36,5 +36,5 @@ These are proposals except "web app" and "Supabase", which Nora decided. If some
 - **The shopping list must work offline** and sync later. Signal in stores is bad.
 - **On iPhone, push only works after "Add to Home Screen".** Guide people there.
 - **The headline ink effect must never clip letters.**
-- **Avatar lines stay 2 px at every size.**
+- **Avatar lines stay 2 px in rows and headers.** Big avatars (80 px and up) scale their lines and get the headline ink. See DESIGN.md.
 - **Pichi is Nora's painting.** Never redraw or generate her.
