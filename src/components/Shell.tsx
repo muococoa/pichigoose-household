@@ -32,6 +32,20 @@ export function Screen({ children, tabbar, footer, className = '', wide, center 
       </div>
     )
   }
+  if (desktop) {
+    // Desktop, outside a household (sign up, join, new password): one sheet of paper on the lilac desk.
+    return (
+      <div className="desk solo">
+        <div className={`screen scr page ${className}`}>
+          <div className="scroll scr">
+            <div className={`solo-content${wide ? ' wide' : ''}`}>{children}</div>
+          </div>
+          {footer && <div className="solo-content">{footer}</div>}
+          <OfflineBadge />
+        </div>
+      </div>
+    )
+  }
   return (
     <div className={`screen scr ${tabbar ? 'with-tabbar' : ''} ${className}`}>
       <div className="margin" />

@@ -74,3 +74,16 @@
   /* Page titles are bigger on the wide page. */
   .desk h1.hand { font-size: 52px !important; line-height: 56px !important }
 }
+
+@media (min-width: 1024px) {
+  /* Outside a household: one sheet on the desk, content in a centered column. */
+  .desk.solo > .screen.page { margin: 18px }
+  .solo-content { max-width: 560px; margin: 0 auto; padding: 24px 0 0 }
+  .solo-content.wide { max-width: 1060px; padding: 24px 48px 32px }
+  .desk.solo .margin { display: none }
+  .desk.solo > .screen > .scroll { background-image: url("../../assets/paper-white.png"), repeating-linear-gradient(#FFFDF8 0 35px, #E6DFE3 35px 36px); background-size: 512px 512px, auto; background-position: 0 0, 0 10px }
+
+  /* Sign up and log in (D1): Pichi, the logo and the tagline on the desk, the form on the sheet. */
+  .auth-side { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px }
+  .desk.auth > .screen.page { flex: 1; margin: 18px 18px 18px 0 }
+}

@@ -9,6 +9,7 @@ import { Hand, Tape } from '../components/Scrapbook'
 import { BackIcon } from '../components/Icons'
 import { FieldError } from '../components/FieldError'
 import { PendingInvites } from './Invite'
+import { useDesktop } from '../lib/desktop'
 
 const PENDING_KEY = 'pichigoose.joinAddress'
 
@@ -64,6 +65,10 @@ export function JoinOrCreateScreen() {
   const [error, setError] = useState('')
 
   const [addressErr, setAddressErr] = useState('')
+  const desktop = useDesktop()
+  // Desktop (D2): both cards side by side and both open, so there's nothing to switch.
+  const showJoin = desktop || mode === 'join'
+  const showCreate = desktop || mode === 'create'
 
   async function join(e: FormEvent) {
     e.preventDefault()
@@ -102,8 +107,8 @@ export function JoinOrCreateScreen() {
   }
 
   return (
-    <Screen>
-      <div className="pad top" style={{ paddingBottom: 40 }}>
+    <Screen wide={desktop}>
+      <div className="pad top" style={{ paddingBottom: 40, ...(desktop ? { padding: '24px 0 40px', textAlign: 'center' } : {}) }}>
         {households.length > 0 && (
           <button type="button" aria-label={t('common.back')} onClick={() => navigate(-1)} style={{ display: 'flex', marginLeft: -10, marginBottom: 4, color: '#1E1A30' }}>
             <BackIcon />
@@ -116,17 +121,19 @@ export function JoinOrCreateScreen() {
           {t('join.intro')}
         </p>
 
-        <PendingInvites style={{ marginBottom: 30 }} />
+        <PendingInvites style={{ marginBottom: 30, ...(desktop ? { maxWidth: 520, margin: '0 auto 30px', textAlign: 'left' } : {}) }} />
 
-        <div className="note n-butter" style={{ transform: 'rotate(-.8deg)', opacity: mode === 'join' ? 1 : 0.7 }}>
+        <div style={desktop ? { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 36, alignItems: 'start', textAlign: 'left', maxWidth: 900, margin: '10px auto 0' } : undefined}>
+
+        <div className="note n-butter" style={{ transform: 'rotate(-.8deg)', opacity: showJoin ? 1 : 0.7 }}>
           <Tape kind="tm" style={{ top: -10, left: 26, transform: 'rotate(-4deg)' }} />
           <button type="button" className="row" onClick={() => setMode('join')} aria-pressed={mode === 'join'} style={{ width: '100%', justifyContent: 'space-between', position: 'relative', zIndex: 1 }}>
             <Hand size={30} lineHeight={32}>
               {t('join.join')}
             </Hand>
-            <Radio on={mode === 'join'} />
+            {!desktop && <Radio on={mode === 'join'} />}
           </button>
-          {mode === 'join' && (
+          {showJoin && (
             <form noValidate onSubmit={join} style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 14, position: 'relative', zIndex: 1 }}>
               <div>
                 <label className="label" htmlFor="label">
@@ -166,18 +173,18 @@ export function JoinOrCreateScreen() {
           )}
         </div>
 
-        <div className="note n-sage" style={{ transform: 'rotate(.7deg)', marginTop: 30, opacity: mode === 'create' ? 1 : 0.7 }}>
+        <div className="note n-sage" style={{ transform: 'rotate(.7deg)', marginTop: desktop ? 0 : 30, opacity: showCreate ? 1 : 0.7 }}>
           <Tape kind="tdots" style={{ top: -10, right: 30, transform: 'rotate(5deg)' }} />
           <button type="button" className="row" onClick={() => setMode('create')} aria-pressed={mode === 'create'} style={{ width: '100%', justifyContent: 'space-between', position: 'relative', zIndex: 1 }}>
             <Hand size={30} lineHeight={32}>
               {t('join.createNew')}
             </Hand>
-            <Radio on={mode === 'create'} />
+            {!desktop && <Radio on={mode === 'create'} />}
           </button>
           <p className="body" style={{ margin: '8px 0 0', position: 'relative', zIndex: 1 }}>
             {t('join.createText')}
           </p>
-          {mode === 'create' && (
+          {showCreate && (
             <form onSubmit={create} style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 14, position: 'relative', zIndex: 1 }}>
               <div>
                 <label className="label" htmlFor="hname">
@@ -191,6 +198,7 @@ export function JoinOrCreateScreen() {
               </button>
             </form>
           )}
+        </div>
         </div>
       </div>
     </Screen>
