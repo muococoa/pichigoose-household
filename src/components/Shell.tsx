@@ -38,6 +38,7 @@ export function Screen({ children, tabbar, footer, className = '', wide, center,
       <div className="desk">
         <Sidebar />
         <div className={`screen scr page ${className}`}>
+          <div className="margin" />
           <div className="scroll scr" ref={scrollRef}>
             <div className={`desk-content${wide ? ' wide' : ''}${center ? ' center' : ''}${doodle ? ' paper-col' : ''}`}>{page}</div>
           </div>

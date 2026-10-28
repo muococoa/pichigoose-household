@@ -130,12 +130,15 @@ textarea.input { height: auto; padding: 12px 16px; resize: none }
 .doodle img { display: block; height: 150px; width: auto; max-width: 70cqw; object-fit: contain; margin-bottom: -9px; user-select: none }
 .doodle svg { display: block; width: min(220px, 80cqw); height: auto; filter: url(#dry-ink) }
 @container (min-height: 200px) { .doodle { display: flex } }
+/* With plenty of room, Pichi is 150% bigger. */
+@container (min-height: 280px) { .doodle img { height: 225px } .doodle svg { width: min(300px, 85cqw) } }
 /* Phone pages with the round +: the bottom strip kept free for the + has room in the middle, so the doodle
    stands down there, clear of the button on the right, and needs much less free paper above it. */
 .with-tabbar.has-fab .doodle { bottom: -108px }
 .with-tabbar.has-fab .doodle img { height: 130px }
 .with-tabbar.has-fab .doodle svg { width: 160px }
 @container (min-height: 36px) { .with-tabbar.has-fab .doodle { display: flex } }
+@container (min-height: 104px) { .with-tabbar.has-fab .doodle img { height: 195px } .with-tabbar.has-fab .doodle svg { width: 220px } }
 
 /* Home: the notes open their page when clicked. */
 .note-link { cursor: pointer }

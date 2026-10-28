@@ -46,13 +46,9 @@ html[data-theme="orange"] { --hero: #D0643B; --hero-dark: #A64A26; --margin: rgb
   background-position: 0 0, 0 6px;
   background-attachment: local, local;
 }
-/* The red margin line scrolls with the page. */
-.screen > .scroll {
-  background-image: linear-gradient(90deg, transparent 26px, var(--margin) 26px 28px, transparent 28px), url("../../assets/paper-white.png"), repeating-linear-gradient(#FFFDF8 0 31px, #E6DFE3 31px 32px);
-  background-size: auto, 512px 512px, auto;
-  background-position: 0 0, 0 0, 0 6px;
-  background-attachment: local, local, local;
-}
+/* The paper (texture, ruled lines, red margin) stays still on the screen; only the content scrolls
+   and bounces over it, so pulling past the ends never shows a seam. */
+.screen > .scroll { background: none }
 .margin { position: absolute; top: 0; bottom: 0; left: 26px; width: 2px; background: var(--margin); pointer-events: none; z-index: 1 }
 
 /* Hand-written headlines: dry marker. Never clip letters: keep the padding and negative margin. */

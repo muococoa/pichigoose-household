@@ -27,9 +27,11 @@
     box-shadow: 3px 4px 0 rgba(30, 26, 48, .13);
   }
   /* Wider ruling (every 36 px) and the margin line further in, at 64 px. */
-  .desk > .screen > .scroll {
-    background-image: linear-gradient(90deg, transparent 64px, var(--margin) 64px 66px, transparent 66px), url("../../assets/paper-white.png"), repeating-linear-gradient(#FFFDF8 0 35px, #E6DFE3 35px 36px);
-    background-position: 0 0, 0 0, 0 10px;
+  /* The page's paper stays still; only the content scrolls over it. Wider ruling (every 36 px). */
+  .desk > .screen.page {
+    background-image: url("../../assets/paper-white.png"), repeating-linear-gradient(#FFFDF8 0 35px, #E6DFE3 35px 36px);
+    background-size: 512px 512px, auto;
+    background-position: 0 0, 0 10px;
   }
   .desk > .screen > .margin { left: 64px }
   /* Content starts right of the margin: 100 px in, 48 px from the right. Screens bring 40 / 22 px of their own. */
