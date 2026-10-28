@@ -308,5 +308,14 @@
     "none": "No messages yet.",
     "unread_one": "{{count}} unread message",
     "unread_other": "{{count}} unread messages"
+  },
+  "person": {
+    "message": "Send a message",
+    "todosAdded": "To-dos added",
+    "todosDone": "To-dos done",
+    "itemsAdded": "Added to buy",
+    "itemsBought": "Bought",
+    "notesWritten": "Notes written",
+    "comments": "Comments"
   }
 }

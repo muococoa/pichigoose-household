@@ -297,3 +297,7 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 .chat-tab .composer { bottom: max(var(--tabbar), var(--kb)) }
 .chat-tab .kb-spacer { height: max(var(--tabbar), var(--kb)) }
 .chat-tab .composer { padding-bottom: 12px }
+
+/* Profile: what someone has done in the household, as little sticky notes. */
+.person-stats { align-self: stretch; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 18px; margin-top: 30px }
+.person-stats .note { padding: 14px 16px 14px; text-align: left }

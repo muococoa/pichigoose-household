@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
 import { db } from '../data/store'
@@ -222,7 +222,26 @@ export function MessagesScreen() {
   )
 }
 
-/** Old links to a single chat open the household chat. */
+/** A private chat with one person, opened from their profile (households of three or more). */
 export function ChatScreen() {
-  return <Navigate to="/messages" replace />
+  const { chat } = useParams()
+  const desktop = useDesktop()
+  const { people } = useHousehold()
+  if (!chat || chat === 'household' || (people.length && !people.some((p) => p.id === chat))) return <Navigate to="/messages" replace />
+  if (desktop) {
+    return (
+      <Screen wide>
+        <div className="chat-split">
+          <div className="chat-split-main">
+            <Conversation key={chat} chatKey={chat} header />
+          </div>
+        </div>
+      </Screen>
+    )
+  }
+  return (
+    <Screen className="chat-screen">
+      <Conversation key={chat} chatKey={chat} header back />
+    </Screen>
+  )
 }
