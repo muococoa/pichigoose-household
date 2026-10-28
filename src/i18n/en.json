@@ -16,7 +16,8 @@
     "items_one": "{{count}} item",
     "items_other": "{{count}} items",
     "seeAll": "see all",
-    "someone": "Someone"
+    "someone": "Someone",
+    "undo": "Undo"
   },
   "auth": {
     "tagline": "Planning your household with the people you live with, so everyone stays organized.",
@@ -291,7 +292,8 @@
     "placeholder": "Add a comment...",
     "send": "Send",
     "count_one": "{{count}} comment",
-    "count_other": "{{count}} comments"
+    "count_other": "{{count}} comments",
+    "deleted": "Comment deleted"
   },
   "messages": {
     "title": "Messages",

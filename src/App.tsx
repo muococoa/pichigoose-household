@@ -6,7 +6,7 @@ import { isConfigured } from './lib/supabase'
 import { setLanguage } from './i18n'
 import { applyTheme } from './lib/theme'
 import { useHousehold, useMyProfile } from './data/hooks'
-import { InkFilter, ToastHost } from './components/Scrapbook'
+import { InkFilter, ToastHost, UndoHost } from './components/Scrapbook'
 import { Framed, Screen } from './components/Shell'
 import { AuthScreen, NewPasswordScreen } from './screens/Auth'
 import { JoinOrCreateScreen, rememberJoinAddress } from './screens/JoinOrCreate'
@@ -140,6 +140,7 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         <ToastHost />
+        <UndoHost />
       </BrowserRouter>
     </AuthProvider>
   )

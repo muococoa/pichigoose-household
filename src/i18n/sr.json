@@ -18,7 +18,8 @@
     "items_few": "{{count}} stavke",
     "items_other": "{{count}} stavki",
     "seeAll": "sve",
-    "someone": "Neko"
+    "someone": "Neko",
+    "undo": "Vrati"
   },
   "auth": {
     "tagline": "Planiraj domaćinstvo sa ljudima s kojima živiš, da svi budu organizovani.",
@@ -296,7 +297,8 @@
     "send": "Pošalji",
     "count_one": "{{count}} komentar",
     "count_few": "{{count}} komentara",
-    "count_other": "{{count}} komentara"
+    "count_other": "{{count}} komentara",
+    "deleted": "Komentar obrisan"
   },
   "messages": {
     "title": "Poruke",

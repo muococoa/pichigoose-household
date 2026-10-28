@@ -6,6 +6,7 @@ import { useComments, useHousehold, type Comment } from '../data/hooks'
 import { ago } from '../lib/time'
 import { Avatar } from './Avatar'
 import { CloseIcon } from './Icons'
+import { showUndo } from './Scrapbook'
 import { PersonLink } from '../screens/Person'
 
 /** What a comment is about: one shopping item, to-do or note. */
@@ -103,7 +104,12 @@ export function Comments({ target }: { target: CommentTarget }) {
               <div className="comment-body">{c.body}</div>
             </div>
             {c.author_id === me && (
-              <button type="button" className="comment-delete" aria-label={t('common.delete')} onClick={() => db.remove('comments', c.id)}>
+              <button type="button" className="comment-delete" aria-label={t('common.delete')} onClick={() => {
+                  // Gone right away, with a floating Undo for 5 seconds that puts it back exactly as it was.
+                  const { id, ...rest } = c
+                  db.remove('comments', id)
+                  showUndo(t('comments.deleted'), t('common.undo'), () => db.insert('comments', { ...rest, id }))
+                }}>
                 <CloseIcon size={16} />
               </button>
             )}

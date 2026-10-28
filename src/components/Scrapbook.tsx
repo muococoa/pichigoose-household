@@ -486,3 +486,49 @@ export function ToastHost() {
     </div>
   ) : null
 }
+
+// ---------------------------------------------------------------------------
+// Undo, like Figma: after deleting something, a floating "Undo" for 5 seconds.
+// ---------------------------------------------------------------------------
+
+type UndoState = { id: number; text: string; undoLabel: string; undo: () => void }
+let undoSetter: ((u: UndoState | null) => void) | null = null
+let undoTimer: number | undefined
+let undoSeq = 0
+export const UNDO_MS = 5000
+
+export function showUndo(text: string, undoLabel: string, undo: () => void) {
+  undoSeq += 1
+  undoSetter?.({ id: undoSeq, text, undoLabel, undo })
+  window.clearTimeout(undoTimer)
+  undoTimer = window.setTimeout(() => undoSetter?.(null), UNDO_MS)
+}
+
+export function UndoHost() {
+  const [state, setState] = useState<UndoState | null>(null)
+  useEffect(() => {
+    undoSetter = setState
+    return () => {
+      undoSetter = null
+    }
+  }, [])
+  if (!state) return null
+  return createPortal(
+    <div className="undo" role="status" key={state.id}>
+      <span>{state.text}</span>
+      <button
+        type="button"
+        onClick={() => {
+          state.undo()
+          window.clearTimeout(undoTimer)
+          setState(null)
+        }}
+      >
+        {state.undoLabel}
+      </button>
+      {/* Shrinks over the 5 seconds the undo is there. */}
+      <span className="undo-time" aria-hidden />
+    </div>,
+    document.body,
+  )
+}
