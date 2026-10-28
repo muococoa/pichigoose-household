@@ -15,6 +15,10 @@ export function watchKeyboard() {
     // Small differences are browser toolbars, not a keyboard.
     const open = covered > 80
     root.style.setProperty('--kb', `${open ? Math.round(covered) : 0}px`)
+    // The part of the page you can actually see. The chat sits exactly in it, so its header
+    // stays at the top while the keyboard is open, like WhatsApp.
+    root.style.setProperty('--vvh', `${Math.round(vv.height)}px`)
+    root.style.setProperty('--vvtop', `${Math.round(vv.offsetTop)}px`)
     // Lets pop-ups grow to use all the room above the keyboard.
     if (open) root.dataset.kb = 'open'
     else delete root.dataset.kb
@@ -28,6 +32,8 @@ export function watchKeyboard() {
   document.addEventListener('focusin', (e) => {
     const el = e.target as HTMLElement | null
     if (!el || !el.matches('input, textarea')) return
+    // The chat already keeps its field above the keyboard.
+    if (el.closest('.chat-screen')) return
     window.setTimeout(() => {
       update()
       el.scrollIntoView({ block: 'nearest', behavior: 'smooth' })

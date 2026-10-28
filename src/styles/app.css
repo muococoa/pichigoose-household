@@ -262,6 +262,12 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 
 .conversation { display: flex; flex-direction: column }
 .chat-screen .conversation { min-height: 100% }
+/* On a phone the chat fills exactly the part of the screen you can see, so when the keyboard opens the
+   header stays at the top and only the messages make room, like WhatsApp. */
+.chat-screen { position: fixed; top: var(--vvtop, 0px); left: 0; right: 0; margin: 0 auto; max-width: 430px; height: var(--vvh, 100dvh); min-height: 0 }
+.chat-screen .composer { bottom: 0 }
+.chat-screen .kb-spacer { display: none }
+html[data-kb="open"] .chat-screen .composer { padding-bottom: 10px }
 .chat-header {
   position: sticky; top: 0; z-index: 3; display: flex; gap: 10px; align-items: center; padding: calc(var(--top) + 6px) 16px 10px 24px;
   background: #FFFDF8 url("../../assets/paper-white.png") 0 0 / 512px 512px; box-shadow: 0 6px 12px -8px rgba(30, 26, 48, .25);

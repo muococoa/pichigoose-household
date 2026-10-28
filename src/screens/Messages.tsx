@@ -131,6 +131,21 @@ function Conversation({ chatKey, header, back }: { chatKey: string; header?: boo
     first.current = false
   }, [count])
 
+  // When the keyboard opens and the chat gets shorter, keep the newest messages in view instead of
+  // the header moving away, like WhatsApp.
+  useEffect(() => {
+    const scroller = endRef.current?.closest('.chat-screen .scroll') as HTMLElement | null
+    if (!scroller) return
+    let last = scroller.clientHeight
+    const watch = new ResizeObserver(() => {
+      const now = scroller.clientHeight
+      if (now < last) scroller.scrollTop += last - now
+      last = now
+    })
+    watch.observe(scroller)
+    return () => watch.disconnect()
+  }, [chat?.key])
+
   // The field grows with the text, up to five lines.
   useLayoutEffect(() => {
     const el = fieldRef.current
