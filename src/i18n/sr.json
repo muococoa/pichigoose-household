@@ -121,7 +121,7 @@
     "addItem": "Nešto za kupovinu",
     "addTodo": "Zadatak",
     "addNote": "Belešku",
-    "addSomeone": "Nekoga u domaćinstvo"
+    "addSomeone": "Dodaj nekoga u domaćinstvo"
   },
   "arrange": {
     "title": "Složi svoju početnu",
@@ -153,7 +153,8 @@
     "itemName": "Stavka",
     "itemNote": "Napomena",
     "itemNotePlaceholder": "veliko pakovanje",
-    "shareTitle": "{{name}}"
+    "shareTitle": "{{name}}",
+    "emptyAbove": "Lista je još prazna. Dodaj prvu stvar iznad."
   },
   "todos": {
     "title": "Zadaci",

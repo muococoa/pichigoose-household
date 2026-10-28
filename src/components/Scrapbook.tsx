@@ -226,7 +226,7 @@ export function PichiPolaroid({ width = 150, rotate = -3, tape = 'tp' as TapeKin
   )
 }
 
-type SheetProps = { open: boolean; onClose: () => void; title?: string; children: ReactNode; labelledBy?: string }
+type SheetProps = { open: boolean; onClose: () => void; title?: string; children: ReactNode; labelledBy?: string; small?: boolean }
 
 // The pop-up paper, loaded up front so the first pop-up doesn't flash plain and then fill in.
 const preload = new Image()
@@ -235,7 +235,7 @@ preload.src = paperWhite
 const CLOSE_MS = 220
 
 /** A bottom sheet of notebook paper. It slides up when it opens and drops away when it closes. */
-export function Sheet({ open, onClose, title, children }: SheetProps) {
+export function Sheet({ open, onClose, title, children, small }: SheetProps) {
   const ref = useRef<HTMLDivElement>(null)
   const [closing, setClosing] = useState(false)
   // While it drops away, keep showing what it showed last, even if the screen already moved on.
@@ -268,7 +268,7 @@ export function Sheet({ open, onClose, title, children }: SheetProps) {
   if (!open && !mounted) return null
   const shown = open ? { title, children } : last.current
   return createPortal(
-    <div className={`sheet-back${closing ? ' closing' : ''}`} onClick={closing ? undefined : onClose}>
+    <div className={`sheet-back${small ? ' small' : ''}${closing ? ' closing' : ''}`} onClick={closing ? undefined : onClose}>
       <div ref={ref} className="sheet" role="dialog" aria-modal="true" aria-label={shown.title} onClick={(e) => e.stopPropagation()}>
         <div className="grab" />
         {shown.title && (

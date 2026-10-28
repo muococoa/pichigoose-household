@@ -99,7 +99,7 @@ export function TodosScreen() {
           <Hand as="h1" style={{ margin: 0 }}>
             {t('todos.title')}
           </Hand>
-          <button type="button" className="row cap" onClick={() => setSwitching(true)} style={{ fontSize: 14, fontWeight: 700, gap: 2, minWidth: 0 }}>
+          <button type="button" className="row cap phone-only" onClick={() => setSwitching(true)} style={{ fontSize: 14, fontWeight: 700, gap: 2, minWidth: 0 }}>
             <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name(household)}</span>
             <ChevronDown />
           </button>
@@ -174,7 +174,7 @@ export function TodosScreen() {
 
       <button
         type="button"
-        className="stk prim round"
+        className="stk prim round fab"
         aria-label={t('todos.new')}
         onClick={() => setEditing('new')}
         style={{ position: 'fixed', right: 'max(20px, calc(50vw - 195px))', bottom: 'calc(var(--tabbar) + 20px)', zIndex: 6, transform: 'rotate(-4deg)' }}

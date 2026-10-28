@@ -92,7 +92,7 @@ export function NotesScreen() {
           <Hand as="h1" style={{ margin: 0 }}>
             {t('notes.title')}
           </Hand>
-          <button type="button" className="row cap" onClick={() => setSwitching(true)} style={{ fontSize: 14, fontWeight: 700, gap: 2, minWidth: 0 }}>
+          <button type="button" className="row cap phone-only" onClick={() => setSwitching(true)} style={{ fontSize: 14, fontWeight: 700, gap: 2, minWidth: 0 }}>
             <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name(household)}</span>
             <ChevronDown />
           </button>
@@ -127,7 +127,7 @@ export function NotesScreen() {
 
       <button
         type="button"
-        className="stk prim round"
+        className="stk prim round fab"
         aria-label={t('home.addNote')}
         onClick={() => {
           if (!hid) return
@@ -268,7 +268,7 @@ export function NoteScreen() {
         </div>
       </div>
 
-      <Sheet open={moving} onClose={() => setMoving(false)} title={t('notes.moveTitle')}>
+      <Sheet small open={moving} onClose={() => setMoving(false)} title={t('notes.moveTitle')}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {households
             .filter((h) => h.id !== hid)
@@ -290,7 +290,7 @@ export function NoteScreen() {
         </div>
       </Sheet>
 
-      <Sheet open={confirmDelete} onClose={() => setConfirmDelete(false)} title={t('notes.deleteNote')}>
+      <Sheet small open={confirmDelete} onClose={() => setConfirmDelete(false)} title={t('notes.deleteNote')}>
         <p className="body" style={{ margin: '0 0 20px' }}>
           {t('notes.deleteText')}
         </p>

@@ -6,7 +6,7 @@ import { isConfigured } from './lib/supabase'
 import { setLanguage } from './i18n'
 import { useHousehold, useMyProfile } from './data/hooks'
 import { InkFilter, ToastHost } from './components/Scrapbook'
-import { Screen } from './components/Shell'
+import { Framed, Screen } from './components/Shell'
 import { AuthScreen, NewPasswordScreen } from './screens/Auth'
 import { JoinOrCreateScreen, rememberJoinAddress } from './screens/JoinOrCreate'
 import { HouseholdCreatedScreen } from './screens/HouseholdCreated'
@@ -30,7 +30,7 @@ function Inside({ children }: { children: ReactNode }) {
   if (!session) return <Navigate to="/signup" replace />
   if (!loaded) return <Paper />
   if (!households.length) return <Navigate to="/welcome" replace />
-  return <>{children}</>
+  return <Framed.Provider value>{children}</Framed.Provider>
 }
 
 /** Signed in, households or not. */

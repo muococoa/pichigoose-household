@@ -1,0 +1,63 @@
+/* Desktop, 1024 px and up (docs/DESKTOP.md). Values from docs/screens/desktop/hifi-source.
+   Nothing here changes the phone layout. */
+
+@media (min-width: 1024px) {
+  #root { max-width: none }
+
+  /* The frame: lilac desk, the sidebar sheet on the left, the notebook page on the right. */
+  .desk { --top: 32px; --bottom: 0px; --tabbar: 0px; display: flex; height: 100dvh; background: #D6C8E6; overflow: hidden }
+  .side {
+    width: 264px; flex: none; position: relative; margin: 18px 0 18px 18px; border-radius: 6px; box-sizing: border-box; padding: 30px 20px 22px;
+    display: flex; flex-direction: column; gap: 22px; overflow-y: auto; overflow-x: hidden;
+    background-color: #FFFFFF; background-image: url("../../assets/paper-white.png"); background-size: 512px 512px; box-shadow: 2px 3px 0 rgba(30, 26, 48, .13); z-index: 2;
+  }
+  .side .tape { position: absolute }
+  .hhbox { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 4px 4px 0; text-align: left }
+  .nav { position: relative; display: flex; align-items: center; gap: 14px; height: 44px; padding: 0 12px; font-size: 16px; font-weight: 700; color: #63586B; border-radius: 8px }
+  .nav svg { width: 24px; height: 24px; flex: none }
+  .nav:hover { color: #1E1A30 }
+  .nav.on { color: #A8335A }
+  .nav.on::before { content: ""; position: absolute; left: 6px; width: 38px; top: 15px; height: 15px; background: repeating-linear-gradient(45deg, rgba(242, 193, 196, .95) 0 7px, rgba(255, 253, 248, .7) 7px 14px); transform: rotate(-1.5deg); z-index: -1 }
+
+  .desk > .screen.page {
+    flex: 1; min-width: 0; height: auto; min-height: 0; margin: 18px 18px 18px -6px; border-radius: 6px; position: relative; z-index: 1;
+    box-shadow: 3px 4px 0 rgba(30, 26, 48, .13);
+  }
+  /* Wider ruling (every 36 px) and the margin line further in, at 64 px. */
+  .desk > .screen > .scroll {
+    background-image: linear-gradient(90deg, transparent 64px, rgba(211, 68, 113, .22) 64px 66px, transparent 66px), url("../../assets/paper-white.png"), repeating-linear-gradient(#FFFDF8 0 35px, #E6DFE3 35px 36px);
+    background-position: 0 0, 0 0, 0 10px;
+  }
+  .desk > .screen > .margin { left: 64px }
+  /* Content starts right of the margin: 100 px in, 48 px from the right. Screens bring 40 / 22 px of their own. */
+  .desk-content { padding: 8px 26px 32px 60px; max-width: 820px }
+  .desk-content.wide { max-width: none }
+  .desk-footer { max-width: 820px; padding-left: 38px }
+  .desk-footer.wide { max-width: none }
+
+  /* Phone-only pieces. */
+  .fab, .phone-only { display: none !important }
+  .desk .ln { font-size: 17px; line-height: 24px }
+  .desk .note { padding: 22px 22px 18px }
+
+  /* Bottom sheets become a side panel on the right of the page, 400 px wide, so the list stays in view. */
+  .sheet-back { justify-content: flex-end; align-items: stretch; padding: 18px 18px 18px 0; background: rgba(30, 26, 48, .16) }
+  .sheet {
+    width: 400px; max-width: 400px; max-height: none; height: 100%; border-radius: 6px; padding: 28px 28px 28px;
+    box-shadow: -3px 4px 18px rgba(30, 26, 48, .18); animation: panel-in .3s var(--ease-out);
+  }
+  .sheet .grab { display: none }
+  .sheet-back.closing .sheet { animation: panel-out .22s cubic-bezier(.55, 0, 1, .45) forwards }
+  @keyframes panel-in { from { transform: translateX(40px); opacity: 0 } }
+  @keyframes panel-out { to { transform: translateX(40px); opacity: 0 } }
+
+  /* Small confirmations (rename, leave, delete) are small centered dialogs. */
+  .sheet-back.small { justify-content: center; align-items: center; padding: 18px }
+  .sheet-back.small .sheet { width: 440px; height: auto; border-radius: 10px 14px 12px 10px; animation: dialog-in .25s var(--ease-out) }
+  .sheet-back.small.closing .sheet { animation: dialog-out .2s ease-in forwards }
+  @keyframes dialog-in { from { transform: scale(.96); opacity: 0 } }
+  @keyframes dialog-out { to { transform: scale(.96); opacity: 0 } }
+
+  .offline { left: 300px; bottom: 40px }
+  .toast { bottom: 40px; left: calc(50% + 132px) }
+}

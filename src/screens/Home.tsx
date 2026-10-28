@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
 import {
@@ -15,11 +15,21 @@ import {
 import { recentlyDone, toggleItem, toggleTodo } from '../data/actions'
 import { Screen } from '../components/Shell'
 import { Avatar, NobodyAvatar } from '../components/Avatar'
-import { Check, Hand, Struck, Tick, PichiStamp, Sheet, Tape, tilt, type TapeKind } from '../components/Scrapbook'
-import { InkChevron, PencilIcon, PersonAddIcon, PlusIcon } from '../components/Icons'
+import { Check, Hand, Struck, Tick, PichiStamp, Tape, tilt, type TapeKind } from '../components/Scrapbook'
+import { InkChevron, PencilIcon, PlusIcon } from '../components/Icons'
 import { MyHouseholds } from './MyHouseholds'
-import { InviteSheet, PendingInvites } from './Invite'
-import { daysFromToday, dueLabel, fromDateString } from '../lib/time'
+import { PendingInvites } from './Invite'
+import { AddSheet } from './AddSheet'
+import { ago, daysFromToday, dueLabel, fromDateString } from '../lib/time'
+import { useDesktop } from '../lib/desktop'
+
+// Desktop: the small notes inside the notes section, each its own color and tape.
+const MINI: { note: string; tape: TapeKind; rotate: number }[] = [
+  { note: 'n-butter', tape: 'tp', rotate: -2 },
+  { note: 'n-mist', tape: 'ty', rotate: 2 },
+  { note: 'n-blush', tape: 'tm', rotate: 1 },
+  { note: 'n-lilac', tape: 'tdots', rotate: -1.5 },
+]
 
 // Each section is a sticky note in its own pastel, held by its own tape.
 const LOOK: Record<Section, { note: string; tape: TapeKind; tapeStyle: React.CSSProperties; rotate: number }> = {
@@ -31,9 +41,10 @@ const LOOK: Record<Section, { note: string; tape: TapeKind; tapeStyle: React.CSS
 }
 
 function NoteHead({ title, right, to }: { title: string; right: string; to: string }) {
+  const desktop = useDesktop()
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
-      <Hand size={30} lineHeight={32}>
+      <Hand size={desktop ? 34 : 30} lineHeight={desktop ? 36 : 32}>
         {title}
       </Hand>
       <Link to={to} className="cap" style={{ color: '#A8335A', fontWeight: 800 }}>
@@ -50,7 +61,6 @@ function Empty({ children }: { children: string }) {
 export function HomeScreen() {
   const { t, i18n } = useTranslation()
   const me = useMe()
-  const navigate = useNavigate()
   const profile = useMyProfile()
   const { household, membership, people, name } = useHousehold()
   const hid = household?.id ?? null
@@ -59,9 +69,9 @@ export function HomeScreen() {
   const items = useItems(firstList?.id ?? null)
   const todos = useTodos(hid)
   const notes = useNotes(hid)
+  const desktop = useDesktop()
   const [switching, setSwitching] = useState(false)
   const [adding, setAdding] = useState(false)
-  const [inviting, setInviting] = useState(false)
 
   const person = (id: string | null) => people.find((p) => p.id === id)
 
@@ -104,14 +114,25 @@ export function HomeScreen() {
     const look = LOOK[s]
     if (s === 'news') {
       return (
-        <div key="news" style={{ display: 'flex', gap: 12, alignItems: 'flex-start', marginTop: -4 }}>
+        <div key="news" style={{ display: 'flex', gap: desktop ? 16 : 12, alignItems: 'flex-start', marginTop: desktop ? 0 : -4 }}>
           <PichiStamp />
-          <div style={{ position: 'relative', flex: 1, background: '#FFFFFF', borderRadius: '14px 16px 14px 4px', padding: '12px 14px', boxShadow: '2px 3px 0 rgba(30,26,48,.10)', marginTop: 6 }}>
+          <div
+            style={{
+              position: 'relative',
+              flex: desktop ? 'none' : 1,
+              minWidth: desktop ? 300 : undefined,
+              background: '#FFFFFF',
+              borderRadius: '14px 16px 14px 4px',
+              padding: desktop ? '14px 18px' : '12px 14px',
+              boxShadow: '2px 3px 0 rgba(30,26,48,.10)',
+              marginTop: desktop ? 10 : 6,
+            }}
+          >
             {/* The greeting leads; the news sits a step smaller under it. */}
-            <Hand size={27} lineHeight={30} color="#A8335A">
+            <Hand size={desktop ? 31 : 27} lineHeight={desktop ? 34 : 30} color="#A8335A">
               {t('home.hi', { name: profile?.display_name ?? '' })}
             </Hand>
-            <div style={{ fontSize: 14, lineHeight: '20px', fontWeight: 600, marginTop: 2, color: '#463D50' }}>{news}</div>
+            <div style={{ fontSize: desktop ? 16 : 14, lineHeight: desktop ? '22px' : '20px', fontWeight: 600, marginTop: 2, color: '#463D50' }}>{news}</div>
           </div>
         </div>
       )
@@ -204,6 +225,28 @@ export function HomeScreen() {
       <div key="notes" className={`note ${look.note}`} style={{ transform: `rotate(${look.rotate}deg)` }}>
         <Tape kind={look.tape} style={look.tapeStyle} />
         <NoteHead title={t('home.notes')} to="/notes" right={t('common.seeAll')} />
+        {desktop ? (
+          // Desktop: the notes as small sticky notes, two across.
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            {pinnedNotes.slice(0, 4).map((n, i) => {
+              const mini = MINI[i % MINI.length]
+              const by = person(n.updated_by)
+              return (
+                <Link
+                  key={n.id}
+                  to={`/notes/${n.id}`}
+                  className={`note ${mini.note}`}
+                  style={{ display: 'block', padding: '14px 14px 12px', transform: `rotate(${mini.rotate}deg)`, boxShadow: '1px 2px 0 rgba(30,26,48,.12)', minWidth: 0 }}
+                >
+                  <Tape kind={mini.tape} style={{ top: -8, left: '30%', width: 46, height: 16, transform: 'rotate(-4deg)' }} />
+                  <div style={{ fontSize: 16, lineHeight: '21px', fontWeight: 800, color: '#1E1A30', overflowWrap: 'anywhere' }}>{n.title || t('notes.untitled')}</div>
+                  <div className="cap">{n.pinned ? t('notes.pinned') : `${by?.display_name ?? ''} · ${ago(n.updated_at, i18n.language)}`}</div>
+                </Link>
+              )
+            })}
+            {!pinnedNotes.length && <Empty>{t('home.noNotes')}</Empty>}
+          </div>
+        ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {pinnedNotes.slice(0, 3).map((n) => (
             <Link key={n.id} to={`/notes/${n.id}`} className="ln" style={{ display: 'block' }}>
@@ -215,7 +258,32 @@ export function HomeScreen() {
           ))}
           {!pinnedNotes.length && <Empty>{t('home.noNotes')}</Empty>}
         </div>
+        )}
       </div>
+    )
+  }
+
+  if (desktop) {
+    // Desktop (D3): Pichi and the greeting on top with "Arrange your home" on the right,
+    // then the sections as sticky notes on a board, three across, in this person's own order.
+    const board = layout.filter((s) => s.section !== 'news')
+    return (
+      <Screen wide>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 26, paddingTop: 'var(--top)', paddingRight: 22, paddingLeft: 40 }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 24 }}>
+            {layout.some((s) => s.section === 'news') && section('news')}
+            <span style={{ flex: 1 }} />
+            <Link to="/arrange" className="stk sec sm" style={{ transform: 'rotate(2deg)', marginTop: 18 }}>
+              <PencilIcon />
+              {t('home.arrange')}
+            </Link>
+          </div>
+          <PendingInvites style={{ maxWidth: 620 }} />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 30, alignItems: 'start', marginTop: 10 }}>
+            {board.map((s) => section(s.section))}
+          </div>
+        </div>
+      </Screen>
     )
   }
 
@@ -252,7 +320,7 @@ export function HomeScreen() {
 
       <button
         type="button"
-        className="stk prim round"
+        className="stk prim round fab"
         aria-label={t('home.add')}
         onClick={() => setAdding(true)}
         style={{ position: 'fixed', right: 'max(20px, calc(50vw - 195px))', bottom: 'calc(var(--tabbar) + 20px)', zIndex: 6, transform: 'rotate(-4deg)' }}
@@ -261,33 +329,7 @@ export function HomeScreen() {
       </button>
 
       <MyHouseholds open={switching} onClose={() => setSwitching(false)} />
-      <Sheet open={adding} onClose={() => setAdding(false)} title={t('home.addWhat')}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-          <button type="button" className="stk sec" style={{ transform: 'rotate(-1deg)' }} onClick={() => navigate('/shopping?add=1')}>
-            {t('home.addItem')}
-          </button>
-          <button type="button" className="stk sec" style={{ transform: 'rotate(1deg)' }} onClick={() => navigate('/todos?add=1')}>
-            {t('home.addTodo')}
-          </button>
-          <button type="button" className="stk sec" style={{ transform: 'rotate(-.5deg)' }} onClick={() => navigate('/notes/new')}>
-            {t('home.addNote')}
-          </button>
-          {/* People get the violet sticker. */}
-          <button
-            type="button"
-            className="stk violet"
-            style={{ transform: 'rotate(1deg)' }}
-            onClick={() => {
-              setAdding(false)
-              setInviting(true)
-            }}
-          >
-            <PersonAddIcon />
-            {t('home.addSomeone')}
-          </button>
-        </div>
-      </Sheet>
-      <InviteSheet household={inviting ? household : null} onClose={() => setInviting(false)} />
+      <AddSheet open={adding} onClose={() => setAdding(false)} />
     </Screen>
   )
 }

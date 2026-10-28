@@ -8,7 +8,7 @@ import { setCurrentHousehold, useHousehold, type Household } from '../data/hooks
 import { Hand, Sheet, Tape } from '../components/Scrapbook'
 import { FieldError } from '../components/FieldError'
 import { ShareIcon } from '../components/Icons'
-import { joinLink, shareAddress } from './HouseholdCreated'
+import { joinLink, shareAddress } from '../lib/share'
 
 type Invite = Row & {
   household_id: string

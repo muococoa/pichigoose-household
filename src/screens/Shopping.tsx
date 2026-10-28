@@ -10,6 +10,7 @@ import { Avatar } from '../components/Avatar'
 import { Check, Hand, Struck, Tick, useArrivals, PichiStamp, Sheet, Stamp, STAMP_COLORS, showToast, tilt, type TapeKind } from '../components/Scrapbook'
 import { BackIcon, PlusIcon, ShareIcon } from '../components/Icons'
 import { ago } from '../lib/time'
+import { useDesktop } from '../lib/desktop'
 
 const TAB_TAPES: TapeKind[] = ['tp', 'tm', 'ty', 'tb', 'tdots', 'tblocks', 'ttri', 'tcheck']
 const LIST_KEY = 'pichigoose.list'
@@ -34,6 +35,7 @@ export function ShoppingScreen() {
   const { t, i18n } = useTranslation()
   const me = useMe()
   const navigate = useNavigate()
+  const desktop = useDesktop()
   const [params] = useSearchParams()
   const { household, people } = useHousehold()
   const hid = household?.id ?? null
@@ -140,11 +142,11 @@ export function ShoppingScreen() {
     return (
       <Tick key={x.id} checked={isBought} onCommit={() => toggleItem(x, me)}>
         {(on, toggle) => (
-      <div className={`ln${on ? ' row-done' : ''}`} style={{ height: isBought ? 48 : 64 }}>
+      <div className={`ln${on ? ' row-done' : ''}`} style={{ height: desktop ? 72 : isBought ? 48 : 64 }}>
         <Check checked={on} onToggle={toggle} label={x.name} rotate={tilt(x.id)} />
         <button
           type="button"
-          style={{ flex: 1, minWidth: 0, fontSize: 17 }}
+          style={{ flex: 1, minWidth: 0, fontSize: desktop ? 18 : 17 }}
           onClick={() => {
             setItemName(x.name)
             setItemNote(x.note ?? '')
@@ -153,7 +155,7 @@ export function ShoppingScreen() {
         >
           <Struck on={on}>{x.name}</Struck>
           {!isBought && (
-            <div className="cap">
+            <div className="cap" style={desktop ? { fontSize: 13 } : undefined}>
               {x.note ? `${x.note} · ` : ''}
               {t('shopping.addedBy', { name: who?.display_name ?? t('common.someone'), when: ago(x.created_at, i18n.language) })}
             </div>
@@ -171,9 +173,10 @@ export function ShoppingScreen() {
   }
 
   return (
-    <Screen tabbar>
+    <Screen tabbar wide>
       {/* One + sticker that turns into the add bar. Closed, it floats above the tab bar.
-          Tapped, it settles into the bar while the field grows out of it. */}
+          Tapped, it settles into the bar while the field grows out of it. Phone only. */}
+      {!desktop && (
       <form onSubmit={add} className={`add-bar${adding ? ' open' : ''}`}>
         <input
           ref={inputRef}
@@ -206,16 +209,19 @@ export function ShoppingScreen() {
           <PlusIcon />
         </button>
       </form>
-      <div style={{ padding: 'calc(var(--top) + 8px) 22px 0 40px', display: 'flex', flexDirection: 'column', gap: 14 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: -10 }}>
-          <button type="button" aria-label={t('common.back')} onClick={() => navigate('/')} style={{ color: '#1E1A30', display: 'flex' }}>
-            <BackIcon />
-          </button>
-          <Hand as="h1" size={42} lineHeight={44} style={{ margin: 0 }}>
+      )}
+      <div style={{ padding: 'calc(var(--top) + 8px) 22px 0 40px', display: 'flex', flexDirection: 'column', gap: desktop ? 18 : 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: desktop ? 0 : -10 }}>
+          {!desktop && (
+            <button type="button" aria-label={t('common.back')} onClick={() => navigate('/')} style={{ color: '#1E1A30', display: 'flex' }}>
+              <BackIcon />
+            </button>
+          )}
+          <Hand as="h1" size={desktop ? 52 : 42} lineHeight={desktop ? 56 : 44} style={{ margin: 0 }}>
             {t('shopping.title')}
           </Hand>
           <span style={{ flex: 1 }} />
-          <button type="button" className="stk sec sm" aria-label={t('shopping.share')} style={{ width: 38, padding: 0, transform: 'rotate(2deg)' }} onClick={share}>
+          <button type="button" className="stk sec sm" aria-label={t('shopping.share')} style={{ width: desktop ? 42 : 38, padding: 0, transform: `rotate(${desktop ? 3 : 2}deg)` }} onClick={share}>
             <ShareIcon />
           </button>
         </div>
@@ -257,6 +263,49 @@ export function ShoppingScreen() {
         </div>
       </div>
 
+      {desktop ? (
+        // Desktop (D5): the add field on top of the list (Enter adds and keeps it ready for the next one),
+        // and Bought in its own column on the right.
+        <div style={{ display: 'flex', gap: 64, alignItems: 'flex-start', padding: '26px 22px 32px 40px' }}>
+          <div style={{ flex: 1.5, minWidth: 0 }}>
+            <form onSubmit={add} style={{ display: 'flex', gap: 14, alignItems: 'center', marginBottom: 8 }}>
+              <input
+                ref={inputRef}
+                className="input"
+                autoFocus={Boolean(params.get('add'))}
+                placeholder={t('shopping.addItem')}
+                aria-label={t('shopping.addItem')}
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                style={{ flex: 1, fontSize: 17 }}
+              />
+              <button type="submit" className="stk prim" style={{ transform: 'rotate(-1.5deg)' }}>
+                {t('shopping.addButton')}
+              </button>
+            </form>
+            {toBuy.map((x) => row(x, false))}
+            {items.loaded && !toBuy.length && (
+              <div className="row" style={{ gap: 14, padding: '16px 0 6px' }}>
+                <PichiStamp width={46} height={56} rotate={-4} />
+                <p className="body" style={{ margin: 0 }}>
+                  {t('shopping.emptyAbove')}
+                </p>
+              </div>
+            )}
+          </div>
+          <div style={{ flex: 1, minWidth: 0, paddingTop: 10 }}>
+            {bought.length > 0 && (
+              <>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                  <Stamp color={STAMP_COLORS.locked} motion={arrived.length ? 'in' : undefined}>{t('shopping.bought')}</Stamp>
+                  <span className="cap">{t('common.items', { count: bought.length })}</span>
+                </div>
+                {bought.map((x) => row(x, true))}
+              </>
+            )}
+          </div>
+        </div>
+      ) : (
       <div style={{ padding: `26px 22px ${adding ? 110 : 24}px 40px` }}>
         {toBuy.map((x) => row(x, false))}
         {items.loaded && !toBuy.length && (
@@ -277,8 +326,9 @@ export function ShoppingScreen() {
           </>
         )}
       </div>
+      )}
 
-      <Sheet open={newList !== null} onClose={() => setNewList(null)} title={t('shopping.newList')}>
+      <Sheet small open={newList !== null} onClose={() => setNewList(null)} title={t('shopping.newList')}>
         <form onSubmit={addList} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <input className="input" autoFocus placeholder={t('shopping.newListPlaceholder')} aria-label={t('shopping.newList')} value={newList ?? ''} onChange={(e) => setNewList(e.target.value)} />
           <button type="submit" className="stk prim" style={{ width: '100%' }}>
@@ -287,7 +337,7 @@ export function ShoppingScreen() {
         </form>
       </Sheet>
 
-      <Sheet open={Boolean(editingList)} onClose={() => setEditingList(null)} title={t('shopping.renameList')}>
+      <Sheet small open={Boolean(editingList)} onClose={() => setEditingList(null)} title={t('shopping.renameList')}>
         <form
           onSubmit={(e) => {
             e.preventDefault()

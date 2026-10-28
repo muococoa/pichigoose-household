@@ -117,7 +117,7 @@
     "addItem": "Something to buy",
     "addTodo": "A to-do",
     "addNote": "A note",
-    "addSomeone": "Someone to the household"
+    "addSomeone": "Add someone to the household"
   },
   "arrange": {
     "title": "Arrange your home",
@@ -149,7 +149,8 @@
     "itemName": "Item",
     "itemNote": "Note",
     "itemNotePlaceholder": "the big bag",
-    "shareTitle": "{{name}}"
+    "shareTitle": "{{name}}",
+    "emptyAbove": "Nothing on the list yet. Add the first thing above."
   },
   "todos": {
     "title": "To-dos",

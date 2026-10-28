@@ -1,12 +1,37 @@
-import { useEffect, useState, useSyncExternalStore, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, useSyncExternalStore, type ReactNode } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { BasketIcon, HomeIcon, NoteIcon, TodoIcon } from './Icons'
 import { Stamp, STAMP_COLORS } from './Scrapbook'
 import { useOutboxCount } from '../data/store'
+import { useDesktop } from '../lib/desktop'
+import { Sidebar } from './Sidebar'
+
+/** Screens inside a household. On desktop they sit on the notebook page next to the sidebar. */
+export const Framed = createContext(false)
+
+type ScreenProps = { children: ReactNode; tabbar?: boolean; footer?: ReactNode; className?: string; wide?: boolean }
 
 /** A screen of notebook paper with the red margin. */
-export function Screen({ children, tabbar, footer, className = '' }: { children: ReactNode; tabbar?: boolean; footer?: ReactNode; className?: string }) {
+export function Screen({ children, tabbar, footer, className = '', wide }: ScreenProps) {
+  const desktop = useDesktop()
+  const framed = useContext(Framed)
+  if (desktop && framed) {
+    // Desktop: sidebar on the left, the notebook page fills the rest. Screens not laid out
+    // for desktop yet keep a comfortable reading width instead of stretching.
+    return (
+      <div className="desk">
+        <Sidebar />
+        <div className={`screen scr page ${className}`}>
+          <div className="scroll scr">
+            <div className={`desk-content${wide ? ' wide' : ''}`}>{children}</div>
+          </div>
+          {footer && <div className={`desk-footer${wide ? ' wide' : ''}`}>{footer}</div>}
+          <OfflineBadge />
+        </div>
+      </div>
+    )
+  }
   return (
     <div className={`screen scr ${tabbar ? 'with-tabbar' : ''} ${className}`}>
       <div className="margin" />

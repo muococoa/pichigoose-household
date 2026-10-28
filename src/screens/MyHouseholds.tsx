@@ -7,7 +7,7 @@ import { setCurrentHousehold, useHousehold, type Household } from '../data/hooks
 import { Avatar } from '../components/Avatar'
 import { Menu, Sheet } from '../components/Scrapbook'
 import { DotsIcon, SmallCheck } from '../components/Icons'
-import { copyText, joinLink } from './HouseholdCreated'
+import { copyText, joinLink } from '../lib/share'
 import { InviteSheet } from './Invite'
 
 /** The sheet that opens from the household name on Home. */
@@ -130,7 +130,7 @@ export function MyHouseholds({ open, onClose }: { open: boolean; onClose: () => 
 
       <InviteSheet household={inviting} onClose={() => setInviting(null)} />
 
-      <Sheet open={Boolean(renaming)} onClose={() => setRenaming(null)} title={t('households.renameTitle')}>
+      <Sheet small open={Boolean(renaming)} onClose={() => setRenaming(null)} title={t('households.renameTitle')}>
         <form
           onSubmit={(e) => {
             e.preventDefault()
@@ -145,7 +145,7 @@ export function MyHouseholds({ open, onClose }: { open: boolean; onClose: () => 
         </form>
       </Sheet>
 
-      <Sheet open={Boolean(leaving)} onClose={() => setLeaving(null)} title={leaving ? t('households.leaveTitle', { name: name(leaving) }) : ''}>
+      <Sheet small open={Boolean(leaving)} onClose={() => setLeaving(null)} title={leaving ? t('households.leaveTitle', { name: name(leaving) }) : ''}>
         <p className="body" style={{ margin: '0 0 20px' }}>
           {leavingAlone ? t('households.leaveLast') : t('households.leaveText')}
         </p>

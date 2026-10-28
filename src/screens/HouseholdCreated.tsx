@@ -2,33 +2,8 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useHousehold } from '../data/hooks'
 import { Screen } from '../components/Shell'
-import { Hand, PichiPolaroid, Tape, showToast } from '../components/Scrapbook'
-
-export function joinLink(address: string) {
-  return `${window.location.origin}/join/${address}`
-}
-
-export async function copyText(text: string, done: string) {
-  try {
-    await navigator.clipboard.writeText(text)
-    showToast(done)
-  } catch {
-    window.prompt('', text)
-  }
-}
-
-export async function shareAddress(address: string, text: string, copied: string) {
-  const link = joinLink(address)
-  if (navigator.share) {
-    try {
-      await navigator.share({ text })
-      return
-    } catch {
-      return
-    }
-  }
-  await copyText(link, copied)
-}
+import { Hand, PichiPolaroid, Tape } from '../components/Scrapbook'
+import { copyText, joinLink, shareAddress } from '../lib/share'
 
 export function HouseholdCreatedScreen() {
   const { t } = useTranslation()
