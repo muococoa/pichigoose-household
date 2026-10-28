@@ -7,7 +7,7 @@ import { useHousehold, useTodos, type Profile, type Todo } from '../data/hooks'
 import { recentlyDone, toggleTodo } from '../data/actions'
 import { Floating, Screen } from '../components/Shell'
 import { Avatar, NobodyAvatar } from '../components/Avatar'
-import { Check, Hand, Struck, Tick, useArrivals, PoseStamp, Sheet, Stamp, STAMP_COLORS, tilt } from '../components/Scrapbook'
+import { Check, Hand, Struck, Tick, useArrivals, EmptyState, Sheet, Stamp, STAMP_COLORS, tilt } from '../components/Scrapbook'
 import { ChevronDown, PlusIcon } from '../components/Icons'
 import { MyHouseholds } from './MyHouseholds'
 import { CommentCount, Comments, useCommentCounts } from '../components/Comments'
@@ -190,13 +190,10 @@ export function TodosScreen() {
           )
         })}
         {todos.loaded && !groups.length && (
-          <div className="row" style={{ gap: 16, marginTop: 28 }}>
-            {/* Pichi honks: nothing to do! */}
-            <PoseStamp pose="honk" color="#F2C1C4" width={70} height={80} zoom={1.15} focus="40% 30%" rotate={3} />
-            <p className="body" style={{ margin: 0 }}>
-              {t('todos.empty')}
-            </p>
-          </div>
+          // Pichi honks: nothing to do!
+          <EmptyState pose="honk" color="#F2C1C4" zoom={1.05} rotate={3}>
+            {t('todos.empty')}
+          </EmptyState>
         )}
         </div>
       </div>

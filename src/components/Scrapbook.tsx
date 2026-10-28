@@ -268,6 +268,19 @@ export function PoseStamp({
   )
 }
 
+/** An empty page: Pichi big in her stamp, centered, with the message under it. The stamp grows,
+ *  but its frame (wavy edge, white border, ink line) stays the same thickness at any size. */
+export function EmptyState({ pose, color, zoom = 1, focus = '50% 45%', rotate = -3, children }: { pose: Pose; color: string; zoom?: number; focus?: string; rotate?: number; children: ReactNode }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 22, padding: '28px 0 12px' }}>
+      <PoseStamp pose={pose} color={color} width={190} height={224} zoom={zoom} focus={focus} rotate={rotate} />
+      <p className="body" style={{ margin: 0, maxWidth: 290, textWrap: 'balance' }}>
+        {children}
+      </p>
+    </div>
+  )
+}
+
 /** A paper clip holding a small note to the one behind it. Drawn as a loop of metal wire. */
 export function PaperClip({ side = 'right', style }: { side?: 'left' | 'right'; style?: CSSProperties }) {
   return (

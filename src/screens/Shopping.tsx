@@ -7,7 +7,7 @@ import { useHousehold, useItems, useLists, type Item, type List } from '../data/
 import { recentlyBought, toggleItem } from '../data/actions'
 import { Floating, Screen } from '../components/Shell'
 import { Avatar } from '../components/Avatar'
-import { Check, Hand, Struck, Tick, useArrivals, PoseStamp, Sheet, Stamp, STAMP_COLORS, showToast, tilt, type TapeKind } from '../components/Scrapbook'
+import { Check, Hand, Struck, Tick, useArrivals, EmptyState, Sheet, Stamp, STAMP_COLORS, showToast, tilt, type TapeKind } from '../components/Scrapbook'
 import { BackIcon, PlusIcon, ShareIcon } from '../components/Icons'
 import { ago } from '../lib/time'
 import { useDesktop } from '../lib/desktop'
@@ -290,12 +290,9 @@ export function ShoppingScreen() {
             </form>
             {toBuy.map((x) => row(x, false))}
             {items.loaded && !toBuy.length && (
-              <div className="row" style={{ gap: 14, padding: '16px 0 6px' }}>
-                <PoseStamp pose="stand-left" color="#F8E6A8" width={64} height={76} zoom={1.05} focus="50% 40%" />
-                <p className="body" style={{ margin: 0 }}>
-                  {t('shopping.emptyAbove')}
-                </p>
-              </div>
+              <EmptyState pose="stand-left" color="#F8E6A8" zoom={0.95}>
+                {t('shopping.emptyAbove')}
+              </EmptyState>
             )}
           </div>
           <div style={{ flex: '1 1 260px', minWidth: 0, paddingTop: 10 }}>
@@ -314,12 +311,9 @@ export function ShoppingScreen() {
       <div style={{ padding: '26px 22px 0 40px' }}>
         {toBuy.map((x) => row(x, false))}
         {items.loaded && !toBuy.length && (
-          <div className="row" style={{ gap: 14, padding: '10px 0 6px' }}>
-            <PoseStamp pose="stand-left" color="#F8E6A8" width={64} height={76} zoom={1.05} focus="50% 40%" />
-            <p className="body" style={{ margin: 0 }}>
-              {t('shopping.empty')}
-            </p>
-          </div>
+          <EmptyState pose="stand-left" color="#F8E6A8" zoom={0.95}>
+            {t('shopping.empty')}
+          </EmptyState>
         )}
         {bought.length > 0 && (
           <>

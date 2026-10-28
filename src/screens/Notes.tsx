@@ -6,7 +6,7 @@ import { db } from '../data/store'
 import { useHousehold, useNotes, type Note } from '../data/hooks'
 import { Floating, Screen } from '../components/Shell'
 import { Avatar } from '../components/Avatar'
-import { Hand, Menu, PoseStamp, Sheet, Stamp, STAMP_COLORS, Tape, tilt, type TapeKind } from '../components/Scrapbook'
+import { EmptyState, Hand, Menu, Sheet, Stamp, STAMP_COLORS, Tape, tilt, type TapeKind } from '../components/Scrapbook'
 import { BackIcon, ChevronDown, CloseIcon, DotsIcon, PlusIcon, SearchIcon } from '../components/Icons'
 import { MyHouseholds } from './MyHouseholds'
 import { ago } from '../lib/time'
@@ -146,12 +146,15 @@ export function NotesScreen() {
           </section>
         )}
         {notes.loaded && !found.length && (
-          <div className="row" style={{ gap: 16, marginTop: 28 }}>
-            {!query && <PoseStamp pose="stand-right" color="#A7D3CC" width={64} height={76} zoom={1.3} focus="45% 30%" />}
-            <p className="body" style={{ margin: 0 }}>
-              {query ? t('notes.noMatch') : t('notes.empty')}
+          query ? (
+            <p className="body" style={{ marginTop: 28 }}>
+              {t('notes.noMatch')}
             </p>
-          </div>
+          ) : (
+            <EmptyState pose="stand-right" color="#A7D3CC" zoom={1}>
+              {t('notes.empty')}
+            </EmptyState>
+          )
         )}
       </div>
 

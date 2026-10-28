@@ -101,13 +101,14 @@ textarea.input { height: auto; padding: 12px 16px; resize: none }
 
 /* Rows on the Home notes: the checkbox lines up with the to-do's first line, not the middle of the row. */
 .note .ln:has(.cap) { align-items: flex-start }
-.note .ln:has(.cap) .check-btn { margin-top: -10px }
+.note .ln:has(.cap) .check-btn { margin-top: -7px }
 .note .ln:has(.cap) .av-fade { align-self: center }
 
 /* Rows with a second line (Shopping, To-dos): the checkbox lines up with the item's name.
    --title-top is how far down the name starts inside the row. */
 .ln.top { align-items: flex-start }
-.ln.top .check-btn { margin-top: calc(var(--title-top, 0px) - 10px) }
+/* 3 px lower than the line's top, so the box starts where the name's big letters start. */
+.ln.top .check-btn { margin-top: calc(var(--title-top, 0px) - 7px) }
 .ln.top .av-fade { align-self: center }
 
 /* Comments: a short chat under an item, to-do or note. */
