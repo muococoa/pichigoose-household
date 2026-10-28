@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
@@ -48,6 +48,23 @@ export function TodosScreen() {
   const hid = household?.id ?? null
   const todos = useTodos(hid)
   const [filter, setFilter] = useState<string>('all')
+  // Switching the filter: the list fades out quickly, then the new one fades in and its labels
+  // are stamped down. The chip changes right away; the list follows.
+  const [shown, setShown] = useState<string>('all')
+  const [phase, setPhase] = useState<'in' | 'out' | 'idle'>('idle')
+  const switchTimer = useRef<number | undefined>(undefined)
+  function pickFilter(next: string) {
+    if (next === filter) return
+    setFilter(next)
+    setPhase('out')
+    window.clearTimeout(switchTimer.current)
+    switchTimer.current = window.setTimeout(() => {
+      setShown(next)
+      setPhase('in')
+      switchTimer.current = window.setTimeout(() => setPhase('idle'), 450)
+    }, 170)
+  }
+  useEffect(() => () => window.clearTimeout(switchTimer.current), [])
   const [switching, setSwitching] = useState(false)
   const [editing, setEditing] = useState<Todo | 'new' | null>(null)
 
@@ -61,10 +78,10 @@ export function TodosScreen() {
   const others = people.filter((p) => p.id !== me)
   const visible = useMemo(() => {
     const rows = todos.rows.filter((x) => !x.done_at || recentlyDone(x))
-    if (filter === 'all') return rows
-    if (filter === 'mine') return rows.filter((x) => x.assignee_id === me)
-    return rows.filter((x) => x.assignee_id === filter)
-  }, [todos.rows, filter, me])
+    if (shown === 'all') return rows
+    if (shown === 'mine') return rows.filter((x) => x.assignee_id === me)
+    return rows.filter((x) => x.assignee_id === shown)
+  }, [todos.rows, shown, me])
 
   const groups = useMemo(() => {
     return ORDER
@@ -106,20 +123,21 @@ export function TodosScreen() {
         </div>
         {others.length > 0 && (
           <div className="row" style={{ gap: 8, flexWrap: 'wrap', margin: '16px 0 0' }}>
-            <Chip on={filter === 'all'} onClick={() => setFilter('all')}>
+            <Chip on={filter === 'all'} onClick={() => pickFilter('all')}>
               {t('todos.all')}
             </Chip>
-            <Chip on={filter === 'mine'} onClick={() => setFilter('mine')}>
+            <Chip on={filter === 'mine'} onClick={() => pickFilter('mine')}>
               {t('todos.mine')}
             </Chip>
             {others.slice(0, 3).map((p) => (
-              <Chip key={p.id} on={filter === p.id} onClick={() => setFilter(p.id)}>
+              <Chip key={p.id} on={filter === p.id} onClick={() => pickFilter(p.id)}>
                 {t('todos.persons', { name: p.display_name })}
               </Chip>
             ))}
           </div>
         )}
 
+        <div key={shown} className={phase === 'out' ? 'swap-out' : phase === 'in' ? 'swap-in' : undefined}>
         {ORDER.filter((g) => leaving.includes(g) || groups.some((x) => x.g === g)).map((g) => {
           const rows = groups.find((x) => x.g === g)?.rows ?? []
           if (!rows.length) {
@@ -138,7 +156,7 @@ export function TodosScreen() {
           return (
           <section key={g} style={{ marginTop: 22 }}>
             <div style={{ marginBottom: 4 }}>
-              <Stamp color={GROUP_COLOR[g]} rotate={g === 'today' ? -3 : 2} motion={arrived.includes(g) ? 'in' : undefined}>
+              <Stamp color={GROUP_COLOR[g]} rotate={g === 'today' ? -3 : 2} motion={arrived.includes(g) || phase === 'in' ? 'in' : undefined}>
                 {t(`todos.${g}`)}
               </Stamp>
             </div>
@@ -170,6 +188,7 @@ export function TodosScreen() {
             {t('todos.empty')}
           </p>
         )}
+        </div>
       </div>
 
       <Floating>
