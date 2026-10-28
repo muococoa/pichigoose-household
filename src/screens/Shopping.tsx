@@ -228,9 +228,8 @@ export function ShoppingScreen() {
             {t('shopping.title')}
           </Hand>
           <span style={{ flex: 1 }} />
-          <button type="button" className="stk sec sm" style={{ transform: 'rotate(2deg)' }} onClick={share}>
+          <button type="button" className="stk sec sm" aria-label={t('shopping.share')} style={{ width: 38, padding: 0, transform: 'rotate(2deg)' }} onClick={share}>
             <ShareIcon />
-            {t('shopping.share')}
           </button>
         </div>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', rowGap: 12 }}>
