@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
@@ -208,6 +208,15 @@ function NoteEditor({ panel }: { panel?: boolean }) {
   const [moving, setMoving] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const lastId = useRef<string | undefined>(undefined)
+  const bodyRef = useRef<HTMLTextAreaElement>(null)
+
+  // The text area is as tall as its text (plus the room below it), so the note grows as you type.
+  useLayoutEffect(() => {
+    const el = bodyRef.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = `${el.scrollHeight}px`
+  }, [body])
 
   // Load the text when the note first arrives (or a different note opens).
   useEffect(() => {
@@ -274,7 +283,9 @@ function NoteEditor({ panel }: { panel?: boolean }) {
           )}
         </div>
 
-        <div className={`note ${note ? colorOf(note.id) : 'n-sage'}`} style={{ marginTop: 22, flex: 1, display: 'flex', flexDirection: 'column', transform: 'rotate(-.5deg)', padding: '22px 20px 16px' }}>
+        {/* The note fits its text plus a few empty lines to keep writing, and grows as you type.
+            It's never smaller than about a third of the screen. The rest is notebook paper. */}
+        <div className={`note ${note ? colorOf(note.id) : 'n-sage'}`} style={{ marginTop: 22, minHeight: '34dvh', display: 'flex', flexDirection: 'column', transform: 'rotate(-.5deg)', padding: '22px 20px 16px' }}>
           <Tape kind="tm" style={{ top: -10, left: 30, transform: 'rotate(-4deg)' }} />
           <input
             value={title}
@@ -284,6 +295,8 @@ function NoteEditor({ panel }: { panel?: boolean }) {
             style={{ position: 'relative', zIndex: 1, background: 'transparent', border: 0, outline: 'none', font: '800 24px/32px Nunito, sans-serif', color: '#1E1A30', padding: 0, width: '100%' }}
           />
           <textarea
+            ref={bodyRef}
+            rows={1}
             value={body}
             onChange={(e) => setBody(e.target.value)}
             placeholder={t('notes.bodyPlaceholder')}
@@ -291,16 +304,18 @@ function NoteEditor({ panel }: { panel?: boolean }) {
             style={{
               position: 'relative',
               zIndex: 1,
-              flex: 1,
-              minHeight: 260,
+              flex: '1 0 auto',
+              minHeight: 78,
               marginTop: 10,
+              overflow: 'hidden',
               background: 'transparent',
               border: 0,
               outline: 'none',
               resize: 'none',
               font: '600 17px/26px Nunito, sans-serif',
               color: '#2E2638',
-              padding: 0,
+              // Three empty lines under the text, ready to keep writing.
+              padding: '0 0 78px',
             }}
           />
           {note && author && (
