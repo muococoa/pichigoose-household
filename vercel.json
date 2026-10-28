@@ -1,6 +1,12 @@
 {
   "rewrites": [
-    { "source": "/join/:address", "destination": "/index.html" },
-    { "source": "/((?!assets/|email/|.*\\..*).*)", "destination": "/index.html" }
+    {
+      "source": "/join/:address",
+      "destination": "/join.html"
+    },
+    {
+      "source": "/((?!assets/|email/|og/|.*\\..*).*)",
+      "destination": "/index.html"
+    }
   ]
 }

@@ -1,11 +1,43 @@
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
+import { readFileSync, writeFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+
+// Chat apps don't run the app's code when they show a link preview, so join links get their own
+// copy of the page with the "Join my household!" image. vercel.json sends /join/... to it.
+function joinPreview() {
+  return {
+    name: 'join-preview',
+    apply: 'build' as const,
+    closeBundle() {
+      const dist = resolve(__dirname, 'dist')
+      const html = readFileSync(resolve(dist, 'index.html'), 'utf8')
+      const preview = `<!-- share-preview -->
+    <meta name="description" content="Join my household on Pichigoose." />
+    <meta property="og:site_name" content="Pichigoose" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Join my household on Pichigoose" />
+    <meta property="og:description" content="Planning your household with the people you live with, so everyone stays organized." />
+    <meta property="og:image" content="https://www.pichigoose.com/og/join.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Pichi the goose on a postage stamp, with Join my household!" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://www.pichigoose.com/og/join.jpg" />
+    <!-- /share-preview -->`
+      const out = html.replace(/<!-- share-preview -->[\s\S]*<!-- \/share-preview -->/, preview)
+      if (out === html) throw new Error('join-preview: share-preview block not found in index.html')
+      writeFileSync(resolve(dist, 'join.html'), out)
+    },
+  }
+}
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
+    joinPreview(),
     VitePWA({
       registerType: 'autoUpdate',
       // Registered in src/main.tsx, so the app can reload itself when a new version is out.
