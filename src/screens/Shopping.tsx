@@ -11,6 +11,7 @@ import { Check, Hand, Struck, Tick, useArrivals, PichiStamp, Sheet, Stamp, STAMP
 import { BackIcon, PlusIcon, ShareIcon } from '../components/Icons'
 import { ago } from '../lib/time'
 import { useDesktop } from '../lib/desktop'
+import { CommentCount, Comments, useCommentCounts } from '../components/Comments'
 
 const TAB_TAPES: TapeKind[] = ['tp', 'tm', 'ty', 'tb', 'tdots', 'tblocks', 'ttri', 'tcheck']
 const LIST_KEY = 'pichigoose.list'
@@ -73,6 +74,7 @@ export function ShoppingScreen() {
   const { arrived } = useArrivals(bought.length ? ['bought'] : [])
 
   const person = (id: string | null) => people.find((p) => p.id === id)
+  const commentsOn = useCommentCounts()
 
   function pick(l: List) {
     if (list?.id === l.id) {
@@ -157,6 +159,7 @@ export function ShoppingScreen() {
           }}
         >
           <Struck on={on}>{x.name}</Struck>
+          <CommentCount n={commentsOn(x.id)} />
           {!isBought && (
             <div className="cap" style={desktop ? { fontSize: 13 } : undefined}>
               {x.note ? `${x.note} · ` : ''}
@@ -376,6 +379,7 @@ export function ShoppingScreen() {
 
       <Sheet open={Boolean(editing)} onClose={() => setEditing(null)} title={t('shopping.editItem')}>
         <form
+          id="item-form"
           onSubmit={(e) => {
             e.preventDefault()
             if (editing && itemName.trim()) db.update('list_items', editing.id, { name: itemName.trim(), note: itemNote.trim() || null })
@@ -395,7 +399,13 @@ export function ShoppingScreen() {
             </label>
             <input id="item-note" className="input" placeholder={t('shopping.itemNotePlaceholder')} value={itemNote} onChange={(e) => setItemNote(e.target.value)} />
           </div>
-          <div className="row" style={{ gap: 12, marginTop: 6 }}>
+        </form>
+        {editing && (
+          <div style={{ marginTop: 18 }}>
+            <Comments target={{ item_id: editing.id }} />
+          </div>
+        )}
+        <div className="row sheet-actions" style={{ gap: 12, marginTop: 18 }}>
             <button
               type="button"
               className="stk sec"
@@ -407,11 +417,10 @@ export function ShoppingScreen() {
             >
               {t('common.delete')}
             </button>
-            <button type="submit" className="stk prim" style={{ flex: 1.4 }}>
+            <button type="submit" form="item-form" className="stk prim" style={{ flex: 1.4 }}>
               {t('common.save')}
             </button>
-          </div>
-        </form>
+        </div>
       </Sheet>
     </Screen>
   )

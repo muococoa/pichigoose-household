@@ -7,6 +7,7 @@ import {
   useHousehold,
   useItems,
   useLists,
+  useComments,
   useMyProfile,
   useNotes,
   useTodos,
@@ -24,6 +25,7 @@ import { AskName, madeFromEmail } from './AskName'
 import { ago, daysFromToday, dueLabel, fromDateString } from '../lib/time'
 import { useDesktop } from '../lib/desktop'
 import { DragBoard } from '../components/DragBoard'
+import { CommentCount, useCommentCounts } from '../components/Comments'
 import { db } from '../data/store'
 
 // Desktop: the small notes inside the notes section, each its own color and tape.
@@ -81,6 +83,8 @@ export function HomeScreen() {
   const needsName = Boolean(profile && email && madeFromEmail(profile.display_name, email))
 
   const person = (id: string | null) => people.find((p) => p.id === id)
+  const commentsOn = useCommentCounts()
+  const comments = useComments(hid)
 
   const openTodos = useMemo(
     () =>
@@ -103,13 +107,23 @@ export function HomeScreen() {
 
   // Pichi's news. Real notifications arrive in phase 4. Until then she tells you what's new on the list.
   const news = useMemo(() => {
-    const recent = toBuy.find((x) => x.added_by && x.added_by !== me && Date.now() - new Date(x.created_at).getTime() < 2 * 86400000)
+    const fresh = (iso: string) => Date.now() - new Date(iso).getTime() < 2 * 86400000
+    const recent = toBuy.find((x) => x.added_by && x.added_by !== me && fresh(x.created_at))
+    // Someone commented on something: "Danko commented on šipka za kuhinju."
+    const comment = [...comments.rows].reverse().find((c) => c.author_id && c.author_id !== me && fresh(c.created_at))
+    if (comment && (!recent || comment.created_at > recent.created_at)) {
+      const thing =
+        items.rows.find((x) => x.id === comment.item_id)?.name ??
+        todos.rows.find((x) => x.id === comment.todo_id)?.title ??
+        notes.rows.find((x) => x.id === comment.note_id)?.title
+      if (thing) return t('home.newsCommented', { name: person(comment.author_id)?.display_name ?? t('common.someone'), item: thing })
+    }
     if (recent) return t('home.newsAdded', { name: person(recent.added_by)?.display_name ?? t('common.someone'), item: recent.name })
     const mineToday = openTodos.filter((x) => x.assignee_id === me && x.due_date && daysFromToday(fromDateString(x.due_date)) <= 0).length
     if (mineToday) return t('home.newsTodos', { count: mineToday })
     return t('home.newsCalm')
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [toBuy, openTodos, me, people, i18n.language])
+  }, [toBuy, openTodos, me, people, i18n.language, comments.rows])
 
   const fullLayout = useMemo(() => {
     const saved = membership?.home_layout?.length ? membership.home_layout : DEFAULT_LAYOUT
@@ -175,6 +189,7 @@ export function HomeScreen() {
                       <Check checked={on} onToggle={toggle} label={x.title} rotate={tilt(x.id)} />
                       <span style={{ flex: 1, minWidth: 0 }}>
                         <Struck on={on}>{x.title}</Struck>
+                        <CommentCount n={commentsOn(x.id)} />
                         {x.due_date && <div className="cap">{dueLabel(x.due_date, i18n.language)}</div>}
                       </span>
                       <span className={`av-fade${on ? ' done' : ''}`}>{who ? <Avatar avatar={who.avatar} label={who.display_name} /> : <NobodyAvatar />}</span>
@@ -192,6 +207,7 @@ export function HomeScreen() {
                       <Check checked={on} onToggle={toggle} label={x.title} rotate={tilt(x.id)} />
                       <span style={{ flex: 1, minWidth: 0 }}>
                         <Struck on={on}>{x.title}</Struck>
+                        <CommentCount n={commentsOn(x.id)} />
                         {x.due_date && <div className="cap">{dueLabel(x.due_date, i18n.language)}</div>}
                       </span>
                       <span className={`av-fade${on ? ' done' : ''}`}>{who ? <Avatar avatar={who.avatar} label={who.display_name} /> : <NobodyAvatar />}</span>
@@ -224,6 +240,7 @@ export function HomeScreen() {
                       <Check checked={on} onToggle={toggle} label={x.name} rotate={tilt(x.id)} />
                       <span style={{ flex: 1, minWidth: 0 }}>
                         <Struck on={on}>{x.name}</Struck>
+                        <CommentCount n={commentsOn(x.id)} />
                       </span>
                       {who && (
                         <span className={`av-fade${on ? ' done' : ''}`}>

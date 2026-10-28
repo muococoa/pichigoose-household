@@ -61,6 +61,16 @@ export type Note = Row & {
   updated_at: string
 }
 
+export type Comment = Row & {
+  household_id: string
+  item_id: string | null
+  todo_id: string | null
+  note_id: string | null
+  author_id: string | null
+  body: string
+  created_at: string
+}
+
 // ---------------------------------------------------------------------------
 
 export function useProfiles() {
@@ -145,6 +155,21 @@ export function useNotes(householdId: string | null) {
           table: 'notes',
           belongs: (r) => r.household_id === householdId,
           load: () => supabase.from('notes').select('*').eq('household_id', householdId),
+          realtime: `household_id=eq.${householdId}`,
+        }
+      : null,
+  )
+}
+
+/** Every comment in the household (they're short and few), for threads and the little counts. */
+export function useComments(householdId: string | null) {
+  return useCollection<Comment>(
+    householdId
+      ? {
+          key: `comments:${householdId}`,
+          table: 'comments',
+          belongs: (r) => r.household_id === householdId,
+          load: () => supabase.from('comments').select('*').eq('household_id', householdId).order('created_at'),
           realtime: `household_id=eq.${householdId}`,
         }
       : null,

@@ -128,7 +128,8 @@
     "addItem": "Something to buy",
     "addTodo": "A to-do",
     "addNote": "A note",
-    "addSomeone": "Add someone to the household"
+    "addSomeone": "Add someone to the household",
+    "newsCommented": "{{name}} commented on {{item}}."
   },
   "arrange": {
     "title": "Arrange your home",
@@ -275,5 +276,12 @@
     "card": "{{inviter}} invited you to {{household}}.",
     "join": "Join",
     "noThanks": "No thanks"
+  },
+  "comments": {
+    "title": "Comments",
+    "placeholder": "Add a comment...",
+    "send": "Send",
+    "count_one": "{{count}} comment",
+    "count_other": "{{count}} comments"
   }
 }

@@ -10,6 +10,7 @@ import { Avatar, NobodyAvatar } from '../components/Avatar'
 import { Check, Hand, Struck, Tick, useArrivals, Sheet, Stamp, STAMP_COLORS, tilt } from '../components/Scrapbook'
 import { ChevronDown, PlusIcon } from '../components/Icons'
 import { MyHouseholds } from './MyHouseholds'
+import { CommentCount, Comments, useCommentCounts } from '../components/Comments'
 import { addDays, capitalize, daysFromToday, dueLabel, fromDateString, toDateString, weekdayName } from '../lib/time'
 
 // On phones the keyboard would cover half the form the moment it opens, so the title field waits for a tap.
@@ -100,6 +101,7 @@ export function TodosScreen() {
   const { arrived, leaving } = useArrivals(groups.map((x) => x.g))
 
   const person = (id: string | null) => people.find((p) => p.id === id)
+  const commentsOn = useCommentCounts()
 
   function detail(x: Todo) {
     const parts: string[] = []
@@ -173,6 +175,7 @@ export function TodosScreen() {
                       <Check checked={on} onToggle={toggle} label={x.title} rotate={tilt(x.id)} />
                       <button type="button" onClick={() => setEditing(x)} style={{ flex: 1, minWidth: 0, fontSize: 17, padding: '8px 0' }}>
                         <Struck on={on}>{x.title}</Struck>
+                        <CommentCount n={commentsOn(x.id)} />
                         {detail(x) && <div className="cap">{detail(x)}</div>}
                       </button>
                       <span className={`av-fade${on ? ' done' : ''}`}>
@@ -248,7 +251,7 @@ function TodoSheet({ todo, householdId, people, onClose }: { todo: Todo | null; 
 
   return (
     <Sheet open onClose={onClose} title={todo ? t('todos.edit') : t('todos.new')}>
-      <form onSubmit={save} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+      <form id="todo-form" onSubmit={save} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
         <div>
           <label className="label" htmlFor="todo-title">
             {t('todos.what')}
@@ -331,7 +334,13 @@ function TodoSheet({ todo, householdId, people, onClose }: { todo: Todo | null; 
             ))}
           </div>
         </div>
-        <div className="row sheet-actions" style={{ gap: 12, marginTop: 4 }}>
+      </form>
+      {todo && (
+        <div style={{ marginTop: 20 }}>
+          <Comments target={{ todo_id: todo.id }} />
+        </div>
+      )}
+        <div className="row sheet-actions" style={{ gap: 12, marginTop: 20 }}>
           {todo && (
             <button
               type="button"
@@ -345,11 +354,10 @@ function TodoSheet({ todo, householdId, people, onClose }: { todo: Todo | null; 
               {t('common.delete')}
             </button>
           )}
-          <button type="submit" className="stk prim" style={{ flex: 1.6, transform: 'rotate(-.6deg)' }} disabled={!title.trim()}>
+          <button type="submit" form="todo-form" className="stk prim" style={{ flex: 1.6, transform: 'rotate(-.6deg)' }} disabled={!title.trim()}>
             {todo ? t('common.save') : t('todos.add')}
           </button>
         </div>
-      </form>
     </Sheet>
   )
 }

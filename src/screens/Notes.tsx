@@ -11,6 +11,7 @@ import { BackIcon, ChevronDown, CloseIcon, DotsIcon, PlusIcon, SearchIcon } from
 import { MyHouseholds } from './MyHouseholds'
 import { ago } from '../lib/time'
 import { useDesktop } from '../lib/desktop'
+import { CommentCount, Comments, useCommentCounts } from '../components/Comments'
 
 const NOTE_COLORS = ['n-sage', 'n-butter', 'n-mist', 'n-blush', 'n-peach', 'n-lilac']
 const PIN_TAPES: TapeKind[] = ['tm', 'tp', 'tdots', 'ty', 'tblocks', 'tcheck']
@@ -56,6 +57,7 @@ export function NotesScreen() {
   const others = found.filter((n) => !n.pinned)
 
   const person = (id: string | null) => people.find((p) => p.id === id)
+  const commentsOn = useCommentCounts()
 
   function card(n: Note, i: number) {
     const who = person(n.updated_by ?? n.created_by)
@@ -94,6 +96,7 @@ export function NotesScreen() {
         </div>
         <div className="cap" style={{ marginTop: 6 }}>
           {who?.display_name ?? ''} · {ago(n.updated_at, i18n.language)}
+          <CommentCount n={commentsOn(n.id)} />
         </div>
       </Link>
     )
@@ -328,6 +331,11 @@ function NoteEditor({ panel }: { panel?: boolean }) {
             </div>
           )}
         </div>
+        {note && (
+          <div style={{ marginTop: 22, paddingBottom: 12 }}>
+            <Comments target={{ note_id: note.id }} />
+          </div>
+        )}
       </div>
 
       <Sheet small open={moving} onClose={() => setMoving(false)} title={t('notes.moveTitle')}>

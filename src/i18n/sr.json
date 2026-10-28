@@ -132,7 +132,8 @@
     "addItem": "Nešto za kupovinu",
     "addTodo": "Zadatak",
     "addNote": "Belešku",
-    "addSomeone": "Dodaj nekoga u domaćinstvo"
+    "addSomeone": "Dodaj nekoga u domaćinstvo",
+    "newsCommented": "{{name}}: novi komentar na {{item}}."
   },
   "arrange": {
     "title": "Složi svoju početnu",
@@ -279,5 +280,13 @@
     "card": "{{inviter}} te poziva u {{household}}.",
     "join": "Pridruži se",
     "noThanks": "Ne, hvala"
+  },
+  "comments": {
+    "title": "Komentari",
+    "placeholder": "Dodaj komentar...",
+    "send": "Pošalji",
+    "count_one": "{{count}} komentar",
+    "count_few": "{{count}} komentara",
+    "count_other": "{{count}} komentara"
   }
 }
