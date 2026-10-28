@@ -143,5 +143,5 @@
 
 /* The paper clip holds the small note to the paper behind it: it slides over the note's side edge near
    the bottom, half on the note and half on the paper, clear of the text. Every other note uses the left side. */
-.paper-clip { position: absolute; bottom: 10px; right: -9px; transform: rotate(84deg); z-index: 2; filter: drop-shadow(1px 1px 0 rgba(30, 26, 48, .18)) }
-.paper-clip.left { right: auto; left: -9px; transform: rotate(-96deg) }
+.paper-clip { position: absolute; bottom: 4px; right: -16px; width: 20px; height: 52px; transform: rotate(84deg); z-index: 2; filter: drop-shadow(1px 1px 0 rgba(30, 26, 48, .2)) }
+.paper-clip.left { right: auto; left: -16px; transform: rotate(-96deg) }

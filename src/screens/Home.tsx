@@ -21,7 +21,7 @@ import { InkChevron, PencilIcon, PlusIcon } from '../components/Icons'
 import { MyHouseholds } from './MyHouseholds'
 import { PendingInvites } from './Invite'
 import { AddSheet } from './AddSheet'
-import { colorOf } from './Notes'
+import { NotePanel, colorOf } from './Notes'
 import { AskName, madeFromEmail } from './AskName'
 import { ago, daysFromToday, dueLabel, fromDateString } from '../lib/time'
 import { useDesktop } from '../lib/desktop'
@@ -29,7 +29,8 @@ import { DragBoard } from '../components/DragBoard'
 import { CommentCount, useCommentCounts } from '../components/Comments'
 import { db } from '../data/store'
 
-// Desktop: the small notes inside the notes section, each a little tilted and held with a paper clip.
+// Desktop: the small notes inside the notes section, each a little tilted and held with a paper clip on the left edge
+// (the bottom right corner is for the comment bubble).
 const MINI_TILT = [-2, 2, 1, -1.5]
 
 // Each section is a sticky note in its own pastel, held by its own tape.
@@ -72,6 +73,8 @@ export function HomeScreen() {
   const notes = useNotes(hid)
   const desktop = useDesktop()
   const [switching, setSwitching] = useState(false)
+  // Desktop: a note opened from the board, in the side panel.
+  const [openNote, setOpenNote] = useState<string | null>(null)
   const [adding, setAdding] = useState(false)
   // Still called by the name made from the email? Ask once, the same way joining does now.
   const email = useAuth().session?.user.email ?? ''
@@ -263,19 +266,23 @@ export function HomeScreen() {
             {pinnedNotes.slice(0, 4).map((n, i) => {
               const by = person(n.updated_by)
               return (
-                <Link
+                <button
+                  type="button"
                   key={n.id}
-                  to={`/notes/${n.id}`}
+                  onClick={() => setOpenNote(n.id)}
                   className={`note ${colorOf(n.id)}`}
-                  style={{ display: 'block', padding: '16px 18px 18px', minHeight: 104, transform: `rotate(${MINI_TILT[i % MINI_TILT.length]}deg)`, boxShadow: '1px 2px 0 rgba(30,26,48,.14)', minWidth: 0 }}
+                  style={{ display: 'block', width: '100%', textAlign: 'left', padding: '16px 18px 30px', minHeight: 104, transform: `rotate(${MINI_TILT[i % MINI_TILT.length]}deg)`, boxShadow: '1px 2px 0 rgba(30,26,48,.14)', minWidth: 0 }}
                 >
-                  <PaperClip side={i % 2 ? 'right' : 'left'} />
+                  <PaperClip side="left" />
                   <div style={{ fontSize: 17, lineHeight: '22px', fontWeight: 800, color: '#1E1A30', overflowWrap: 'anywhere' }}>{n.title || t('notes.untitled')}</div>
                   <div className="cap" style={{ marginTop: 4 }}>
                     {n.pinned ? t('notes.pinned') : `${by?.display_name ?? ''} · ${ago(n.updated_at, i18n.language)}`}
-                    <CommentCount n={commentsOn(n.id)} />
                   </div>
-                </Link>
+                  {/* The comment bubble sits in the bottom right corner. */}
+                  <span style={{ position: 'absolute', right: 12, bottom: 8 }}>
+                    <CommentCount n={commentsOn(n.id)} />
+                  </span>
+                </button>
               )
             })}
             {!pinnedNotes.length && <Empty>{t('home.noNotes')}</Empty>}
@@ -317,6 +324,7 @@ export function HomeScreen() {
           </div>
         </div>
         <AskName save open={needsName && !askedName} onClose={() => setAskedName(true)} onJoin={() => {}} />
+        {openNote && <NotePanel id={openNote} onClose={() => setOpenNote(null)} />}
       </Screen>
     )
   }

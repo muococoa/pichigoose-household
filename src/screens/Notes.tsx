@@ -191,11 +191,24 @@ export function NoteScreen() {
   )
 }
 
-function NoteEditor({ panel }: { panel?: boolean }) {
+/** Desktop Home: a note opened from the board, edited in the same side panel as on Notes. */
+export function NotePanel({ id, onClose }: { id: string; onClose: () => void }) {
+  const { t } = useTranslation()
+  return (
+    <aside className="note-panel" aria-label={t('notes.title')}>
+      <NoteEditor key={id} panel noteId={id} onClose={onClose} />
+    </aside>
+  )
+}
+
+function NoteEditor({ panel, noteId, onClose }: { panel?: boolean; noteId?: string; onClose?: () => void }) {
   const { t, i18n } = useTranslation()
   const me = useMe()
   const navigate = useNavigate()
-  const { id } = useParams()
+  const params = useParams()
+  const id = noteId ?? params.id
+  // Closing goes back to Notes, or just closes the panel when it was opened from Home.
+  const done = () => (onClose ? onClose() : navigate('/notes'))
   const { household, households, people, name } = useHousehold()
   const hid = household?.id ?? null
   const notes = useNotes(hid)
@@ -245,7 +258,7 @@ function NoteEditor({ panel }: { panel?: boolean }) {
   function leave() {
     // A note left empty isn't worth keeping.
     if (note && !title.trim() && !body.trim()) db.remove('notes', note.id)
-    navigate('/notes')
+    done()
   }
 
   const author = people.find((p) => p.id === note?.created_by)
@@ -356,7 +369,7 @@ function NoteEditor({ panel }: { panel?: boolean }) {
                 onClick={() => {
                   if (note) db.update('notes', note.id, { household_id: h.id })
                   setMoving(false)
-                  navigate('/notes')
+                  done()
                 }}
               >
                 {name(h)}
@@ -379,7 +392,7 @@ function NoteEditor({ panel }: { panel?: boolean }) {
             style={{ flex: 1 }}
             onClick={() => {
               if (note) db.remove('notes', note.id)
-              navigate('/notes')
+              done()
             }}
           >
             {t('common.delete')}
