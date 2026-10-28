@@ -5,7 +5,7 @@ import { useAuth } from '../auth'
 import { supabase } from '../lib/supabase'
 import { refetchAll, useCollection, type Row } from '../data/store'
 import { setCurrentHousehold, useHousehold, type Household } from '../data/hooks'
-import { Hand, Sheet, Tape } from '../components/Scrapbook'
+import { Hand, PoseStamp, Sheet, Tape } from '../components/Scrapbook'
 import { FieldError } from '../components/FieldError'
 import { ShareIcon } from '../components/Icons'
 import { joinLink, shareAddress } from '../lib/share'
@@ -73,6 +73,10 @@ export function InviteSheet({ household, onClose }: { household: Household | nul
     <Sheet open={Boolean(household)} onClose={onClose} title={result?.kind === 'sent' ? t('invite.sent') : t('invite.title')}>
       {result ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {result.kind === 'sent' && (
+            // Pichi runs off to deliver it.
+            <PoseStamp pose="run" color="#D6C8E6" width={112} height={76} zoom={1} focus="50% 55%" rotate={-3} style={{ alignSelf: 'center', margin: '4px 0 6px' }} />
+          )}
           <p className="body" role="status" style={{ margin: '0 0 6px' }}>
             {result.kind === 'already'
               ? t('invite.already', { email: result.email, name: householdName })
@@ -207,6 +211,8 @@ export function PendingInvites({ style }: { style?: React.CSSProperties }) {
         <div key={i.id} className="note n-lilac" style={{ transform: `rotate(${n % 2 ? 0.8 : -0.8}deg)` }}>
           <Tape kind="ttri" style={{ top: -10, left: 30, transform: 'rotate(-4deg)' }} />
           <div style={{ position: 'relative', zIndex: 1 }}>
+            {/* Pichi walks over to welcome them. */}
+            <PoseStamp pose="walk" color="#F8E6A8" width={60} height={70} zoom={1.25} focus="55% 20%" rotate={5} style={{ float: 'right', margin: '-4px -2px 8px 12px' }} />
             <Hand size={30} lineHeight={32}>
               {t('invite.invited')}
             </Hand>

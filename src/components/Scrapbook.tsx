@@ -4,6 +4,11 @@
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import pichi from '../../assets/pichi-painted.jpg'
+import poseStandLeft from '../../assets/pichi/stand-left.webp'
+import poseStandRight from '../../assets/pichi/stand-right.webp'
+import poseHonk from '../../assets/pichi/honk.webp'
+import poseRun from '../../assets/pichi/run.webp'
+import poseWalk from '../../assets/pichi/walk.webp'
 import paperWhite from '../../assets/paper-white.png'
 
 /** Turns any text into a stable number, so each headline and stamp gets its own texture offset. */
@@ -202,6 +207,62 @@ export function PichiStamp({ width = 58, height = 70, rotate = -5 }: { width?: n
     <div className="postage" style={{ transform: `rotate(${rotate}deg)` }}>
       <div className="in">
         <img src={pichi} alt="Pichi" style={{ width, height, objectFit: 'cover' }} />
+      </div>
+    </div>
+  )
+}
+
+/** Nora's poses of Pichi (her paintings, never redrawn), with see-through backgrounds. */
+const POSES = {
+  'stand-left': poseStandLeft,
+  'stand-right': poseStandRight,
+  honk: poseHonk,
+  run: poseRun,
+  walk: poseWalk,
+}
+export type Pose = keyof typeof POSES
+
+/**
+ * Pichi in a postage stamp, in any pose, on any background color, cropped however we like.
+ * `zoom` 1 shows her whole; bigger zooms in. `focus` is the point to zoom toward, like "50% 20%" for her head.
+ */
+export function PoseStamp({
+  pose,
+  color,
+  width = 70,
+  height = 84,
+  zoom = 1,
+  focus = '50% 50%',
+  rotate = -4,
+  style,
+}: {
+  pose: Pose
+  color: string
+  width?: number
+  height?: number
+  zoom?: number
+  focus?: string
+  rotate?: number
+  style?: CSSProperties
+}) {
+  return (
+    <div className="postage" style={{ transform: `rotate(${rotate}deg)`, flex: 'none', ...style }}>
+      <div className="in">
+        <div
+          role="img"
+          aria-label="Pichi"
+          style={{
+            width,
+            height,
+            border: '2px solid #1E1A30',
+            boxSizing: 'border-box',
+            backgroundColor: color,
+            backgroundImage: `url(${POSES[pose]})`,
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: `${zoom * 88}% auto`,
+            backgroundPosition: focus,
+          }}
+        />
       </div>
     </div>
   )

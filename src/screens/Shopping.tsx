@@ -7,7 +7,7 @@ import { useHousehold, useItems, useLists, type Item, type List } from '../data/
 import { recentlyBought, toggleItem } from '../data/actions'
 import { Floating, Screen } from '../components/Shell'
 import { Avatar } from '../components/Avatar'
-import { Check, Hand, Struck, Tick, useArrivals, PichiStamp, Sheet, Stamp, STAMP_COLORS, showToast, tilt, type TapeKind } from '../components/Scrapbook'
+import { Check, Hand, Struck, Tick, useArrivals, PoseStamp, Sheet, Stamp, STAMP_COLORS, showToast, tilt, type TapeKind } from '../components/Scrapbook'
 import { BackIcon, PlusIcon, ShareIcon } from '../components/Icons'
 import { ago } from '../lib/time'
 import { useDesktop } from '../lib/desktop'
@@ -294,7 +294,7 @@ export function ShoppingScreen() {
             {toBuy.map((x) => row(x, false))}
             {items.loaded && !toBuy.length && (
               <div className="row" style={{ gap: 14, padding: '16px 0 6px' }}>
-                <PichiStamp width={46} height={56} rotate={-4} />
+                <PoseStamp pose="stand-left" color="#F8E6A8" width={64} height={76} zoom={1.05} focus="50% 40%" />
                 <p className="body" style={{ margin: 0 }}>
                   {t('shopping.emptyAbove')}
                 </p>
@@ -318,7 +318,7 @@ export function ShoppingScreen() {
         {toBuy.map((x) => row(x, false))}
         {items.loaded && !toBuy.length && (
           <div className="row" style={{ gap: 14, padding: '10px 0 6px' }}>
-            <PichiStamp width={46} height={56} rotate={-4} />
+            <PoseStamp pose="stand-left" color="#F8E6A8" width={64} height={76} zoom={1.05} focus="50% 40%" />
             <p className="body" style={{ margin: 0 }}>
               {t('shopping.empty')}
             </p>
