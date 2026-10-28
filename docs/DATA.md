@@ -53,6 +53,7 @@ A home, or an event (temporary household).
 | id | uuid, primary key | |
 | name | text | the name given when created, like "Our home" |
 | address | text, unique | three random English words joined by dots, like `lemon.sunny.goose` (A9) [Nora] |
+| secret | text | the household's secret password [Nora]. Joining by typing the address needs it ("Knock knock!"); email invites skip it; join links carry it. Members can see and change it. |
 | kind | text | `'home'` or `'event'` (E1) |
 | event_date | date, nullable | events only |
 | archived_at | timestamptz, nullable | events archive themselves after the date (E3) [Claude] |
@@ -62,7 +63,7 @@ A home, or an event (temporary household).
 **Address rules [Nora, details Claude]**
 - Three words from one fixed English word list kept in the app's code. Short, friendly words only, nothing rude, no words that look alike.
 - Created by a database function: pick three words, try to insert, and if the address is taken, pick again. The unique constraint is the final guard.
-- Also works as a link: `pichigoose.app/join/lemon.sunny.goose` (domain not decided yet).
+- Also works as a link: `pichigoose.com/join/lemon.sunny.goose/<secret password>`. The link carries the password, so whoever gets it can join with one tap.
 - People type it with dots, spaces or dashes. The app cleans it up before looking it up.
 
 ### household_members
@@ -143,6 +144,20 @@ Shared household info (N1, N2).
 | created_by | uuid | |
 | updated_by | uuid | |
 | updated_at | timestamptz | |
+
+### comments
+A short conversation under a shopping item, to-do or note [Nora]. Flat, like a chat.
+
+| column | type | notes |
+|---|---|---|
+| id | uuid, primary key | |
+| household_id | uuid, references households | always taken from the thing commented on, by a database trigger |
+| item_id / todo_id / note_id | uuid, one of them | exactly one is set; deleting the thing deletes its comments |
+| author_id | uuid, references profiles | must be the person writing it |
+| body | text | 1 to 2000 characters |
+| created_at | timestamptz | |
+
+Everyone in the household can read and write comments; people can delete only their own. Live updates on.
 
 ### money_people
 The people someone has money with (M1 to M3). They don't need the app.
