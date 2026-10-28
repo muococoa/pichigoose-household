@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="{{ if .Data.language }}{{ .Data.language }}{{ else }}en{{ end }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<title>Pichigoose</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; padding: 0; background: #F6F0E8; }
+  a.sticker:hover { background: #A8335A !important; }
+  @media (max-width: 560px) { .card { padding: 0 22px 26px !important; } .headline { width: 240px !important; } }
+</style>
+</head>
+<body style="margin:0;padding:0;background:#F6F0E8 url('https://www.pichigoose.com/email/paper-lined.jpg') repeat;">
+{{ if and .Data.language (eq .Data.language "sr") }}
+<div style="display:none;max-height:0;overflow:hidden;">Dodirni dugme da potvrdiš email.</div>
+{{ else }}
+<div style="display:none;max-height:0;overflow:hidden;">Tap the button to confirm your email.</div>
+{{ end }}
+<!-- Lined notebook paper with fibers behind everything. Clients without background images show the plain tan. -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#F6F0E8" background="https://www.pichigoose.com/email/paper-lined.jpg" style="background:#F6F0E8 url('https://www.pichigoose.com/email/paper-lined.jpg') repeat;">
+  <tr>
+    <td align="center" style="padding:28px 12px 36px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px;">
+        <!-- Washi tape holding the note, half on the paper behind and half on the note.
+             It's one strip cut in two at the note's top edge, because email apps don't allow overlapping. -->
+        <tr>
+          <td align="center" style="line-height:0;font-size:0;padding:0;">
+            <img src="https://www.pichigoose.com/email/tape-pink-top.png" width="111" height="14" alt="" style="display:block;border:0;margin:0 auto;">
+          </td>
+        </tr>
+        <!-- The note. Its hard shadow is a darker right and bottom edge, which Gmail keeps (it strips real shadows). -->
+        <tr>
+          <td class="card" bgcolor="#FFFDF8" background="https://www.pichigoose.com/email/paper.jpg" style="background:#FFFDF8 url('https://www.pichigoose.com/email/paper.jpg') repeat;border-radius:6px;padding:0 40px 32px;border-right:2px solid #DDD3CE;border-bottom:3px solid #DDD3CE;font-family:Nunito,'Trebuchet MS',Arial,sans-serif;color:#2E2638;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td align="center" style="line-height:0;font-size:0;padding:0 0 22px;">
+                  <img src="https://www.pichigoose.com/email/tape-pink-bottom.png" width="111" height="14" alt="" style="display:block;border:0;margin:0 auto;">
+                </td>
+              </tr>
+              <tr>
+                <td align="center" style="padding-bottom:6px;">
+                  <img src="https://www.pichigoose.com/email/pichi-stamp.png" width="132" height="154" alt="Pichi" style="display:block;border:0;">
+                </td>
+              </tr>
+              <tr>
+                <td align="center" style="padding:4px 0 8px;">
+{{ if and .Data.language (eq .Data.language "sr") }}
+                  <img class="headline" src="https://www.pichigoose.com/email/almost-there-sr.png" width="175" height="76" alt="Još malo!" style="display:block;border:0;">
+{{ else }}
+                  <img class="headline" src="https://www.pichigoose.com/email/almost-there-en.png" width="249" height="76" alt="Almost there!" style="display:block;border:0;">
+{{ end }}
+                </td>
+              </tr>
+              <tr>
+                <td align="center" style="font-size:17px;line-height:26px;font-weight:600;padding:0 0 24px;">
+{{ if and .Data.language (eq .Data.language "sr") }}
+                  Dodirni dugme da potvrdiš svoj email i ulaziš.
+{{ else }}
+                  Tap the button to confirm your email, and you're in.
+{{ end }}
+                </td>
+              </tr>
+              <tr>
+                <td align="center" style="padding:0 0 26px;">
+                  <!-- The pink sticker button: thick white edge, uneven corners, a soft lift -->
+                  <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td style="border-radius:8px 26px 12px 22px;background:#D34471;border:4px solid #FFFFFF;box-shadow:0 0 0 1px rgba(30,26,48,.10),2px 3px 4px rgba(30,26,48,.22);">
+                        <a class="sticker" href="{{ .ConfirmationURL }}" style="display:inline-block;padding:14px 28px;font-family:Nunito,'Trebuchet MS',Arial,sans-serif;font-size:16px;line-height:20px;font-weight:800;color:#FFFFFF;text-decoration:none;border-radius:8px 26px 12px 22px;">
+{{ if and .Data.language (eq .Data.language "sr") }}Potvrdi email{{ else }}Confirm my email{{ end }}
+                        </a>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td align="center" style="font-size:13px;line-height:20px;font-weight:600;color:#63586B;">
+{{ if and .Data.language (eq .Data.language "sr") }}
+                  Ovaj nalog nije tvoj? Slobodno zanemari ovaj email.
+{{ else }}
+                  Didn't sign up for Pichigoose? You can ignore this email.
+{{ end }}
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <!-- Signed with the logo -->
+        <tr>
+          <td align="center" style="padding:26px 0 0;">
+            <a href="https://www.pichigoose.com" style="text-decoration:none;"><img src="https://www.pichigoose.com/email/logo.png" width="96" height="72" alt="Pichigoose" style="display:block;border:0;margin:0 auto;"></a>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>
