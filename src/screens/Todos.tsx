@@ -133,7 +133,7 @@ export function TodosScreen() {
                   <Check checked={done} onChange={() => toggleTodo(x, me)} label={x.title} rotate={tilt(x.id)} />
                   <button type="button" onClick={() => setEditing(x)} style={{ flex: 1, minWidth: 0, fontSize: 17, padding: '8px 0' }}>
                     <Struck on={done}>{x.title}</Struck>
-                    {!done && detail(x) && <div className="cap">{detail(x)}</div>}
+                    {detail(x) && <div className="cap">{detail(x)}</div>}
                   </button>
                   <span style={{ opacity: done ? 0.6 : 1, display: 'flex' }}>
                     {who ? <Avatar avatar={who.avatar} label={who.display_name} /> : <NobodyAvatar />}
