@@ -61,3 +61,14 @@
   .offline { left: 300px; bottom: 40px }
   .toast { bottom: 40px; left: calc(50% + 132px) }
 }
+
+@media (min-width: 1024px) {
+  /* Notes: an open note sits in a panel on the right of the page, next to the grid. */
+  .note-panel {
+    position: fixed; top: 18px; right: 18px; bottom: 18px; width: 400px; z-index: 5; box-sizing: border-box; padding: 28px 28px 24px;
+    overflow-y: auto; border-radius: 0 6px 6px 0; background-color: #FFFEFC; background-image: url("../../assets/paper-white.png"); background-size: 512px 512px;
+    box-shadow: -2px 0 0 rgba(30, 26, 48, .06), -6px 0 14px rgba(30, 26, 48, .08); animation: panel-in .3s var(--ease-out);
+  }
+  /* Page titles are bigger on the wide page. */
+  .desk h1.hand { font-size: 52px !important; line-height: 56px !important }
+}

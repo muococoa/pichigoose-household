@@ -7,9 +7,10 @@ import { useHousehold, useNotes, type Note } from '../data/hooks'
 import { Screen } from '../components/Shell'
 import { Avatar } from '../components/Avatar'
 import { Hand, Menu, Sheet, Stamp, STAMP_COLORS, Tape, tilt, type TapeKind } from '../components/Scrapbook'
-import { BackIcon, ChevronDown, DotsIcon, PlusIcon, SearchIcon } from '../components/Icons'
+import { BackIcon, ChevronDown, CloseIcon, DotsIcon, PlusIcon, SearchIcon } from '../components/Icons'
 import { MyHouseholds } from './MyHouseholds'
 import { ago } from '../lib/time'
+import { useDesktop } from '../lib/desktop'
 
 const NOTE_COLORS = ['n-sage', 'n-butter', 'n-mist', 'n-blush', 'n-peach', 'n-lilac']
 const PIN_TAPES: TapeKind[] = ['tm', 'tp', 'tdots', 'ty', 'tblocks', 'tcheck']
@@ -39,6 +40,11 @@ export function NotesScreen() {
   const notes = useNotes(hid)
   const [query, setQuery] = useState('')
   const [switching, setSwitching] = useState(false)
+  const desktop = useDesktop()
+  // Desktop: /notes/<id> keeps the grid and opens the note in a panel next to it.
+  const { id: openId } = useParams()
+  const panel = desktop && Boolean(openId)
+  const cols = desktop ? 'repeat(auto-fill, minmax(210px, 1fr))' : '1fr 1fr'
 
   const found = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -58,7 +64,15 @@ export function NotesScreen() {
         key={n.id}
         to={`/notes/${n.id}`}
         className={`note ${colorOf(n.id)}`}
-        style={{ display: 'block', padding: '16px 14px 12px', transform: `rotate(${tilt(n.id, 1.5)}deg)`, minHeight: 120 }}
+        aria-current={n.id === openId ? 'page' : undefined}
+        style={{
+          display: 'block',
+          padding: '16px 14px 12px',
+          transform: `rotate(${tilt(n.id, 1.5)}deg)`,
+          minHeight: 120,
+          outline: n.id === openId ? '2px solid #1E1A30' : undefined,
+          outlineOffset: 3,
+        }}
       >
         {n.pinned && <Tape kind={PIN_TAPES[i % PIN_TAPES.length]} style={{ top: -10, left: '50%', marginLeft: -30, width: 60, height: 18, transform: `rotate(${tilt(n.id, 5)}deg)` }} />}
         <div style={{ fontSize: 17, lineHeight: '22px', fontWeight: 800, color: '#1E1A30', overflowWrap: 'anywhere' }}>{n.title || t('notes.untitled')}</div>
@@ -86,18 +100,26 @@ export function NotesScreen() {
   }
 
   return (
-    <Screen tabbar>
-      <div style={{ padding: 'calc(var(--top) + 10px) 22px 0 40px' }}>
+    <Screen tabbar wide={desktop}>
+      <div style={{ padding: 'calc(var(--top) + 10px) 22px 0 40px', marginRight: panel ? 400 : 0 }}>
         <div className="row" style={{ justifyContent: 'space-between', gap: 10 }}>
           <Hand as="h1" style={{ margin: 0 }}>
             {t('notes.title')}
           </Hand>
+          {desktop && (
+            <div style={{ position: 'relative', width: 280 }}>
+              <span style={{ position: 'absolute', left: 14, top: 16, color: '#857A8C', display: 'flex' }}>
+                <SearchIcon />
+              </span>
+              <input className="input" type="search" style={{ paddingLeft: 42 }} placeholder={t('notes.search')} aria-label={t('notes.search')} value={query} onChange={(e) => setQuery(e.target.value)} />
+            </div>
+          )}
           <button type="button" className="row cap phone-only" onClick={() => setSwitching(true)} style={{ fontSize: 14, fontWeight: 700, gap: 2, minWidth: 0 }}>
             <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name(household)}</span>
             <ChevronDown />
           </button>
         </div>
-        <div style={{ position: 'relative', marginTop: 16 }}>
+        <div className="phone-only" style={{ position: 'relative', marginTop: 16 }}>
           <span style={{ position: 'absolute', left: 14, top: 16, color: '#857A8C', display: 'flex' }}>
             <SearchIcon />
           </span>
@@ -107,7 +129,7 @@ export function NotesScreen() {
         {pinned.length > 0 && (
           <section style={{ marginTop: 24 }}>
             <Stamp color={STAMP_COLORS.nora}>{t('notes.pinned')}</Stamp>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18, marginTop: 18 }}>{pinned.map(card)}</div>
+            <div style={{ display: 'grid', gridTemplateColumns: cols, gap: 18, marginTop: 18 }}>{pinned.map(card)}</div>
           </section>
         )}
         {others.length > 0 && (
@@ -115,7 +137,7 @@ export function NotesScreen() {
             <Stamp color={STAMP_COLORS.claude} rotate={2}>
               {t('notes.others')}
             </Stamp>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18, marginTop: 14 }}>{others.map(card)}</div>
+            <div style={{ display: 'grid', gridTemplateColumns: cols, gap: 18, marginTop: 14 }}>{others.map(card)}</div>
           </section>
         )}
         {notes.loaded && !found.length && (
@@ -139,11 +161,27 @@ export function NotesScreen() {
         <PlusIcon />
       </button>
       <MyHouseholds open={switching} onClose={() => setSwitching(false)} />
+      {panel && (
+        <aside className="note-panel" aria-label={t('notes.title')}>
+          <NoteEditor key={openId} panel />
+        </aside>
+      )}
     </Screen>
   )
 }
 
+/** A note on its own screen (phone), or in the panel next to the grid (desktop). */
 export function NoteScreen() {
+  const desktop = useDesktop()
+  if (desktop) return <NotesScreen />
+  return (
+    <Screen>
+      <NoteEditor />
+    </Screen>
+  )
+}
+
+function NoteEditor({ panel }: { panel?: boolean }) {
   const { t, i18n } = useTranslation()
   const me = useMe()
   const navigate = useNavigate()
@@ -195,13 +233,15 @@ export function NoteScreen() {
   const editor = people.find((p) => p.id === note?.updated_by)
 
   return (
-    <Screen>
-      <div style={{ padding: 'calc(var(--top) + 8px) 22px 24px 40px', display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
+    <>
+      <div style={{ padding: panel ? 0 : 'calc(var(--top) + 8px) 22px 24px 40px', display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
         <div className="row" style={{ gap: 10 }}>
-          <button type="button" onClick={leave} className="row" style={{ marginLeft: -10, color: '#463D50', fontWeight: 700, fontSize: 16, gap: 2 }}>
-            <BackIcon />
-            {t('notes.title')}
-          </button>
+          {!panel && (
+            <button type="button" onClick={leave} className="row" style={{ marginLeft: -10, color: '#463D50', fontWeight: 700, fontSize: 16, gap: 2 }}>
+              <BackIcon />
+              {t('notes.title')}
+            </button>
+          )}
           <span style={{ flex: 1 }} />
           {note && (
             <button
@@ -224,6 +264,11 @@ export function NoteScreen() {
             >
               <DotsIcon />
             </Menu>
+          )}
+          {panel && (
+            <button type="button" aria-label={t('common.close')} onClick={leave} style={{ display: 'flex', color: '#463D50' }}>
+              <CloseIcon />
+            </button>
           )}
         </div>
 
@@ -311,6 +356,6 @@ export function NoteScreen() {
           </button>
         </div>
       </Sheet>
-    </Screen>
+    </>
   )
 }
