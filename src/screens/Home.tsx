@@ -12,11 +12,11 @@ import {
   useTodos,
   type Section,
 } from '../data/hooks'
-import { toggleItem, toggleTodo } from '../data/actions'
+import { recentlyDone, toggleItem, toggleTodo } from '../data/actions'
 import { Screen } from '../components/Shell'
 import { Avatar, NobodyAvatar } from '../components/Avatar'
-import { Check, Hand, PichiStamp, Sheet, Tape, tilt, type TapeKind } from '../components/Scrapbook'
-import { ChevronDown, PencilIcon, PlusIcon } from '../components/Icons'
+import { Check, Hand, Struck, PichiStamp, Sheet, Tape, tilt, type TapeKind } from '../components/Scrapbook'
+import { InkChevron, PencilIcon, PlusIcon } from '../components/Icons'
 import { MyHouseholds } from './MyHouseholds'
 import { daysFromToday, dueLabel, fromDateString } from '../lib/time'
 
@@ -70,6 +70,11 @@ export function HomeScreen() {
         .sort((a, b) => (a.due_date ?? '9999').localeCompare(b.due_date ?? '9999') || a.created_at.localeCompare(b.created_at)),
     [todos.rows],
   )
+  // Done today stays on the note, crossed out at the bottom, until the day passes.
+  const doneTodos = useMemo(
+    () => todos.rows.filter((x) => recentlyDone(x)).sort((a, b) => (b.done_at ?? '').localeCompare(a.done_at ?? '')),
+    [todos.rows],
+  )
   const todayCount = openTodos.filter((x) => x.due_date && daysFromToday(fromDateString(x.due_date)) <= 0).length
   const toBuy = useMemo(() => items.rows.filter((x) => !x.checked_at).sort((a, b) => b.created_at.localeCompare(a.created_at)), [items.rows])
   const pinnedNotes = useMemo(
@@ -121,7 +126,7 @@ export function HomeScreen() {
             {openTodos.slice(0, 3).map((x) => {
               const who = person(x.assignee_id)
               return (
-                <div key={x.id} className="ln">
+                <div key={x.id} className="ln row-in">
                   <Check checked={false} onChange={() => toggleTodo(x, me)} label={x.title} rotate={tilt(x.id)} />
                   <span style={{ flex: 1, minWidth: 0 }}>
                     {x.title}
@@ -131,7 +136,19 @@ export function HomeScreen() {
                 </div>
               )
             })}
-            {!openTodos.length && <Empty>{t('home.noTodos')}</Empty>}
+            {doneTodos.slice(0, 2).map((x) => {
+              const who = person(x.done_by ?? x.assignee_id)
+              return (
+                <div key={`done-${x.id}`} className="ln row-in" style={{ color: '#857A8C' }}>
+                  <Check checked onChange={() => toggleTodo(x, me)} label={x.title} rotate={tilt(x.id)} />
+                  <span style={{ flex: 1, minWidth: 0 }}>
+                    <Struck on>{x.title}</Struck>
+                  </span>
+                  <span style={{ opacity: 0.6, display: 'flex' }}>{who ? <Avatar avatar={who.avatar} label={who.display_name} /> : <NobodyAvatar />}</span>
+                </div>
+              )
+            })}
+            {!openTodos.length && !doneTodos.length && <Empty>{t('home.noTodos')}</Empty>}
           </div>
         </div>
       )
@@ -189,7 +206,10 @@ export function HomeScreen() {
               <Hand size={42} lineHeight={44}>
                 {name(household)}
               </Hand>
-              <ChevronDown />
+              {/* Sits low, by the bottom of the letters. */}
+              <span style={{ display: 'flex', alignSelf: 'flex-end', marginBottom: 4, marginLeft: 2 }}>
+                <InkChevron />
+              </span>
             </button>
             <div className="cap" style={{ marginTop: 2 }}>
               {household?.address} · {t('common.people', { count: people.length })}

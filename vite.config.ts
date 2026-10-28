@@ -8,6 +8,8 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      // Registered in src/main.tsx, so the app can reload itself when a new version is out.
+      injectRegister: false,
       includeAssets: ['apple-touch-icon.png', 'favicon.png'],
       manifest: {
         name: 'Pichigoose',

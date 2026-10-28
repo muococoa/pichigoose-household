@@ -7,7 +7,7 @@ import { useHousehold, useTodos, type Profile, type Todo } from '../data/hooks'
 import { recentlyDone, toggleTodo } from '../data/actions'
 import { Screen } from '../components/Shell'
 import { Avatar, NobodyAvatar } from '../components/Avatar'
-import { Check, Hand, Sheet, Stamp, STAMP_COLORS, tilt } from '../components/Scrapbook'
+import { Check, Hand, Struck, Sheet, Stamp, STAMP_COLORS, tilt } from '../components/Scrapbook'
 import { ChevronDown, PlusIcon } from '../components/Icons'
 import { MyHouseholds } from './MyHouseholds'
 import { addDays, capitalize, daysFromToday, dueLabel, fromDateString, toDateString, weekdayName } from '../lib/time'
@@ -129,10 +129,10 @@ export function TodosScreen() {
               const who = person(x.assignee_id)
               const done = Boolean(x.done_at)
               return (
-                <div key={x.id} className="ln" style={{ minHeight: 64, color: done ? '#857A8C' : undefined }}>
+                <div key={x.id} className="ln row-in" style={{ minHeight: 64, color: done ? '#857A8C' : undefined }}>
                   <Check checked={done} onChange={() => toggleTodo(x, me)} label={x.title} rotate={tilt(x.id)} />
                   <button type="button" onClick={() => setEditing(x)} style={{ flex: 1, minWidth: 0, fontSize: 17, padding: '8px 0' }}>
-                    <span style={done ? { textDecoration: 'line-through', textDecorationColor: '#D34471', textDecorationThickness: 2 } : undefined}>{x.title}</span>
+                    <Struck on={done}>{x.title}</Struck>
                     {!done && detail(x) && <div className="cap">{detail(x)}</div>}
                   </button>
                   <span style={{ opacity: done ? 0.6 : 1, display: 'flex' }}>

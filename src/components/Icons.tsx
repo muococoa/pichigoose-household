@@ -1,3 +1,5 @@
+import inkPatch from '../../assets/ink-patch.png'
+
 // Line icons from the hi-fi screens: 26 px, 2 px stroke, round caps.
 
 type P = { size?: number; width?: number; className?: string }
@@ -113,5 +115,24 @@ export function GripIcon() {
       <circle cx="4" cy="18" r="1.8" />
       <circle cx="10" cy="18" r="1.8" />
     </svg>
+  )
+}
+
+/** The household switcher arrow, drawn in the same dry ink as the headline next to it:
+ *  rough edges from the #dry-ink filter, patchy ink from the same mask. */
+export function InkChevron() {
+  const mask = `url(${inkPatch})`
+  return (
+    <span style={{ display: 'flex', WebkitMaskImage: mask, maskImage: mask, WebkitMaskSize: '420px 420px', maskSize: '420px 420px', WebkitMaskPosition: '-210px -130px', maskPosition: '-210px -130px', padding: 3, margin: -3 }}>
+      <svg viewBox="0 0 26 26" width="28" height="28" fill="none" aria-hidden style={{ filter: 'url(#dry-ink)', overflow: 'visible' }}>
+        <path
+          d="M6.2 9.2c2 1.7 4 3.7 6.4 6.6.3.4.8.4 1.1 0 2-2.7 4-4.8 6.2-6.9"
+          stroke="#1E1A30"
+          strokeWidth="3.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </span>
   )
 }

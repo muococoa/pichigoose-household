@@ -10,8 +10,21 @@ import './styles/app.css'
 import './i18n'
 import App from './App'
 import { watchKeyboard } from './lib/keyboard'
+import { registerSW } from 'virtual:pwa-register'
 
 watchKeyboard()
+
+// The app keeps a copy of itself on the phone so it opens without signal. When a new version
+// is published, swap to it and reload right away, and look for one each time the app is opened.
+registerSW({
+  immediate: true,
+  onRegisteredSW(_url, registration) {
+    if (!registration) return
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') void registration.update()
+    })
+  },
+})
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

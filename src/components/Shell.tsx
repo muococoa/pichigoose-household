@@ -1,4 +1,4 @@
-import { useSyncExternalStore, type ReactNode } from 'react'
+import { useEffect, useState, useSyncExternalStore, type ReactNode } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { BasketIcon, HomeIcon, NoteIcon, TodoIcon } from './Icons'
@@ -55,8 +55,18 @@ export function useOnline() {
 /** A small stamp while changes made on this phone haven't reached the others yet. */
 function OfflineBadge() {
   const { t } = useTranslation()
-  const waiting = useOutboxCount()
-  if (!waiting) return null
+  const waiting = useOutboxCount() > 0
+  // Only after 10 seconds of waiting. Normal saves take less than a second and shouldn't flash a stamp.
+  const [late, setLate] = useState(false)
+  useEffect(() => {
+    if (!waiting) {
+      setLate(false)
+      return
+    }
+    const timer = window.setTimeout(() => setLate(true), 10000)
+    return () => window.clearTimeout(timer)
+  }, [waiting])
+  if (!late) return null
   return (
     <div className="offline" aria-live="polite">
       <Stamp color={STAMP_COLORS.claude} rotate={2}>

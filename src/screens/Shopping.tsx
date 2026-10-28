@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
@@ -7,7 +7,7 @@ import { useHousehold, useItems, useLists, type Item, type List } from '../data/
 import { recentlyBought, toggleItem } from '../data/actions'
 import { Screen } from '../components/Shell'
 import { Avatar } from '../components/Avatar'
-import { Check, Hand, PichiStamp, Sheet, Stamp, STAMP_COLORS, showToast, tilt, type TapeKind } from '../components/Scrapbook'
+import { Check, Hand, Struck, PichiStamp, Sheet, Stamp, STAMP_COLORS, showToast, tilt, type TapeKind } from '../components/Scrapbook'
 import { BackIcon, PlusIcon, ShareIcon } from '../components/Icons'
 import { ago } from '../lib/time'
 
@@ -56,6 +56,11 @@ export function ShoppingScreen() {
 
   // The add field opens only when someone taps +.
   const [adding, setAdding] = useState(() => Boolean(params.get('add')))
+  // Lets the Not synced stamp step above the open add bar.
+  useEffect(() => {
+    document.body.classList.toggle('adding', adding)
+    return () => document.body.classList.remove('adding')
+  }, [adding])
 
   const toBuy = useMemo(() => items.rows.filter((x) => !x.checked_at).sort((a, b) => b.created_at.localeCompare(a.created_at)), [items.rows])
   const bought = useMemo(
@@ -131,7 +136,7 @@ export function ShoppingScreen() {
   function row(x: Item, isBought: boolean) {
     const who = person(x.added_by)
     return (
-      <div key={x.id} className="ln" style={isBought ? { height: 48, color: '#857A8C' } : { height: 64 }}>
+      <div key={x.id} className="ln row-in" style={isBought ? { height: 48, color: '#857A8C' } : { height: 64 }}>
         <Check checked={isBought} onChange={() => toggleItem(x, me)} label={x.name} rotate={tilt(x.id)} />
         <button
           type="button"
@@ -142,7 +147,7 @@ export function ShoppingScreen() {
             setEditing(x)
           }}
         >
-          <span style={isBought ? { textDecoration: 'line-through', textDecorationColor: '#D34471', textDecorationThickness: 2 } : undefined}>{x.name}</span>
+          <Struck on={isBought}>{x.name}</Struck>
           {!isBought && (
             <div className="cap">
               {x.note ? `${x.note} · ` : ''}
@@ -164,63 +169,40 @@ export function ShoppingScreen() {
 
   return (
     <Screen tabbar>
-      {adding ? (
-        <form
-          onSubmit={add}
-          style={{
-            position: 'fixed',
-            left: 0,
-            right: 0,
-            // Sits on the tab bar, or right on top of the keyboard when it's open.
-            bottom: 'max(var(--tabbar), var(--kb))',
-            transition: 'bottom .3s var(--ease-out)',
-            maxWidth: 430,
-            margin: '0 auto',
-            zIndex: 6,
-            background: '#FFFDF8',
-            boxShadow: '0 -6px 14px rgba(30,26,48,.08)',
-            padding: '14px 20px 14px 20px',
-            display: 'flex',
-            gap: 12,
-            alignItems: 'flex-start',
+      {/* One + sticker that turns into the add bar. Closed, it floats above the tab bar.
+          Tapped, it settles into the bar while the field grows out of it. */}
+      <form onSubmit={add} className={`add-bar${adding ? ' open' : ''}`}>
+        <input
+          ref={inputRef}
+          className="input"
+          tabIndex={adding ? 0 : -1}
+          aria-hidden={!adding}
+          placeholder={t('shopping.addItem')}
+          aria-label={t('shopping.addItem')}
+          value={text}
+          enterKeyHint="done"
+          onChange={(e) => setText(e.target.value)}
+          onBlur={() => {
+            // Close the field again when it's left empty.
+            if (!text.trim()) setAdding(false)
           }}
-        >
-          <input
-            ref={inputRef}
-            className="input"
-            style={{ flex: 1 }}
-            autoFocus
-            placeholder={t('shopping.addItem')}
-            aria-label={t('shopping.addItem')}
-            value={text}
-            enterKeyHint="done"
-            onChange={(e) => setText(e.target.value)}
-            onBlur={() => {
-              // Close the field again when it's left empty.
-              if (!text.trim()) setAdding(false)
-            }}
-          />
-          <button
-            type="submit"
-            className="stk prim round"
-            aria-label={t('shopping.addButton')}
-            onPointerDown={(e) => e.preventDefault()}
-            style={{ width: 54, height: 54, transform: 'rotate(-4deg)', marginTop: -1 }}
-          >
-            <PlusIcon />
-          </button>
-        </form>
-      ) : (
+        />
         <button
-          type="button"
+          type="submit"
           className="stk prim round"
           aria-label={t('shopping.addButton')}
-          onClick={() => setAdding(true)}
-          style={{ position: 'fixed', right: 'max(20px, calc(50vw - 195px))', bottom: 'calc(var(--tabbar) + 20px)', zIndex: 6, transform: 'rotate(-4deg)' }}
+          onPointerDown={(e) => e.preventDefault()}
+          onClick={(e) => {
+            if (adding) return
+            e.preventDefault()
+            setAdding(true)
+            // Focus right away, inside the tap, so the phone opens the keyboard.
+            inputRef.current?.focus()
+          }}
         >
           <PlusIcon />
         </button>
-      )}
+      </form>
       <div style={{ padding: 'calc(var(--top) + 8px) 22px 0 40px', display: 'flex', flexDirection: 'column', gap: 14 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: -10 }}>
           <button type="button" aria-label={t('common.back')} onClick={() => navigate('/')} style={{ color: '#1E1A30', display: 'flex' }}>

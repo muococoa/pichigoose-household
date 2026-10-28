@@ -1,7 +1,7 @@
 // The scrapbook building blocks: ink headlines, stamps, sticky notes, tape, checkboxes,
 // stickers, Pichi's postage stamp and the bottom sheet.
 
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import pichi from '../../assets/pichi-painted.jpg'
 
@@ -79,9 +79,9 @@ export function Tape({ kind, style }: { kind: TapeKind; style?: CSSProperties })
 }
 
 /** The hand-drawn check, kept in one place so Nora can improve it later. */
-export function CheckMark() {
+export function CheckMark({ on = true }: { on?: boolean }) {
   return (
-    <svg viewBox="0 0 28 28" width="28" height="28" aria-hidden>
+    <svg viewBox="0 0 28 28" width="28" height="28" aria-hidden className={`check-mark${on ? ' on' : ''}`}>
       <path
         d="M5 15.5 C7 17, 9 19.8, 10.6 22.4 C13.5 15, 17.5 9, 24 3.5"
         fill="none"
@@ -89,6 +89,7 @@ export function CheckMark() {
         strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
+        pathLength={1}
       />
     </svg>
   )
@@ -97,18 +98,39 @@ export function CheckMark() {
 export function Box({ checked, rotate = 0 }: { checked: boolean; rotate?: number }) {
   return (
     <span className="box" style={{ transform: `rotate(${rotate}deg)` }}>
-      {checked && <CheckMark />}
+      <CheckMark on={checked} />
     </span>
   )
 }
 
-/** A tappable checkbox. */
+// How long the pen stroke takes before the row moves (to Bought, or to the bottom).
+const TICK_MS = 300
+
+/** A tappable checkbox. The check is drawn like a pen mark first, then the change is saved. */
 export function Check({ checked, onChange, label, rotate }: { checked: boolean; onChange: () => void; label: string; rotate?: number }) {
+  const [shown, setShown] = useState<boolean | null>(null)
+  const busy = useRef(false)
+  function tap() {
+    if (busy.current) return
+    busy.current = true
+    setShown(!checked)
+    window.setTimeout(() => {
+      onChange()
+      setShown(null)
+      busy.current = false
+    }, TICK_MS)
+  }
+  const on = shown ?? checked
   return (
-    <button type="button" className="check-btn" role="checkbox" aria-checked={checked} aria-label={label} onClick={onChange}>
-      <Box checked={checked} rotate={rotate} />
+    <button type="button" className="check-btn" role="checkbox" aria-checked={on} aria-label={label} onClick={tap}>
+      <Box checked={on} rotate={rotate} />
     </button>
   )
+}
+
+/** Text crossed out with a hero-pink pen line that draws across. */
+export function Struck({ on, children }: { on: boolean; children: ReactNode }) {
+  return <span className={`struck${on ? ' on' : ''}`}>{children}</span>
 }
 
 /** Rotation that stays the same for the same id, between -max and max degrees. */
@@ -177,41 +199,62 @@ export function Sheet({ open, onClose, title, children }: SheetProps) {
   )
 }
 
-/** A small "···" menu. */
+/** A small "···" menu. It opens below its button, or above when there's no room, and never leaves the screen. */
 export function Menu({ label, items, children }: { label: string; items: { label: string; onClick: () => void; danger?: boolean }[]; children: ReactNode }) {
   const [open, setOpen] = useState(false)
+  const [place, setPlace] = useState<CSSProperties>({ visibility: 'hidden' })
   const ref = useRef<HTMLDivElement>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
+
   useEffect(() => {
     if (!open) return
     const close = (e: Event) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+      const t = e.target as Node
+      if (!ref.current?.contains(t) && !menuRef.current?.contains(t)) setOpen(false)
     }
     document.addEventListener('pointerdown', close)
+    window.addEventListener('resize', () => setOpen(false), { once: true })
     return () => document.removeEventListener('pointerdown', close)
   }, [open])
+
+  useLayoutEffect(() => {
+    if (!open || !ref.current || !menuRef.current) return
+    const gap = 8
+    const edge = 12
+    const button = ref.current.getBoundingClientRect()
+    const menu = menuRef.current.getBoundingClientRect()
+    const below = button.bottom + gap
+    const fitsBelow = below + menu.height <= window.innerHeight - edge
+    const top = fitsBelow ? below : Math.max(edge, button.top - gap - menu.height)
+    const left = Math.min(Math.max(edge, button.right - menu.width), window.innerWidth - edge - menu.width)
+    setPlace({ top, left })
+  }, [open])
+
   return (
     <div ref={ref} style={{ position: 'relative' }}>
       <button type="button" aria-label={label} aria-expanded={open} onClick={() => setOpen((o) => !o)} style={{ padding: 8, margin: -8, display: 'flex', color: '#63586B' }}>
         {children}
       </button>
-      {open && (
-        <div className="menu" role="menu">
-          {items.map((it) => (
-            <button
-              key={it.label}
-              type="button"
-              role="menuitem"
-              className={it.danger ? 'danger' : undefined}
-              onClick={() => {
-                setOpen(false)
-                it.onClick()
-              }}
-            >
-              {it.label}
-            </button>
-          ))}
-        </div>
-      )}
+      {open &&
+        createPortal(
+          <div ref={menuRef} className="menu" role="menu" style={{ position: 'fixed', right: 'auto', ...place }}>
+            {items.map((it) => (
+              <button
+                key={it.label}
+                type="button"
+                role="menuitem"
+                className={it.danger ? 'danger' : undefined}
+                onClick={() => {
+                  setOpen(false)
+                  it.onClick()
+                }}
+              >
+                {it.label}
+              </button>
+            ))}
+          </div>,
+          document.body,
+        )}
     </div>
   )
 }
