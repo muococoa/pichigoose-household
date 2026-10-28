@@ -5,7 +5,7 @@ import { refetchTable } from './store'
 import { useChatReads, useHousehold, useMessages, type Message, type Profile } from './hooks'
 
 /** A chat: the household's group chat ('household') or a private chat with one person (their id). */
-export type Chat = { key: string; person: Profile | null; messages: Message[]; last: Message | undefined; unread: number }
+export type Chat = { key: string; person: Profile | null; messages: Message[]; last: Message | undefined; unread: number; readByAll: (m: Message) => boolean }
 
 export function inChat(m: Message, key: string, me: string) {
   if (key === 'household') return m.to_user === null
@@ -24,9 +24,14 @@ export function useChats() {
     const since = membership?.joined_at ?? '1970-01-01'
     const make = (key: string, person: Profile | null): Chat => {
       const list = messages.rows.filter((m) => inChat(m, key, me)).sort((a, b) => a.created_at.localeCompare(b.created_at))
-      const readAt = reads.rows.find((r) => r.chat === key)?.read_at ?? since
+      const readAt = reads.rows.find((r) => r.chat === key && r.user_id === me)?.read_at ?? since
       const unread = list.filter((m) => m.author_id !== me && m.created_at > readAt).length
-      return { key, person, messages: list, last: list[list.length - 1], unread }
+      // Read ticks: everyone else in the chat has read up to this message. (In a private chat, the
+      // other person marks it under my id.)
+      const others = key === 'household' ? people.filter((p) => p.id !== me).map((p) => ({ id: p.id, chat: 'household' })) : [{ id: key, chat: me }]
+      const readByAll = (m: Message) =>
+        others.length > 0 && others.every((o) => (reads.rows.find((r) => r.user_id === o.id && r.chat === o.chat)?.read_at ?? '') >= m.created_at)
+      return { key, person, messages: list, last: list[list.length - 1], unread, readByAll }
     }
     const privateChats = people
       .filter((p) => p.id !== me)

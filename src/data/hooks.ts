@@ -79,7 +79,7 @@ export type Message = Row & {
   created_at: string
 }
 
-export type ChatRead = Row & { household_id: string; chat: string; read_at: string }
+export type ChatRead = Row & { user_id: string; household_id: string; chat: string; read_at: string }
 
 // ---------------------------------------------------------------------------
 
@@ -218,7 +218,7 @@ export function useMessages(householdId: string | null) {
   )
 }
 
-/** Where I stopped reading each chat in the household. */
+/** Where everyone in the household stopped reading each chat (mine for unread counts, theirs for read ticks). */
 export function useChatReads(householdId: string | null) {
   return useCollection<ChatRead>(
     householdId
@@ -227,6 +227,7 @@ export function useChatReads(householdId: string | null) {
           table: 'chat_reads',
           belongs: (r) => r.household_id === householdId,
           load: () => supabase.from('chat_reads').select('*').eq('household_id', householdId),
+          realtime: `household_id=eq.${householdId}`,
         }
       : null,
   )

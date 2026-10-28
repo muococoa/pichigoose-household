@@ -50,8 +50,18 @@ function chatName(chat: Chat, householdName: string) {
   return chat.person ? chat.person.display_name : householdName
 }
 
+function Ticks({ read }: { read: boolean }) {
+  const { t } = useTranslation()
+  return (
+    <svg className={`ticks${read ? ' read' : ''}`} viewBox="0 0 20 12" width="18" height="11" role="img" aria-label={read ? t('messages.read') : t('messages.sent')}>
+      <path d="M1.5 6.6 4.6 9.6 10.6 2.6" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+      {read && <path d="M8.2 9.3 8.6 9.6 14.6 2.6" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />}
+    </svg>
+  )
+}
+
 /** Speech bubbles grouped into runs: the same person, the same day, a few minutes apart. */
-function Bubbles({ messages, group }: { messages: Message[]; group: boolean }) {
+function Bubbles({ messages, group, readByAll }: { messages: Message[]; group: boolean; readByAll: (m: Message) => boolean }) {
   const me = useMe()
   const { people } = useHousehold()
   const { time, day } = useTimeLabels()
@@ -77,13 +87,17 @@ function Bubbles({ messages, group }: { messages: Message[]; group: boolean }) {
                 </Stamp>
               </div>
             )}
-            <div className={`msg${mine ? ' mine' : ''}${first ? ' first' : ''}`}>
-              {/* In the group chat, other people's runs carry their avatar at the bottom. */}
-              {group && !mine && <span className="msg-avatar">{lastOfRun && who ? <PersonLink id={who.id}><Avatar avatar={who.avatar} size={30} /></PersonLink> : null}</span>}
+            <div className={`msg${mine ? ' mine' : ''}${first ? ' first' : ''}${lastOfRun ? ' last' : ''}`}>
+              {/* Like WhatsApp: in the group chat, the avatar sits at the bottom of each run, by the bubble's tail. */}
+              {group && !mine && <span className="msg-avatar">{lastOfRun && who ? <PersonLink id={who.id}><Avatar avatar={who.avatar} size={34} /></PersonLink> : null}</span>}
               <div className="bubble">
                 {group && !mine && first && <div className="bubble-name">{who?.display_name}</div>}
                 <span className="bubble-text">{m.body}</span>
-                <span className="bubble-time">{time(m.created_at)}</span>
+                <span className="bubble-time">
+                  {time(m.created_at)}
+                  {/* One tick when sent, two once everyone else has read it. */}
+                  {mine && <Ticks read={readByAll(m)} />}
+                </span>
               </div>
             </div>
           </div>
@@ -173,7 +187,7 @@ function Conversation({ chatKey, header, back }: { chatKey: string; header?: boo
       )}
       <div className="bubbles">
         {chat.messages.length ? (
-          <Bubbles messages={chat.messages} group={group} />
+          <Bubbles messages={chat.messages} group={group} readByAll={chat.readByAll} />
         ) : (
           <p className="say-hi">{group ? t('messages.sayHiAll') : t('messages.sayHi', { name: title })}</p>
         )}
@@ -190,7 +204,7 @@ function Conversation({ chatKey, header, back }: { chatKey: string; header?: boo
           onChange={(e) => setText(e.target.value)}
           onKeyDown={key}
         />
-        <button type="submit" className="stk violet round" aria-label={t('messages.send')} disabled={!text.trim()} onPointerDown={(e) => e.preventDefault()}>
+        <button type="submit" className="send-btn" aria-label={t('messages.send')} disabled={!text.trim()} onPointerDown={(e) => e.preventDefault()}>
           <SendIcon />
         </button>
       </form>

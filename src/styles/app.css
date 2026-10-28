@@ -245,9 +245,8 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 }
 
 /* ---------------------------------------------------------------------------
-   Messages, like WhatsApp: a list of chats, then speech bubbles. Yours on the right in a light violet
-   (violet is for people), theirs on the left in white. The first bubble of a run has one sharp corner,
-   like WhatsApp's tail; the other corners are a little uneven, like our stickers.
+   Messages, like WhatsApp: a list of chats, then speech bubbles. Yours on the right in the theme color,
+   theirs on the left in white, with a little curled tail on the last bubble of each run.
    --------------------------------------------------------------------------- */
 .group-avatar { display: inline-grid; place-items: center; flex: none; border-radius: 50%; background: #D6C8E6; color: #1E1A30; box-shadow: 0 0 0 2px #FFFFFF, 1px 2px 2px 1px rgba(30, 26, 48, .15) }
 .chat-list { display: flex; flex-direction: column; gap: 2px }
@@ -269,28 +268,44 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 }
 .chat-back { display: flex; color: #1E1A30; margin-left: -8px }
 .bubbles { flex: 1; padding: 8px 14px 14px 34px }
-.msg { display: flex; align-items: flex-end; gap: 6px; margin-top: 2px }
+.msg { display: flex; align-items: flex-end; gap: 12px; margin-top: 2px }
 .msg.first { margin-top: 10px }
 .msg.mine { justify-content: flex-end }
-.msg-avatar { width: 30px; flex: none; display: flex }
+.msg-avatar { width: 34px; flex: none; display: flex }
+/* Bubbles: theirs white, yours in the theme color with white text. The last bubble of a run gets a curled
+   tail at the bottom, like WhatsApp (drawn with a mask so it's the bubble's own color). */
 .bubble {
-  max-width: 78%; padding: 7px 11px 6px 12px; background: #FFFFFF; color: #2E2638; font: 600 15px/21px Nunito, sans-serif;
-  border-radius: 18px 17px 19px 16px; box-shadow: 0 1px 0 rgba(30, 26, 48, .10), 1px 2px 3px rgba(30, 26, 48, .05); white-space: pre-wrap; overflow-wrap: anywhere;
+  position: relative; max-width: 78%; padding: 7px 11px 6px 12px; background: #FFFFFF; color: #2E2638; font: 600 15px/21px Nunito, sans-serif;
+  border-radius: 18px; filter: drop-shadow(0 1px 0 rgba(30, 26, 48, .10)) drop-shadow(1px 2px 2px rgba(30, 26, 48, .05)); white-space: pre-wrap; overflow-wrap: anywhere;
 }
-.msg.first .bubble { border-top-left-radius: 4px }
-.msg.mine .bubble { background: #E5DAF3; border-radius: 17px 18px 16px 19px }
-.msg.mine.first .bubble { border-top-left-radius: 17px; border-top-right-radius: 4px }
+.msg.mine .bubble { background: var(--hero); color: #FFFFFF }
+.msg.last .bubble { border-bottom-left-radius: 0 }
+.msg.mine.last .bubble { border-bottom-left-radius: 18px; border-bottom-right-radius: 0 }
+.msg.last .bubble::after {
+  content: ""; position: absolute; bottom: 0; left: -8px; width: 10px; height: 13px; background: inherit;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 13'%3E%3Cpath d='M10 0 L10 13 L1.5 13 C.3 13 0 12 .8 11.4 C5 8.6 8 5 10 0 Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 13'%3E%3Cpath d='M10 0 L10 13 L1.5 13 C.3 13 0 12 .8 11.4 C5 8.6 8 5 10 0 Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+}
+.msg.mine.last .bubble::after { left: auto; right: -8px; transform: scaleX(-1) }
 .bubble-name { font-size: 12px; line-height: 16px; font-weight: 800; color: #6A4F9C; margin-bottom: 1px }
-.bubble-time { float: right; margin: 7px 0 -5px 10px; font: 600 11px/14px Nunito, sans-serif; color: #857A8C }
-.msg.mine .bubble-time { color: #786A8E }
+.bubble-time { float: right; display: inline-flex; align-items: center; gap: 3px; margin: 7px 0 -5px 10px; font: 600 11px/14px Nunito, sans-serif; color: #857A8C }
+.msg.mine .bubble-time { color: rgba(255, 255, 255, .78) }
+.ticks { display: block; color: rgba(255, 255, 255, .7) }
+.ticks.read { color: #FFFFFF }
 .day-stamp { display: flex; justify-content: center; margin: 18px 0 4px }
 .say-hi { text-align: center; color: #63586B; font-size: 15px; font-weight: 600; margin: 48px 0 }
 .composer {
-  position: sticky; bottom: var(--kb); z-index: 3; display: flex; gap: 10px; align-items: flex-end; padding: 10px 14px max(var(--bottom), 12px) 24px;
-  background: #FFFDF8 url("../../assets/paper-white.png") 0 0 / 512px 512px; box-shadow: 0 -6px 12px -8px rgba(30, 26, 48, .25); transition: bottom .3s var(--ease-out);
+  position: sticky; bottom: var(--kb); z-index: 3; display: flex; gap: 10px; align-items: flex-end; padding: 8px 12px max(var(--bottom), 10px) 16px;
+  background: rgba(255, 253, 248, .94) url("../../assets/paper-white.png") 0 0 / 512px 512px; box-shadow: 0 -1px 0 rgba(30, 26, 48, .08);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); transition: bottom .3s var(--ease-out);
 }
-.composer .input { flex: 1; height: auto; min-height: 46px; padding: 11px 16px; resize: none; line-height: 22px; border-radius: 22px 24px 21px 20px }
-.composer .stk.round { width: 46px; height: 46px; border-width: 3px; flex: none }
+/* A slim, fully round field, like WhatsApp. */
+.composer .input { flex: 1; height: auto; min-height: 40px; padding: 9px 16px; resize: none; line-height: 22px; border-radius: 22px; box-shadow: inset 0 0 0 1.5px #E2D8EC; background: #FFFFFF }
+.composer .input:focus { box-shadow: inset 0 0 0 1.5px var(--hero) }
+/* Round send button in the theme color: quiet while the field is empty, lit up once you type. */
+.send-btn { flex: none; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--hero); color: #FFFFFF; box-shadow: 1px 2px 3px rgba(30, 26, 48, .2); transition: opacity .2s, transform .25s var(--ease-out) }
+.send-btn:disabled { opacity: .35; box-shadow: none; transform: scale(.92) }
+.send-btn:not(:disabled):active { transform: scale(.92) }
 .kb-spacer { height: var(--kb) }
 /* As a tab, the chat's writing field sits on the tab bar (or the keyboard when it's open). */
 .chat-tab.with-tabbar .scroll { padding-bottom: 0 }

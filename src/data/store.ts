@@ -35,7 +35,7 @@ export type CollectionDef = {
 // Tables without a single id column get one made from their key columns.
 const syntheticId: Record<string, (row: Record<string, unknown>) => string> = {
   household_members: (r) => `${r.household_id}:${r.user_id}`,
-  chat_reads: (r) => `${r.household_id}:${r.chat}`,
+  chat_reads: (r) => `${r.user_id}:${r.household_id}:${r.chat}`,
 }
 
 function withId(table: string, row: Record<string, unknown>): Row {

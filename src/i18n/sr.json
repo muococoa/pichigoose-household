@@ -313,7 +313,9 @@
     "none": "Još nema poruka.",
     "unread_one": "{{count}} nepročitana poruka",
     "unread_few": "{{count}} nepročitane poruke",
-    "unread_other": "{{count}} nepročitanih poruka"
+    "unread_other": "{{count}} nepročitanih poruka",
+    "sent": "Poslato",
+    "read": "Svi su pročitali"
   },
   "person": {
     "message": "Pošalji poruku",

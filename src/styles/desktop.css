@@ -120,6 +120,6 @@
   .chat-split .bubbles { overflow-y: auto }
   .chat-split .chat-header { position: static; padding: 14px 18px }
   .chat-split .chat-back { display: none }
-  .chat-split .composer { position: static; padding: 12px 16px }
+  .chat-split .composer { position: static; padding: 10px 14px }
   .chat-split .kb-spacer { display: none }
 }
