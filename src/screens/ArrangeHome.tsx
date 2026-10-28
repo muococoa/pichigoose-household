@@ -303,7 +303,7 @@ function ArrangeBoard({ order, setOrder, toggle, intro, onReset, onDone }: Board
           {t('arrange.done')}
         </button>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 30, marginTop: 6, position: 'relative' }}>
+      <div className="board-grid" style={{ marginTop: 6, position: 'relative', alignItems: 'stretch' }}>
         {slot && (
           <div
             aria-hidden

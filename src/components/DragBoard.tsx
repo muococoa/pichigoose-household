@@ -12,7 +12,7 @@ type Item<K extends string> = { key: K; node: ReactNode }
  * notes slide out of the way, and a dashed "drop it here" shows where it will land. Letting go saves.
  * A plain click (on a checkbox, a link) still works, because a drag only starts after a few pixels.
  */
-export function DragBoard<K extends string>({ items, onReorder, dropLabel, columns = 3 }: { items: Item<K>[]; onReorder: (keys: K[]) => void; dropLabel: string; columns?: number }) {
+export function DragBoard<K extends string>({ items, onReorder, dropLabel }: { items: Item<K>[]; onReorder: (keys: K[]) => void; dropLabel: string }) {
   const keysOf = items.map((i) => i.key).join('|')
   const [order, setOrder] = useState<K[]>(() => items.map((i) => i.key))
   const [active, setActive] = useState<K | null>(null)
@@ -46,7 +46,8 @@ export function DragBoard<K extends string>({ items, onReorder, dropLabel, colum
   return (
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={start} onDragEnd={end} onDragCancel={() => setActive(null)}>
       <SortableContext items={order} strategy={rectSortingStrategy}>
-        <div style={{ display: 'grid', gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`, gap: 30, alignItems: 'start' }}>
+        {/* As many columns as fit, at least 280 px each: three on a big screen, fewer in a narrow window. */}
+        <div className="board-grid">
           {order.map((key) => (
             <Slot key={key} id={key} dropLabel={dropLabel}>
               {byKey.get(key)}

@@ -89,7 +89,7 @@ export function ProfileScreen() {
               {t('profile.title')}
             </Hand>
           </div>
-          <div style={{ display: 'flex', gap: 56, alignItems: 'flex-start', marginTop: 28 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', columnGap: 56, rowGap: 32, alignItems: 'flex-start', marginTop: 28 }}>
             <div style={{ flex: 'none', width: 380, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <div className="row" style={{ gap: 14 }}>
                 {step !== 'color' && <Arrow dir={-1} onClick={() => cycle(-1)} label={t('profile.previous')} />}
@@ -105,7 +105,7 @@ export function ProfileScreen() {
                 </div>
               )}
             </div>
-            <div style={{ flex: 1, minWidth: 0, maxWidth: 560 }}>
+            <div style={{ flex: '1 1 340px', minWidth: 0, maxWidth: 560 }}>
               <div role="tablist" className="row" style={{ gap: 6 }}>
                 {STEPS.map((x, i) => (
                   <button

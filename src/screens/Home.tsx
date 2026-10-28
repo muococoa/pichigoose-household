@@ -262,7 +262,7 @@ export function HomeScreen() {
         <NoteHead title={t('home.notes')} to="/notes" right={t('common.seeAll')} />
         {desktop ? (
           // Desktop: the notes as small sticky notes, two across.
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 22, paddingTop: 6 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 22, paddingTop: 6 }}>
             {pinnedNotes.slice(0, 4).map((n, i) => {
               const by = person(n.updated_by)
               return (
@@ -274,7 +274,7 @@ export function HomeScreen() {
                   style={{ display: 'block', width: '100%', textAlign: 'left', padding: '16px 18px 30px', minHeight: 104, transform: `rotate(${MINI_TILT[i % MINI_TILT.length]}deg)`, boxShadow: '1px 2px 0 rgba(30,26,48,.14)', minWidth: 0 }}
                 >
                   <PaperClip side="left" />
-                  <div style={{ fontSize: 17, lineHeight: '22px', fontWeight: 800, color: '#1E1A30', overflowWrap: 'anywhere' }}>{n.title || t('notes.untitled')}</div>
+                  <div style={{ fontSize: 17, lineHeight: '22px', fontWeight: 800, color: '#1E1A30', overflowWrap: 'break-word', hyphens: 'auto' }}>{n.title || t('notes.untitled')}</div>
                   <div className="cap" style={{ marginTop: 4 }}>
                     {n.pinned ? t('notes.pinned') : `${by?.display_name ?? ''} · ${ago(n.updated_at, i18n.language)}`}
                   </div>

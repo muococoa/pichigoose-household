@@ -132,7 +132,7 @@ export function MyHouseholds({ open, onClose, page }: { open: boolean; onClose: 
               {t('households.createNew')}
             </button>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 26, marginTop: 30, alignItems: 'start' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: 26, marginTop: 30, alignItems: 'start' }}>
             {households.map((h, i) => {
               const people = peopleIn(h.id)
               const isCurrent = h.id === current?.id

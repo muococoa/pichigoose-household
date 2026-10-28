@@ -271,8 +271,8 @@ export function ShoppingScreen() {
       {desktop ? (
         // Desktop (D5): the add field on top of the list (Enter adds and keeps it ready for the next one),
         // and Bought in its own column on the right.
-        <div style={{ display: 'flex', gap: 64, alignItems: 'flex-start', padding: '26px 22px 32px 40px' }}>
-          <div style={{ flex: 1.5, minWidth: 0 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', columnGap: 64, rowGap: 28, alignItems: 'flex-start', padding: '26px 22px 32px 40px' }}>
+          <div style={{ flex: '1.5 1 380px', minWidth: 0 }}>
             <form onSubmit={add} style={{ display: 'flex', gap: 14, alignItems: 'center', marginBottom: 8 }}>
               <input
                 ref={inputRef}
@@ -298,7 +298,7 @@ export function ShoppingScreen() {
               </div>
             )}
           </div>
-          <div style={{ flex: 1, minWidth: 0, paddingTop: 10 }}>
+          <div style={{ flex: '1 1 260px', minWidth: 0, paddingTop: 10 }}>
             {bought.length > 0 && (
               <>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>

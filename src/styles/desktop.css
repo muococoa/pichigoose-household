@@ -102,3 +102,9 @@
   .drag-lifted { cursor: grabbing; transform: rotate(-3deg) scale(1.02); filter: drop-shadow(6px 14px 14px rgba(30, 26, 48, .24)) }
   .drop-here { position: absolute; inset: 0; border: 2.5px dashed #C9C0CF; border-radius: 4px; display: grid; place-items: center }
 }
+
+@media (min-width: 1024px) {
+  /* Home board and Arrange: three columns that fill the page, like the hi-fi; two or one when the window
+     is too narrow for notes of at least 250 px. */
+  .board-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(max(250px, calc((100% - 60px) / 3)), 1fr)); gap: 30px; align-items: start }
+}

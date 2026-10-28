@@ -79,7 +79,7 @@ export function NotesScreen() {
         }}
       >
         {n.pinned && <Tape kind={PIN_TAPES[i % PIN_TAPES.length]} style={{ top: -10, left: '50%', marginLeft: -30, width: 60, height: 18, transform: `rotate(${tilt(n.id, 5)}deg)` }} />}
-        <div style={{ fontSize: 17, lineHeight: '22px', fontWeight: 800, color: '#1E1A30', overflowWrap: 'anywhere' }}>{n.title || t('notes.untitled')}</div>
+        <div style={{ fontSize: 17, lineHeight: '22px', fontWeight: 800, color: '#1E1A30', overflowWrap: 'break-word', hyphens: 'auto' }}>{n.title || t('notes.untitled')}</div>
         <div
           style={{
             fontSize: 14,
