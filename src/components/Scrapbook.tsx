@@ -183,7 +183,7 @@ export function Sheet({ open, onClose, title, children }: SheetProps) {
   if (!open) return null
   return createPortal(
     <div className="sheet-back" onClick={onClose}>
-      <div ref={ref} className="sheet scr" role="dialog" aria-modal="true" aria-label={title} onClick={(e) => e.stopPropagation()}>
+      <div ref={ref} className="sheet" role="dialog" aria-modal="true" aria-label={title} onClick={(e) => e.stopPropagation()}>
         <div className="grab" />
         {title && (
           <div style={{ marginBottom: 14 }}>
