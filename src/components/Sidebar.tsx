@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useHousehold, useMyProfile } from '../data/hooks'
 import { Avatar } from './Avatar'
 import { Hand, Tape } from './Scrapbook'
-import { BasketIcon, ChevronDown, HomeIcon, InkCircle, NoteIcon, PlusIcon, TodoIcon } from './Icons'
+import { BasketIcon, ChevronDown, HomeIcon, InkCircle, MessagesIcon, NoteIcon, PlusIcon, TodoIcon } from './Icons'
 import { AddSheet } from '../screens/AddSheet'
 import logo from '../../assets/logo-pichigoose.png'
 
@@ -22,6 +22,7 @@ export function Sidebar() {
     { to: '/shopping', label: t('tabs.shopping'), icon: <BasketIcon /> },
     { to: '/todos', label: t('tabs.todos'), icon: <TodoIcon /> },
     { to: '/notes', label: t('tabs.notes'), icon: <NoteIcon /> },
+    { to: '/messages', label: t('tabs.messages'), icon: <MessagesIcon /> },
   ]
 
   return (

@@ -102,7 +102,8 @@
     "shopping": "Shopping",
     "todos": "To-dos",
     "notes": "Notes",
-    "money": "Money"
+    "money": "Money",
+    "messages": "Messages"
   },
   "home": {
     "hi": "Hi {{name}}!",
@@ -283,5 +284,9 @@
     "send": "Send",
     "count_one": "{{count}} comment",
     "count_other": "{{count}} comments"
+  },
+  "messages": {
+    "title": "Messages",
+    "soon": "Messages for the whole household are coming soon."
   }
 }

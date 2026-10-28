@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useRef, useState, useSyncExternal
 import { createPortal } from 'react-dom'
 import { NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { BasketIcon, HomeIcon, InkCircle, NoteIcon, TodoIcon } from './Icons'
+import { BasketIcon, HomeIcon, InkCircle, MessagesIcon, NoteIcon, TodoIcon } from './Icons'
 import { DoodleSpot, Stamp, STAMP_COLORS, type DoodlePose } from './Scrapbook'
 import { flush, refetchAll, useOutboxCount } from '../data/store'
 import { useDesktop } from '../lib/desktop'
@@ -80,6 +80,7 @@ export function TabBar() {
     { to: '/shopping', label: t('tabs.shopping'), icon: <BasketIcon /> },
     { to: '/todos', label: t('tabs.todos'), icon: <TodoIcon /> },
     { to: '/notes', label: t('tabs.notes'), icon: <NoteIcon /> },
+    { to: '/messages', label: t('tabs.messages'), icon: <MessagesIcon /> },
   ]
   return (
     <nav className="tabbar">

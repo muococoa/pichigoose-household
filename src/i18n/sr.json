@@ -104,7 +104,8 @@
     "shopping": "Kupovina",
     "todos": "Zadaci",
     "notes": "Beleške",
-    "money": "Novac"
+    "money": "Novac",
+    "messages": "Poruke"
   },
   "home": {
     "hi": "Ćao {{name}}!",
@@ -288,5 +289,9 @@
     "count_one": "{{count}} komentar",
     "count_few": "{{count}} komentara",
     "count_other": "{{count}} komentara"
+  },
+  "messages": {
+    "title": "Poruke",
+    "soon": "Poruke za celo domaćinstvo stižu uskoro."
   }
 }

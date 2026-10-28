@@ -18,6 +18,7 @@ import { NoteScreen, NotesScreen } from './screens/Notes'
 import { ProfileScreen, SettingsScreen } from './screens/Profile'
 import { HouseholdsScreen } from './screens/Households'
 import { PersonScreen } from './screens/Person'
+import { MessagesScreen } from './screens/Messages'
 
 /** Blank notebook paper while things load. */
 function Paper() {
@@ -67,7 +68,7 @@ function LanguageSync() {
   return null
 }
 
-const TABS = ['/', '/shopping', '/todos', '/notes']
+const TABS = ['/', '/shopping', '/todos', '/notes', '/messages']
 
 /**
  * Which way the next screen slides in, like a new sheet of paper. Forward slides in from the right;
@@ -124,6 +125,7 @@ export default function App() {
           <Route path="/shopping" element={<Inside><ShoppingScreen /></Inside>} />
           <Route path="/todos" element={<Inside><TodosScreen /></Inside>} />
           <Route path="/notes" element={<Inside><NotesScreen /></Inside>} />
+          <Route path="/messages" element={<Inside><MessagesScreen /></Inside>} />
           <Route path="/notes/:id" element={<Inside><NoteScreen /></Inside>} />
           <Route path="/profile" element={<Inside><ProfileScreen /></Inside>} />
           <Route path="/settings" element={<Inside><SettingsScreen /></Inside>} />

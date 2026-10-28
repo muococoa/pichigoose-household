@@ -105,6 +105,12 @@ export const NoteIcon = (p: P) => (
     <path d="M9 13h8M9 17h6" />
   </Svg>
 )
+export const MessagesIcon = (p: P) => (
+  <Svg {...p}>
+    <path d="M13.4 4.6c5 0 8.6 3.4 8.6 7.7s-3.6 7.6-8.6 7.6c-1.3 0-2.5-.2-3.6-.6L5.2 21.4l1.3-4.3C5 15.8 4.4 14.1 4.4 12.3c0-4.3 3.9-7.7 9-7.7Z" />
+    <path d="M9.6 12.4h.01M13.3 12.4h.01M17 12.4h.01" strokeWidth="2.6" />
+  </Svg>
+)
 export const MoneyIcon = (p: P) => (
   <Svg {...p}>
     <circle cx="13" cy="13" r="8.5" />
