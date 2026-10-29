@@ -185,7 +185,8 @@
       "delete": "Yes, delete",
       "keep": "No, keep it"
     },
-    "itemDeleted": "Item deleted"
+    "itemDeleted": "Item deleted",
+    "onList": "On the list"
   },
   "todos": {
     "title": "To-dos",

@@ -16,6 +16,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { useDesktop } from '../lib/desktop'
 import { useKept } from '../lib/kept'
 import { TypingBar, justSent } from '../components/TypingBar'
+import { Chip } from './Todos'
 import { useSlideDirection, useSwipeBetween, useTapeBounce } from '../components/Slide'
 import { PersonLink } from './Person'
 import { CommentCount, Comments, useCommentCounts } from '../components/Comments'
@@ -68,6 +69,8 @@ export function ShoppingScreen() {
   const [text, setText] = useKept(`${keep}:text`, '')
   const inputRef = useRef<HTMLInputElement>(null)
   const [newList, setNewList] = useKept<string | null>(`${keep}:newList`, null)
+  // The item a new list is being made for, from its pop-up.
+  const [movingItem, setMovingItem] = useState<Item | null>(null)
   const [editingList, setEditingList] = useKept<List | null>(`${keep}:editingList`, null)
   const [listName, setListName] = useKept(`${keep}:listName`, '')
   const [editing, setEditing] = useKept<Item | null>(`${keep}:editing`, null)
@@ -193,9 +196,19 @@ export function ShoppingScreen() {
       created_by: me,
       created_at: new Date().toISOString(),
     })
+    // Started from an item's pop-up: that item moves to the new list.
+    if (movingItem) moveItem(movingItem, row.id as string)
+    setMovingItem(null)
     setPicked(row.id)
     saveList(hid, row.id)
     setNewList(null)
+  }
+
+  // Move an item to another list (from its pop-up), and follow it there.
+  function moveItem(item: Item, listId: string) {
+    if (item.list_id === listId) return
+    db.update('list_items', item.id, { list_id: listId })
+    if (editing?.id === item.id) setEditing({ ...editing, list_id: listId })
   }
 
   async function share() {
@@ -395,7 +408,7 @@ export function ShoppingScreen() {
       </div>
       )}
 
-      <Sheet small open={newList !== null} onClose={() => setNewList(null)} title={t('shopping.newList')}>
+      <Sheet small open={newList !== null} onClose={() => { setNewList(null); setMovingItem(null) }} title={t('shopping.newList')}>
         <form onSubmit={addList} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <input className="input" ref={autoFocusField} placeholder={t('shopping.newListPlaceholder')} aria-label={t('shopping.newList')} value={newList ?? ''} onChange={(e) => setNewList(e.target.value)} />
           <button type="submit" className="stk prim" style={{ width: '100%' }}>
@@ -453,6 +466,28 @@ export function ShoppingScreen() {
           </label>
           <input id="item-name" className="input" value={itemName} enterKeyHint="done" onChange={(e) => setItemName(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.currentTarget as HTMLInputElement).blur()} />
         </div>
+        {/* Which list it's on: tap another to move it there, or start a new list for it. */}
+        {editing && (
+          <div style={{ marginTop: 16 }}>
+            <span className="label">{t('shopping.onList')}</span>
+            <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
+              {sortedLists.map((l) => (
+                <Chip key={l.id} on={l.id === editing.list_id} onClick={() => moveItem(editing, l.id)}>
+                  {l.name}
+                </Chip>
+              ))}
+              <Chip
+                on={false}
+                onClick={() => {
+                  setMovingItem(editing)
+                  setNewList('')
+                }}
+              >
+                {t('shopping.addList')}
+              </Chip>
+            </div>
+          </div>
+        )}
         {editing && (
           <div style={{ marginTop: 18 }}>
             <Comments target={{ item_id: editing.id }} />

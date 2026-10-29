@@ -190,7 +190,8 @@
       "delete": "Da, obriši",
       "keep": "Ne, ostavi"
     },
-    "itemDeleted": "Stavka obrisana"
+    "itemDeleted": "Stavka obrisana",
+    "onList": "Na spisku"
   },
   "todos": {
     "title": "Zadaci",

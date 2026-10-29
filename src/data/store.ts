@@ -14,7 +14,7 @@ type Match = Record<string, string>
 
 type NewOp =
   | { kind: 'insert'; table: string; row: Row }
-  | { kind: 'update'; table: string; match: Match; patch: Record<string, unknown> }
+  | { kind: 'update'; table: string; match: Match; patch: Record<string, unknown>; carry?: Row }
   | { kind: 'delete'; table: string; match: Match }
 type Op = NewOp & { seq: number }
 
@@ -116,6 +116,8 @@ function applyOp(rows: Row[], op: Op, def: CollectionDef): Row[] {
         if (def.belongs(next)) out.push(next)
       }
     }
+    // A row that moved here from another collection (an item moved to another list) arrives with it.
+    if (op.carry && def.belongs(op.carry) && !out.some((r) => r.id === op.carry?.id)) out.push(op.carry)
     return out
   }
   return rows.filter((r) => !matches(r, op.match))
@@ -134,6 +136,19 @@ function eachLoaded(table: string, fn: (def: CollectionDef, rows: Row[]) => Row[
 }
 
 function mutate(op: NewOp) {
+  // An update to one row by its id carries the whole changed row, so a collection it moves into (another list)
+  // shows it right away, even before the server has it.
+  if (op.kind === 'update' && Object.keys(op.match).length === 1 && op.match.id) {
+    const upd = op
+    for (const def of defs.values()) {
+      if (def.table !== upd.table) continue
+      const found = state.cache[def.key]?.find((r) => r.id === upd.match.id)
+      if (found) {
+        op = { ...upd, carry: { ...found, ...upd.patch } as Row }
+        break
+      }
+    }
+  }
   const full = { ...op, seq: ++state.seq } as Op
   state = { ...state, outbox: [...state.outbox, full] }
   tableVersion[op.table] = (tableVersion[op.table] ?? 0) + 1
@@ -329,10 +344,16 @@ export function useCollection<T extends Row = Row>(def: CollectionDef | null): {
   if (def) {
     // Seen for the first time this visit: changes made elsewhere while offline (like Pichi putting
     // oats on the list from the pantry) show up here right away, not only once there's signal.
-    const cached = !defs.has(def.key) ? state.cache[def.key] : undefined
+    const firstTime = !defs.has(def.key)
+    const cached = firstTime ? state.cache[def.key] : undefined
     defs.set(def.key, def)
     const pending = cached ? pendingFor(def.table) : []
     if (cached && pending.length) setRows(def.key, pending.reduce((rows, op) => applyOp(rows, op, def), cached))
+    // A brand-new collection (a list just made) that something was moved or added into: start it with those.
+    if (firstTime && !state.cache[def.key]) {
+      const into = pendingFor(def.table).filter((op) => (op.kind === 'update' && op.carry && def.belongs(op.carry)) || (op.kind === 'insert' && def.belongs(withId(op.table, op.row))))
+      if (into.length) setRows(def.key, pendingFor(def.table).reduce((rows, op) => applyOp(rows, op, def), [] as Row[]))
+    }
   }
   const rows = useSyncExternalStore(subscribe, () => (def ? state.cache[def.key] : undefined))
   const key = def?.key
