@@ -76,7 +76,7 @@ function LanguageSync() {
   return null
 }
 
-const TABS = ['/shopping', '/todos', '/', '/projects', '/messages']
+const TABS = ['/', '/shopping', '/todos', '/projects', '/messages']
 
 /**
  * Which way the next screen slides in, like a new sheet of paper. Forward slides in from the right;

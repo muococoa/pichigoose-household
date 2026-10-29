@@ -133,11 +133,11 @@ export function TabBar() {
   const unread = useUnreadTotal()
   const { pathname } = useLocation()
   // Outlined icons; the selected one is filled with ink, like WhatsApp's menu.
-  // Home in the middle (Nora, 29 Oct). Notes lives on Home as a note; Projects takes its place in the menu.
+  // Home first (Nora, 29 Oct). Notes and Calendar live on Home as notes, and in the "Our home" hub.
   const tabs = [
+    { to: '/', label: t('tabs.home'), icon: <HomeIcon size={ICON} width={STROKE} />, on: <HomeFilled size={ICON} /> },
     { to: '/shopping', label: t('tabs.shopping'), icon: <BasketIcon size={ICON} width={STROKE} />, on: <BasketFilled size={ICON} /> },
     { to: '/todos', label: t('tabs.todos'), icon: <TodoIcon size={ICON} width={STROKE} />, on: <TodoFilled size={ICON} /> },
-    { to: '/', label: t('tabs.home'), icon: <HomeIcon size={ICON} width={STROKE} />, on: <HomeFilled size={ICON} /> },
     { to: '/projects', label: t('tabs.projects'), icon: <ProjectIcon size={ICON} width={STROKE} />, on: <ProjectFilled size={ICON} /> },
     { to: '/messages', label: t('tabs.messages'), icon: <MessagesIcon size={ICON} width={STROKE} />, on: <MessagesFilled size={ICON} /> },
   ]
