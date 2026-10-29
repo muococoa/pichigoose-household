@@ -34,16 +34,19 @@ a { color: inherit; text-decoration: none }
   --kb-move: .36s cubic-bezier(.16, 1, .3, 1);
   transition: --kb var(--kb-move);
 }
-/* On a phone (Nora, 29 Oct): the app is one sheet of paper on the lilac desk, like on a computer. The lilac shows at the
+/* While the keyboard is open the paper gets shorter, so its rounded bottom sits just above the keyboard with the desk
+   underneath (Nora, 29 Oct), and the menu steps away like in a native app; typing bars sit at the paper's foot. */
+html[data-kb="open"] .tabbar { visibility: hidden }
+/* On a phone (Nora, 29 Oct): the app is one sheet of paper on the desk (a pale tint of the theme), like on a computer. The lilac shows at the
    top (behind the time and battery) and in a thin frame around the paper, and a washi tape holds the paper at the top. */
 @media (max-width: 1023px) {
-  html, body { background: #D6C8E6 }
+  html, body { background: var(--desk) }
   .screen:not(.page) {
-    --top: 10px; height: calc(100dvh - var(--status) - var(--frame)); min-height: 0; margin: var(--status) var(--frame) var(--frame); border-radius: var(--paper-radius);
+    --top: 10px; height: calc(100dvh - var(--status) - var(--frame) - var(--kb)); min-height: 0; margin: var(--status) var(--frame) var(--frame); border-radius: var(--paper-radius);
     /* Small enough to fit inside the lilac frame, so the screen's edge never cuts it off. */
     box-shadow: 0 0 0 1px rgba(30, 26, 48, .04), 0 2px 4px -1px rgba(30, 26, 48, .14), 0 3px 8px -3px rgba(30, 26, 48, .22);
   }
-  .screen.chat-screen { top: calc(var(--vvtop, 0px) + var(--status)); bottom: var(--frame); left: var(--frame); right: var(--frame); max-width: calc(430px - 2 * var(--frame)); height: auto; margin: 0 auto }
+  .screen.chat-screen { top: calc(var(--vvtop, 0px) + var(--status)); bottom: calc(var(--frame) + var(--kb)); left: var(--frame); right: var(--frame); max-width: calc(430px - 2 * var(--frame)); height: auto; margin: 0 auto }
   #root::before {
     content: ""; position: fixed; z-index: 40; top: calc(var(--status) - 10px); left: calc(var(--edge) + 70px); width: 92px; height: 22px; transform: rotate(-3deg); pointer-events: none;
     background: radial-gradient(circle, rgba(211, 68, 113, .5) 2.5px, transparent 3px) 0 0/11px 11px, rgba(242, 193, 196, .85);
@@ -74,10 +77,6 @@ html[data-nav="back"] .screen > .scroll { animation: sheet-in-left .35s cubic-be
 .screen > .scroll { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain; position: relative; z-index: 2 }
 /* An invisible strip 1 px taller than the screen: a short page still scrolls by a hair, so the phone's own bounce always works. */
 .screen > .scroll::before { content: ""; position: absolute; top: 0; left: 0; width: 1px; height: calc(100% + 1px); pointer-events: none }
-/* While the keyboard is open, every page gets that much room at its bottom, so a field near the end (a comment, a
-   reply) can scroll up above the keyboard instead of staying behind it. */
-.screen > .scroll::after { content: ""; display: block; height: var(--kb); pointer-events: none }
-.chat-screen > .scroll::after { display: none }
 .pad { padding: 0 22px 0 40px }
 .top { padding-top: calc(var(--top) + 8px) }
 .with-tabbar .scroll { padding-bottom: calc(var(--tabbar) + 24px) }
@@ -200,7 +199,7 @@ textarea.input { height: auto; min-height: 40px; padding: 9px 16px; resize: none
 .add-bar {
   --kinetic: cubic-bezier(.16, 1, .3, 1);
   position: fixed; left: calc(var(--edge) + 14px); right: calc(var(--edge) + 14px); z-index: 6; height: 50px; pointer-events: none;
-  bottom: max(calc(var(--tabbar) + 12px), calc(var(--kb) + 8px));
+  bottom: max(calc(var(--tabbar) + 12px), calc(var(--kb) + var(--frame) + var(--tabbar-gap)));
 }
 .add-bar .typing-bar {
   position: absolute; left: 0; right: 0; bottom: 0; opacity: 0; clip-path: inset(0 0 0 calc(100% - 50px) round 26px);
@@ -319,7 +318,7 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 .chat-screen .bubbles::after { content: ""; position: absolute; top: 0; left: 0; width: 1px; height: calc(100% + 1px); pointer-events: none }
 /* The chat's typing bar floats where the menu would be, or right above the keyboard while it's open. The messages
    scroll behind it, with room at the bottom so the newest one stays above it. */
-.chat-screen { --composer-at: max(var(--tabbar-gap), calc(var(--kb) + 8px - var(--frame))) }
+.chat-screen { --composer-at: var(--tabbar-gap) }
 .chat-screen .typing-bar { position: absolute; left: 14px; right: 14px; bottom: var(--composer-at); z-index: 3 }
 .chat-screen .bubbles { padding-top: 74px; padding-bottom: calc(var(--composer-h, 50px) + var(--composer-at) + 14px) }
 .chat-screen .kb-spacer { display: none }
@@ -463,7 +462,7 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 /* Comments: the bar sits in its place under the comments, and floats up above the keyboard while you type in it. */
 .typing-slot { min-height: 50px }
 @media (pointer: coarse) {
-  .typing-slot .typing-bar.typing { position: fixed; z-index: 60; left: calc(var(--edge) + 14px); right: calc(var(--edge) + 14px); bottom: calc(var(--kb) + 8px); animation: typing-up .25s var(--ease-out) }
+  .typing-slot .typing-bar.typing { position: fixed; z-index: 60; left: calc(var(--edge) + 14px); right: calc(var(--edge) + 14px); bottom: calc(var(--kb) + var(--frame) + var(--tabbar-gap)); animation: typing-up .25s var(--ease-out) }
 }
 @keyframes typing-up { from { opacity: .4; transform: translateY(12px) } }
 /* Round send button in the theme color: quiet while the field is empty, lit up once you type. */
