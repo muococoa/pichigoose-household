@@ -186,6 +186,12 @@ Decided (Danko and Nora, 29 Oct):
 Still open:
 1. **Chore types.** Claude's recommendation: a short fixed list (dishes, laundry, hanging laundry, ironing, groceries, trash, cleaning, cooking, plants), and Pichi guesses the type from the to-do's title in English and Serbian ("sudovi", "veš", "prodavnica"...). You can change her guess, or leave a to-do without a type.
 
+To brainstorm before building (Danko's and Nora's thoughts, 29 Oct):
+- **Photo proof (Danko):** take a photo to show you did a chore, as another layer of trust. Nora's worry: proof feels like a competitive game (gamers, MOBA ranked play), not a family. Claude's suggestion: never required. A photo is an optional "look what I did" moment, not evidence.
+- **Is it too competitive?** Most homes (parents and children) aren't. It must stay optional. The example to design for: a 17-year-old talks her hesitant dad into the app for planning, and it mustn't turn into grinding and scorekeeping. Claude's suggestion: trophies are **off by default**, and a household turns them on deliberately in its settings. Maybe two levels: **Gentle** (a warm monthly "thank you" recap with no ranks) and **Playful** (trophies and ranks).
+- **What are points for?** Glory only, or something real? One idea: coupons you give to people in your household ("breakfast in bed", "one chore skipped"). Needs thinking.
+- **Money in trophies** ("who spent the most on groceries"): careful. Money is personal and hidden when someone turns money tracking off, so it probably never belongs in trophies.
+
 Placeholder trophy names (Claude's, for Nora to improve):
 - Dishes: **Dish Whiz** · three months in a row: **Captain Clean Plate**
 - Laundry: **Sock Whisperer** · three months: **Spin Cycle Legend**
