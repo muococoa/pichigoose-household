@@ -1,5 +1,5 @@
 import { useId, type ReactNode } from 'react'
-import type { Container, Place } from '../data/hooks'
+import type { Container, Place, RoomKind } from '../data/hooks'
 
 /*
  * The things on the pantry shelves, drawn in ink: jars, bottles, boxes, bags and so on.
@@ -147,6 +147,13 @@ export const CONTAINERS = Object.keys(SHAPES) as Container[]
 export const CONTAINERS_FOR: Record<Place, Container[]> = {
   pantry: ['jar', 'bottle', 'box', 'bag', 'can', 'carton'],
   bathroom: ['pump', 'lotion', 'creamjar', 'tube', 'dropper', 'mist', 'perfume', 'spray', 'jug', 'box', 'flatbox'],
+}
+
+/** The drawings a room offers: a kitchen's, a bathroom's, or every one for any other room. */
+export function containersFor(kind: RoomKind): Container[] {
+  if (kind === 'kitchen') return CONTAINERS_FOR.pantry
+  if (kind === 'bathroom') return CONTAINERS_FOR.bathroom
+  return [...new Set([...CONTAINERS_FOR.pantry, ...CONTAINERS_FOR.bathroom])]
 }
 
 /** The gel pen color for how full something is: green when there's plenty, orange when it's going,

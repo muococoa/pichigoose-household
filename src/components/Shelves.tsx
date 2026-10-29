@@ -12,8 +12,8 @@ import { InkCircle } from './Icons'
 
 export type Group = { key: string; name: string; rows: PantryItem[] }
 
-/** "Vino", "vino" and "VINO " in the same place are the same thing. */
-export const groupKey = (p: Pick<PantryItem, 'place' | 'name'>) => `${p.place}:${p.name.trim().toLocaleLowerCase()}`
+/** "Vino", "vino" and "VINO " in the same storage spot are the same thing. */
+export const groupKey = (p: Pick<PantryItem, 'place' | 'name'> & { spot_id?: string | null }) => `${p.spot_id ?? p.place}:${p.name.trim().toLocaleLowerCase()}`
 
 /** The things in shelf order, each group together (oldest bottle first). */
 export function groupThings(rows: PantryItem[]): Group[] {

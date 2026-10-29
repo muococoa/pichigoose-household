@@ -3,19 +3,18 @@ import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
 import { db } from '../data/store'
-import { useHousehold, useItemsIn, useLists, usePantry, type Container, type PantryItem, type Place } from '../data/hooks'
+import { useHousehold, useItemsIn, useLists, usePantry, useRooms, useSpots, type Container, type PantryItem, type Room, type RoomKind, type Spot } from '../data/hooks'
 import { setPantryLevel } from '../data/actions'
 import { Floating, Screen } from '../components/Shell'
-import { EmptyState, Hand, PeekingPichi, Sheet, showUndo } from '../components/Scrapbook'
+import { EmptyState, Hand, PeekingPichi, Sheet, showToast, showUndo, type TapeKind } from '../components/Scrapbook'
 import { BackIcon, BroomIcon, PlusIcon } from '../components/Icons'
-import { CONTAINERS_FOR, ContainerDrawing, guessContainer, insideSpan } from '../components/Containers'
+import { ContainerDrawing, containersFor, guessContainer, insideSpan } from '../components/Containers'
 import { GroupDrawing, ShelfRows, groupKey, groupThings, useShelfWidth, type Group } from '../components/Shelves'
 import { useDesktop } from '../lib/desktop'
 import { Chip } from './Todos'
 import { useBack } from '../lib/back'
 import { autoFocusField } from '../lib/keyboard'
 
-const PLACES: Place[] = ['pantry', 'bathroom']
 const STEPS = [
   { key: 'full', level: 100 },
   { key: 'pct', level: 75 },
@@ -91,29 +90,73 @@ export function usePantryLevel() {
   }
 }
 
-/** The pantry and the bathroom cabinet: drawn shelves, each thing showing how full it is. */
+/** Where a thing lives: its spot, or (made offline before rooms) the first spot of a room like its place. */
+export function spotOf(p: PantryItem, rooms: Room[], spots: Spot[]) {
+  if (p.spot_id) return p.spot_id
+  const room = rooms.find((r) => r.kind === (p.place === 'bathroom' ? 'bathroom' : 'kitchen'))
+  return spots.find((s) => s.room_id === room?.id)?.id ?? null
+}
+
+const ROOM_KINDS: RoomKind[] = ['kitchen', 'bathroom', 'other']
+const ROOM_TAPES: TapeKind[] = ['ty', 'tb', 'tp', 'tm', 'tdots', 'tblocks', 'ttri', 'tcheck']
+
+/** The home's rooms, each with its storage spots: drawn shelves, each thing showing how full it is. */
 export function PantryScreen() {
   const { t } = useTranslation()
   const me = useMe()
   const back = useBack()
   const desktop = useDesktop()
   const [params, setParams] = useSearchParams()
-  const place: Place = params.get('place') === 'bathroom' ? 'bathroom' : 'pantry'
   const { household } = useHousehold()
   const hid = household?.id ?? null
   const pantry = usePantry(hid)
+  const rooms = useRooms(hid)
+  const spots = useSpots(hid)
   const setLevel = usePantryLevel()
   const { ref, width } = useShelfWidth()
   const [open, setOpen] = useState<string | null>(null)
-  const [adding, setAdding] = useState(false)
+  const [adding, setAdding] = useState<string | null>(null)
   const [cleaning, setCleaning] = useState(false)
+  // Rooms and spots: adding (a blank one) or changing one.
+  const [roomEdit, setRoomEdit] = useState<{ id: string | null; name: string; kind: RoomKind } | null>(null)
+  const [spotEdit, setSpotEdit] = useState<{ id: string | null; name: string } | null>(null)
 
+  // The room on screen: from the link (?room=, or ?place=bathroom from before rooms), else the first.
+  const wanted = params.get('room')
+  const room =
+    rooms.rows.find((r) => r.id === wanted) ??
+    (params.get('place') === 'bathroom' ? rooms.rows.find((r) => r.kind === 'bathroom') : undefined) ??
+    rooms.rows[0] ??
+    null
+  const roomSpots = useMemo(() => spots.rows.filter((x) => x.room_id === room?.id), [spots.rows, room?.id])
+  const where = (p: PantryItem) => spotOf(p, rooms.rows, spots.rows)
   const things = useMemo(
-    () => pantry.rows.filter((p) => p.place === place).sort((a, b) => a.position - b.position || a.created_at.localeCompare(b.created_at)),
-    [pantry.rows, place],
+    () => pantry.rows.filter((p) => roomSpots.some((x) => x.id === where(p))),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [pantry.rows, roomSpots, rooms.rows, spots.rows],
   )
-  const groups = useMemo(() => groupThings(things), [things])
   const height = desktop ? 96 : 80
+  const pickRoom = (id: string) => setParams({ room: id }, { replace: true })
+
+  function saveRoom() {
+    if (!roomEdit || !hid || !roomEdit.name.trim()) return
+    if (roomEdit.id) db.update('rooms', roomEdit.id, { name: roomEdit.name.trim(), kind: roomEdit.kind })
+    else {
+      const now = new Date().toISOString()
+      const r = db.insert('rooms', { household_id: hid, name: roomEdit.name.trim(), kind: roomEdit.kind, position: rooms.rows.length ? Math.max(...rooms.rows.map((x) => x.position)) + 1 : 0, created_at: now })
+      // A new room starts with one spot, so things can go in right away.
+      db.insert('storage_spots', { household_id: hid, room_id: r.id, name: t('pantry.rooms.firstSpot'), position: 0, created_at: now })
+      pickRoom(r.id)
+    }
+    setRoomEdit(null)
+  }
+
+  function saveSpot() {
+    if (!spotEdit || !hid || !room || !spotEdit.name.trim()) return
+    if (spotEdit.id) db.update('storage_spots', spotEdit.id, { name: spotEdit.name.trim() })
+    else db.insert('storage_spots', { household_id: hid, room_id: room.id, name: spotEdit.name.trim(), position: roomSpots.length ? Math.max(...roomSpots.map((x) => x.position)) + 1 : 0, created_at: new Date().toISOString() })
+    setSpotEdit(null)
+  }
 
   return (
     <Screen tabbar wide className="has-fab" doodle={things.length ? 'walk' : undefined}>
@@ -125,66 +168,111 @@ export function PantryScreen() {
             </button>
           )}
           <Hand as="h1" size={desktop ? 52 : 42} lineHeight={desktop ? 56 : 44} style={{ margin: 0 }}>
-            {t(`pantry.${place}`)}
+            {room?.name ?? t('pantry.title')}
           </Hand>
           <span style={{ flex: 1 }} />
-          {/* The deep clean: empties this place in one go, after asking. */}
-          {things.length > 0 && (
-            <button type="button" className="stk sec sm" aria-label={t(`pantry.clean.${place}.title`)} title={t(`pantry.clean.${place}.title`)} style={{ width: desktop ? 42 : 38, padding: 0, transform: `rotate(${desktop ? 3 : 2}deg)` }} onClick={() => setCleaning(true)}>
+          {/* The deep clean: empties this room in one go, after asking. */}
+          {things.length > 0 && room && (
+            <button type="button" className="stk sec sm" aria-label={t('pantry.clean.room.title', { name: room.name })} title={t('pantry.clean.room.title', { name: room.name })} style={{ width: desktop ? 42 : 38, padding: 0, transform: `rotate(${desktop ? 3 : 2}deg)` }} onClick={() => setCleaning(true)}>
               <BroomIcon />
             </button>
           )}
         </div>
-        {/* The two places as washi-tape tabs, like the shopping lists. */}
-        <div style={{ display: 'flex', gap: 10 }}>
-          {PLACES.map((p, i) => (
-            <button
-              key={p}
-              type="button"
-              className={i ? 'tb' : 'ty'}
-              aria-pressed={p === place}
-              onClick={() => setParams(p === 'pantry' ? {} : { place: p }, { replace: true })}
-              style={{
-                position: 'relative',
-                display: 'inline-flex',
-                alignItems: 'center',
-                height: 30,
-                padding: '0 14px',
-                fontSize: 14,
-                color: p === place ? '#1E1A30' : '#63586B',
-                fontWeight: p === place ? 800 : 700,
-                transform: `rotate(${i % 2 ? 1.5 : -2}deg)`,
-                boxShadow: p === place ? '1px 2px 0 rgba(30,26,48,.12)' : undefined,
-                opacity: p === place ? 1 : 0.75,
-              }}
-            >
-              {t(`pantry.${p}`)}
-            </button>
-          ))}
+        {/* The rooms as washi-tape tabs, like the shopping lists. Tap the open one to rename it. */}
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', rowGap: 12 }}>
+          {rooms.rows.map((r, i) => {
+            const on = r.id === room?.id
+            return (
+              <button
+                key={r.id}
+                type="button"
+                className={ROOM_TAPES[i % ROOM_TAPES.length]}
+                aria-pressed={on}
+                onClick={() => (on ? setRoomEdit({ id: r.id, name: r.name, kind: r.kind }) : pickRoom(r.id))}
+                style={{
+                  position: 'relative',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  height: 30,
+                  padding: '0 14px',
+                  fontSize: 14,
+                  color: on ? '#1E1A30' : '#63586B',
+                  fontWeight: on ? 800 : 700,
+                  transform: `rotate(${i % 2 ? 1.5 : -2}deg)`,
+                  boxShadow: on ? '1px 2px 0 rgba(30,26,48,.12)' : undefined,
+                  opacity: on ? 1 : 0.75,
+                }}
+              >
+                {r.name}
+              </button>
+            )
+          })}
+          <button
+            type="button"
+            onClick={() => setRoomEdit({ id: null, name: '', kind: 'other' })}
+            style={{ display: 'inline-flex', alignItems: 'center', height: 28, padding: '0 12px', fontSize: 14, fontWeight: 700, color: '#63586B', border: '2px dashed #B6ABBE', borderRadius: 4 }}
+          >
+            {t('pantry.rooms.add')}
+          </button>
         </div>
       </div>
 
-      <div ref={ref} style={{ padding: desktop ? '34px 22px 32px 40px' : '30px 26px 0 44px', maxWidth: desktop ? 900 : undefined }}>
-        <ShelfRows groups={groups} width={width} height={height} onOpen={(g) => setOpen(g.key)} />
-        {pantry.loaded && !things.length && (
+      <div ref={ref} style={{ padding: desktop ? '30px 22px 32px 40px' : '26px 26px 0 44px', maxWidth: desktop ? 900 : undefined }}>
+        {/* Each storage spot in the room: its handwritten name, then its own shelves. */}
+        {roomSpots.map((spot) => {
+          const here = groupThings(things.filter((p) => where(p) === spot.id))
+          return (
+            <section key={spot.id} style={{ marginBottom: 18 }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 10 }}>
+                <button type="button" onClick={() => setSpotEdit({ id: spot.id, name: spot.name })} aria-label={t('pantry.spots.rename', { name: spot.name })}>
+                  <Hand size={desktop ? 30 : 27} lineHeight={desktop ? 32 : 29}>
+                    {spot.name}
+                  </Hand>
+                </button>
+                <span className="cap">{here.length ? t('common.items', { count: here.reduce((n, g) => n + g.rows.length, 0) }) : ''}</span>
+                <span style={{ flex: 1 }} />
+                <button type="button" className="cap" style={{ color: 'var(--hero-dark)', fontWeight: 800 }} onClick={() => setAdding(spot.id)}>
+                  {t('pantry.spots.addHere')}
+                </button>
+              </div>
+              {here.length ? (
+                <ShelfRows groups={here} width={width} height={height} onOpen={(g) => setOpen(g.key)} />
+              ) : things.length ? (
+                <div className="cap" style={{ fontSize: 14, padding: '4px 0 6px' }}>{t('pantry.spots.empty')}</div>
+              ) : null}
+            </section>
+          )
+        })}
+        {room && (
+          <button
+            type="button"
+            onClick={() => setSpotEdit({ id: null, name: '' })}
+            style={{ display: 'inline-flex', alignItems: 'center', height: 30, padding: '0 14px', fontSize: 14, fontWeight: 700, color: '#63586B', border: '2px dashed #B6ABBE', borderRadius: 4, marginTop: 4 }}
+          >
+            {t('pantry.spots.add')}
+          </button>
+        )}
+        {pantry.loaded && room && !things.length && (
           <EmptyState pose="walk" color="#E9E1D6" zoom={0.95}>
-            {t(place === 'pantry' ? 'pantry.empty' : 'pantry.emptyBathroom')}
+            {t(room.kind === 'bathroom' ? 'pantry.emptyBathroom' : room.kind === 'kitchen' ? 'pantry.empty' : 'pantry.emptyRoom')}
           </EmptyState>
         )}
-        {desktop && (
-          <button type="button" className="stk prim" style={{ transform: 'rotate(-1.5deg)', marginTop: 10 }} onClick={() => setAdding(true)}>
-            {t('pantry.add')}
-          </button>
+        {desktop && roomSpots[0] && (
+          <div>
+            <button type="button" className="stk prim" style={{ transform: 'rotate(-1.5deg)', marginTop: 16 }} onClick={() => setAdding(roomSpots[0].id)}>
+              {t('pantry.add')}
+            </button>
+          </div>
         )}
       </div>
 
-      {!desktop && (
+      {!desktop && roomSpots[0] && (
         <Floating>
           <button
             type="button"
             className="stk prim round fab"
             aria-label={t('pantry.add')}
-            onClick={() => setAdding(true)}
+            onClick={() => setAdding(roomSpots[0].id)}
             style={{ position: 'fixed', right: 'max(20px, calc(50vw - 195px))', bottom: 'calc(var(--tabbar) + 20px)', zIndex: 6, transform: 'rotate(-4deg)' }}
           >
             <PlusIcon />
@@ -193,11 +281,76 @@ export function PantryScreen() {
       )}
 
       <GroupSheet groupId={open} onClose={() => setOpen(null)} />
-      <Sheet small open={cleaning} onClose={() => setCleaning(false)} title={t(`pantry.clean.${place}.title`)}>
+
+      {/* A room: its name, and what kind of room it is (that decides the drawings). */}
+      <Sheet small open={Boolean(roomEdit)} onClose={() => setRoomEdit(null)} title={roomEdit?.id ? t('pantry.rooms.edit') : t('pantry.rooms.new')}>
+        {roomEdit && (
+          <form onSubmit={(e) => { e.preventDefault(); saveRoom() }} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <input className="input" ref={roomEdit.id ? undefined : autoFocusField} placeholder={t('pantry.rooms.placeholder')} aria-label={t('pantry.rooms.name')} value={roomEdit.name} onChange={(e) => setRoomEdit({ ...roomEdit, name: e.target.value })} />
+            <div>
+              <span className="label">{t('pantry.rooms.kind')}</span>
+              <div className="chips">
+                {ROOM_KINDS.map((k) => (
+                  <Chip key={k} on={roomEdit.kind === k} onClick={() => setRoomEdit({ ...roomEdit, kind: k })}>
+                    {t(`pantry.rooms.kinds.${k}`)}
+                  </Chip>
+                ))}
+              </div>
+            </div>
+            <button type="submit" className="stk prim" style={{ width: '100%' }} disabled={!roomEdit.name.trim()}>
+              {roomEdit.id ? t('common.save') : t('pantry.rooms.addButton')}
+            </button>
+            {roomEdit.id && rooms.rows.length > 1 && (
+              <button
+                type="button"
+                className="stk sec"
+                style={{ width: '100%', color: '#A8335A' }}
+                onClick={() => {
+                  if (roomEdit.id && window.confirm(t('pantry.rooms.deleteText', { name: roomEdit.name }))) {
+                    db.remove('rooms', roomEdit.id)
+                    setParams({}, { replace: true })
+                  }
+                  setRoomEdit(null)
+                }}
+              >
+                {t('pantry.rooms.delete')}
+              </button>
+            )}
+          </form>
+        )}
+      </Sheet>
+
+      {/* A storage spot in the room: the pantry, a cabinet, the shelf by the bathtub. */}
+      <Sheet small open={Boolean(spotEdit)} onClose={() => setSpotEdit(null)} title={spotEdit?.id ? t('pantry.spots.edit') : t('pantry.spots.new', { room: room?.name ?? '' })}>
+        {spotEdit && (
+          <form onSubmit={(e) => { e.preventDefault(); saveSpot() }} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <input className="input" ref={spotEdit.id ? undefined : autoFocusField} placeholder={t(room?.kind === 'bathroom' ? 'pantry.spots.placeholderBathroom' : 'pantry.spots.placeholder')} aria-label={t('pantry.spots.name')} value={spotEdit.name} onChange={(e) => setSpotEdit({ ...spotEdit, name: e.target.value })} />
+            <button type="submit" className="stk prim" style={{ width: '100%' }} disabled={!spotEdit.name.trim()}>
+              {spotEdit.id ? t('common.save') : t('pantry.spots.addButton')}
+            </button>
+            {spotEdit.id && roomSpots.length > 1 && (
+              <button
+                type="button"
+                className="stk sec"
+                style={{ width: '100%', color: '#A8335A' }}
+                onClick={() => {
+                  const count = things.filter((p) => where(p) === spotEdit.id).length
+                  if (spotEdit.id && window.confirm(t('pantry.spots.deleteText', { name: spotEdit.name, count }))) db.remove('storage_spots', spotEdit.id)
+                  setSpotEdit(null)
+                }}
+              >
+                {t('pantry.spots.delete')}
+              </button>
+            )}
+          </form>
+        )}
+      </Sheet>
+
+      <Sheet small open={cleaning} onClose={() => setCleaning(false)} title={t('pantry.clean.room.title', { name: room?.name ?? '' })}>
         {/* Pichi peeks in from the right edge, looking at you: are you sure? */}
         <div style={{ position: 'relative' }}>
           <p className="body" style={{ margin: '0 0 18px', paddingRight: 44 }}>
-            {t(`pantry.clean.${place}.text`)}
+            {t('pantry.clean.room.text', { name: room?.name ?? '' })}
             <br />
             {t('pantry.clean.undo')}
           </p>
@@ -220,34 +373,41 @@ export function PantryScreen() {
           </button>
         </div>
       </Sheet>
-      <AddThingSheet
-        open={adding}
-        place={place}
-        groups={groups}
-        onClose={() => setAdding(false)}
-        onAdd={(name, container, level) => {
-          if (!hid) return
-          // Already on the shelf (any capitals)? It joins that group, looking the same.
-          const same = groups.find((g) => g.key === groupKey({ place, name }))
-          const like = same?.rows[0]
-          const row = db.insert('pantry_items', {
-            household_id: hid,
-            place,
-            name: like ? like.name : name,
-            container: like ? like.container : container,
-            level,
-            low_at: like ? like.low_at : 20,
-            list_id: like ? like.list_id : null,
-            position: like ? like.position : things.length ? Math.max(...things.map((x) => x.position)) + 1 : 0,
-            created_by: me,
-            created_at: new Date().toISOString(),
-            updated_by: me,
-            updated_at: new Date().toISOString(),
-          }) as PantryItem
-          // Put on the shelf already almost out, with nothing else like it? Pichi adds it to the list straight away.
-          if (!same && level <= row.low_at) setLevel({ ...row, level: 100 }, level)
-        }}
-      />
+      {room && (
+        <AddThingSheet
+          open={Boolean(adding)}
+          kind={room.kind}
+          spots={roomSpots}
+          spot={adding}
+          groupsIn={(spotId) => groupThings(things.filter((p) => where(p) === spotId))}
+          onClose={() => setAdding(null)}
+          onAdd={(spotId, name, container, level) => {
+            if (!hid) return
+            const inSpot = things.filter((p) => where(p) === spotId)
+            // Already in this spot (any capitals)? It joins that group, looking the same.
+            const same = groupThings(inSpot).find((g) => g.key === groupKey({ place: 'pantry', name, spot_id: spotId }))
+            const like = same?.rows[0]
+            const now = new Date().toISOString()
+            const row = db.insert('pantry_items', {
+              household_id: hid,
+              spot_id: spotId,
+              place: room.kind === 'bathroom' ? 'bathroom' : 'pantry',
+              name: like ? like.name : name,
+              container: like ? like.container : container,
+              level,
+              low_at: like ? like.low_at : 20,
+              list_id: like ? like.list_id : null,
+              position: like ? like.position : inSpot.length ? Math.max(...inSpot.map((x) => x.position)) + 1 : 0,
+              created_by: me,
+              created_at: now,
+              updated_by: me,
+              updated_at: now,
+            }) as PantryItem
+            // Put on the shelf already almost out, with nothing else like it? Pichi adds it to the list straight away.
+            if (!same && level <= row.low_at) setLevel({ ...row, level: 100 }, level)
+          }}
+        />
+      )}
     </Screen>
   )
 }
@@ -264,6 +424,8 @@ function GroupSheet({ groupId, onClose }: { groupId: string | null; onClose: () 
   const hid = household?.id ?? null
   const pantry = usePantry(hid)
   const lists = useLists(hid)
+  const rooms = useRooms(hid)
+  const spots = useSpots(hid)
   const setLevelOf = usePantryLevel()
   const group: Group | null = useMemo(() => (groupId ? groupThings(pantry.rows).find((g) => g.key === groupId) ?? null : null), [groupId, pantry.rows])
   // Which one you're changing: the one you tapped, or else the open one (the least full).
@@ -317,6 +479,17 @@ function GroupSheet({ groupId, onClose }: { groupId: string | null; onClose: () 
 
   const sortedLists = [...lists.rows].sort((a, b) => a.position - b.position)
   const level = dragLevel ?? p?.level ?? 0
+  const here = p ? spotOf(p, rooms.rows, spots.rows) : null
+  const hereRoom = rooms.rows.find((r) => r.id === spots.rows.find((x) => x.id === here)?.room_id)
+
+  // Moving the whole group to another spot, even in another room.
+  function moveTo(spotId: string) {
+    if (!group || spotId === here) return
+    const target = spots.rows.find((x) => x.id === spotId)
+    save({ spot_id: spotId })
+    showToast(t('pantry.spots.moved', { item: group.name, spot: target?.name ?? '' }))
+    onClose()
+  }
 
   return (
     <Sheet open={Boolean(p)} onClose={() => { commitName(); onClose() }} title={lastName.current}>
@@ -388,8 +561,33 @@ function GroupSheet({ groupId, onClose }: { groupId: string | null; onClose: () 
 
           <div>
             <span className="label">{t('pantry.looksLike')}</span>
-            <ContainerPicker place={p.place} value={p.container} level={p.level} lowAt={p.low_at} onPick={(container) => save({ container })} />
+            <ContainerPicker kind={hereRoom?.kind ?? (p.place === 'bathroom' ? 'bathroom' : 'kitchen')} value={p.container} level={p.level} lowAt={p.low_at} onPick={(container) => save({ container })} />
           </div>
+
+          {/* Where it lives: every storage spot in the home. Tap one to move it there. */}
+          {spots.rows.length > 1 && (
+            <div>
+              <span className="label">{t('pantry.spots.livesIn')}</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {rooms.rows.map((r) => {
+                  const inRoom = spots.rows.filter((x) => x.room_id === r.id)
+                  if (!inRoom.length) return null
+                  return (
+                    <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', rowGap: 8 }}>
+                      {rooms.rows.length > 1 && <span className="cap" style={{ minWidth: 64, fontWeight: 800 }}>{r.name}</span>}
+                      <div className="chips">
+                        {inRoom.map((x) => (
+                          <Chip key={x.id} on={x.id === here} onClick={() => moveTo(x.id)}>
+                            {x.name}
+                          </Chip>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
 
           <div>
             <span className="label">{t('pantry.lowAt')}</span>
@@ -440,9 +638,10 @@ function GroupSheet({ groupId, onClose }: { groupId: string | null; onClose: () 
   )
 }
 
-function ContainerPicker({ place, value, level, lowAt, onPick }: { place: Place; value: Container; level: number; lowAt: number; onPick: (c: Container) => void }) {
-  // Only what makes sense in this place, plus whatever this thing already is.
-  const choices = CONTAINERS_FOR[place].includes(value) ? CONTAINERS_FOR[place] : [value, ...CONTAINERS_FOR[place]]
+function ContainerPicker({ kind, value, level, lowAt, onPick }: { kind: RoomKind; value: Container; level: number; lowAt: number; onPick: (c: Container) => void }) {
+  // Only what makes sense in this kind of room, plus whatever this thing already is.
+  const set = containersFor(kind)
+  const choices = set.includes(value) ? set : [value, ...set]
   const { t } = useTranslation()
   return (
     <div className="thing-pick">
@@ -457,29 +656,48 @@ function ContainerPicker({ place, value, level, lowAt, onPick }: { place: Place;
 }
 
 /** Putting something new on the shelf: what it is, what it looks like (guessed from the name), how full. */
-function AddThingSheet({ open, place, groups, onClose, onAdd }: { open: boolean; place: Place; groups: Group[]; onClose: () => void; onAdd: (name: string, container: Container, level: number) => void }) {
+function AddThingSheet({
+  open,
+  kind,
+  spots,
+  spot,
+  groupsIn,
+  onClose,
+  onAdd,
+}: {
+  open: boolean
+  kind: RoomKind
+  spots: Spot[]
+  spot: string | null
+  groupsIn: (spotId: string) => Group[]
+  onClose: () => void
+  onAdd: (spotId: string, name: string, container: Container, level: number) => void
+}) {
   const { t } = useTranslation()
   const [name, setName] = useState('')
   const [picked, setPicked] = useState<Container | null>(null)
   const [level, setLevel] = useState(100)
+  const [goesIn, setGoesIn] = useState<string | null>(spot)
 
   useEffect(() => {
     if (!open) return
     setName('')
     setPicked(null)
     setLevel(100)
-  }, [open])
+    setGoesIn(spot)
+  }, [open, spot])
 
+  const target = goesIn ?? spots[0]?.id ?? null
   // Until someone picks one, the drawing follows the name: "oil" is a bottle, "rice" a bag.
-  const guess = guessContainer(name, CONTAINERS_FOR[place])
-  const container = picked ?? guess ?? (place === 'bathroom' ? 'pump' : 'jar')
-  // Typed something that's already on the shelf? It joins that group.
-  const same = name.trim() ? groups.find((g) => g.key === groupKey({ place, name })) : undefined
+  const guess = guessContainer(name, containersFor(kind))
+  const container = picked ?? guess ?? (kind === 'bathroom' ? 'pump' : 'jar')
+  // Typed something that's already in this spot? It joins that group.
+  const same = name.trim() && target ? groupsIn(target).find((g) => g.key === groupKey({ place: 'pantry', name, spot_id: target })) : undefined
 
   function add(e: FormEvent) {
     e.preventDefault()
-    if (!name.trim()) return
-    onAdd(name.trim(), container, level)
+    if (!name.trim() || !target) return
+    onAdd(target, name.trim(), container, level)
     onClose()
   }
 
@@ -490,8 +708,20 @@ function AddThingSheet({ open, place, groups, onClose, onAdd }: { open: boolean;
           <label className="label" htmlFor="new-thing">
             {t('pantry.name')}
           </label>
-          <input id="new-thing" className="input" ref={autoFocusField} placeholder={t(place === 'pantry' ? 'pantry.namePlaceholder' : 'pantry.namePlaceholderBathroom')} value={name} onChange={(e) => setName(e.target.value)} />
+          <input id="new-thing" className="input" ref={autoFocusField} placeholder={t(kind === 'bathroom' ? 'pantry.namePlaceholderBathroom' : 'pantry.namePlaceholder')} value={name} onChange={(e) => setName(e.target.value)} />
         </div>
+        {spots.length > 1 && (
+          <div>
+            <span className="label">{t('pantry.spots.goesIn')}</span>
+            <div className="chips">
+              {spots.map((x) => (
+                <Chip key={x.id} on={x.id === target} onClick={() => setGoesIn(x.id)}>
+                  {x.name}
+                </Chip>
+              ))}
+            </div>
+          </div>
+        )}
         {same ? (
           <p className="body" role="status" style={{ margin: 0, display: 'flex', alignItems: 'center', gap: 14 }}>
             <GroupDrawing g={same} height={48} />
@@ -500,7 +730,7 @@ function AddThingSheet({ open, place, groups, onClose, onAdd }: { open: boolean;
         ) : (
           <div>
             <span className="label">{t('pantry.looksLike')}</span>
-            <ContainerPicker place={place} value={container} level={level} lowAt={20} onPick={setPicked} />
+            <ContainerPicker kind={kind} value={container} level={level} lowAt={20} onPick={setPicked} />
           </div>
         )}
         <div>

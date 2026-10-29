@@ -1,16 +1,18 @@
-import { useLayoutEffect, useRef, useState, type PointerEvent } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
 import { db } from '../data/store'
-import { DEFAULT_LAYOUT, completeLayout, useHousehold, type LayoutEntry, type Section } from '../data/hooks'
+import { DEFAULT_LAYOUT, completeLayout, useHousehold, useRooms, type LayoutEntry, type Room, type Section } from '../data/hooks'
+import { roomLook } from './Home'
 import { Screen } from '../components/Shell'
 import { Box, Hand, Tape, type TapeKind } from '../components/Scrapbook'
 import { GripIcon } from '../components/Icons'
 import { useDesktop } from '../lib/desktop'
 import { CleanHouseholdButton } from './HouseholdClean'
 
-const LOOK: Record<Section, { note: string; tape: TapeKind; rotate: number; label: string }> = {
+type ALook = { note: string; tape: TapeKind; rotate: number; label: string }
+const LOOK: Record<string, ALook> = {
   news: { note: 'n-lilac', tape: 'ttri', rotate: -0.8, label: 'home.news' },
   todos: { note: 'n-blush', tape: 'tdots', rotate: -0.4, label: 'home.todos' },
   shopping: { note: 'n-butter', tape: 'tm', rotate: 0.8, label: 'home.toBuy' },
@@ -23,8 +25,18 @@ const LOOK: Record<Section, { note: string; tape: TapeKind; rotate: number; labe
 // Picking up a note: it lifts, rotates about -3 degrees, moves a few px, and its shadow goes soft and deep.
 const LIFT = 'rotate(-3deg) translate(8px,-2px)'
 
-function complete(saved: LayoutEntry[] | undefined) {
-  return completeLayout(saved)
+/** A section's note: its pastel, tape, tilt and name. Rooms use their own name. */
+function useLookOf(rooms: Room[]) {
+  const { t } = useTranslation()
+  return (section: Section): ALook => {
+    if (section.startsWith('room:')) {
+      const room = rooms.find((r) => `room:${r.id}` === section)
+      const look = roomLook(room, rooms)
+      return { note: look.note, tape: look.tape, rotate: look.rotate, label: (room?.name ?? '').toLocaleLowerCase() }
+    }
+    const look = LOOK[section] ?? LOOK.pantry
+    return { ...look, label: t(look.label) }
+  }
 }
 
 export function ArrangeHomeScreen() {
@@ -32,7 +44,15 @@ export function ArrangeHomeScreen() {
   const me = useMe()
   const navigate = useNavigate()
   const { household, membership, people } = useHousehold()
-  const [order, setOrder] = useState<LayoutEntry[]>(() => complete(membership?.home_layout))
+  const rooms = useRooms(household?.id ?? null)
+  const lookOf = useLookOf(rooms.rows)
+  const [order, setOrder] = useState<LayoutEntry[]>(() => completeLayout(membership?.home_layout, rooms.rows))
+  // Rooms load a moment later: give each its own note in the order.
+  const roomKey = rooms.rows.map((r) => r.id).join(',')
+  useEffect(() => {
+    if (rooms.rows.length) setOrder((o) => completeLayout(o, rooms.rows))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [roomKey])
   const [dragging, setDragging] = useState<Section | null>(null)
   const listRef = useRef<HTMLDivElement>(null)
   const refs = useRef<Partial<Record<Section, HTMLDivElement | null>>>({})
@@ -109,11 +129,12 @@ export function ArrangeHomeScreen() {
     return (
       <Screen wide>
         <ArrangeBoard
+          lookOf={lookOf}
           order={order}
           setOrder={setOrder}
           toggle={toggle}
           intro={others.length === 1 ? t('arrange.intro', { name: others[0].display_name }) : t('arrange.introAlone')}
-          onReset={() => setOrder(DEFAULT_LAYOUT)}
+          onReset={() => setOrder(completeLayout(DEFAULT_LAYOUT, rooms.rows))}
           onDone={done}
         />
       </Screen>
@@ -124,7 +145,7 @@ export function ArrangeHomeScreen() {
     <Screen
       footer={
         <div style={{ position: 'relative', zIndex: 3, display: 'flex', gap: 12, padding: '12px 22px calc(var(--bottom) + 44px) 40px' }}>
-          <button type="button" className="stk sec" style={{ flex: 1, transform: 'rotate(-1deg)' }} onClick={() => setOrder(DEFAULT_LAYOUT)}>
+          <button type="button" className="stk sec" style={{ flex: 1, transform: 'rotate(-1deg)' }} onClick={() => setOrder(completeLayout(DEFAULT_LAYOUT, rooms.rows))}>
             {t('arrange.reset')}
           </button>
           <button type="button" className="stk prim" style={{ flex: 1.6, transform: 'rotate(1deg)' }} onClick={done}>
@@ -150,9 +171,9 @@ export function ArrangeHomeScreen() {
         </div>
         <div ref={listRef} data-nobounce style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 6, position: 'relative' }}>
           {shown.map((s) => {
-            const look = LOOK[s.section]
+            const look = lookOf(s.section)
             const lifted = dragging === s.section
-            const label = t(look.label)
+            const label = look.label
             return (
               <div
                 key={s.section}
@@ -209,6 +230,7 @@ export function ArrangeHomeScreen() {
 }
 
 type BoardProps = {
+  lookOf: (section: Section) => ALook
   order: LayoutEntry[]
   setOrder: (next: LayoutEntry[]) => void
   toggle: (section: Section) => void
@@ -219,7 +241,7 @@ type BoardProps = {
 
 /** Desktop (D4): arranging happens in place. The board's notes, three across, are dragged around;
  *  the picked-up note lifts and tilts, and a dashed "drop it here" shows where it will land. */
-function ArrangeBoard({ order, setOrder, toggle, intro, onReset, onDone }: BoardProps) {
+function ArrangeBoard({ lookOf, order, setOrder, toggle, intro, onReset, onDone }: BoardProps) {
   const { t } = useTranslation()
   const [dragging, setDragging] = useState<Section | null>(null)
   const refs = useRef<Partial<Record<Section, HTMLDivElement | null>>>({})
@@ -326,9 +348,9 @@ function ArrangeBoard({ order, setOrder, toggle, intro, onReset, onDone }: Board
           </div>
         )}
         {shown.map((s) => {
-          const look = LOOK[s.section]
+          const look = lookOf(s.section)
           const lifted = dragging === s.section
-          const label = t(look.label)
+          const label = look.label
           return (
             <div
               key={s.section}

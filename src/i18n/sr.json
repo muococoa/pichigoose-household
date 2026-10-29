@@ -415,7 +415,49 @@
         "title": "Spremni za generalno čišćenje\nkupatilskog ormarića?",
         "text": "Sve police u kupatilskom ormariću biće ispražnjene."
       },
-      "undo": "Ovo ne može da se poništi."
+      "undo": "Ovo ne može da se poništi.",
+      "room": {
+        "title": "Spremni za generalno čišćenje\nprostorije {{name}}?",
+        "text": "Sve police u prostoriji {{name}} biće ispražnjene."
+      }
+    },
+    "title": "Prostorije",
+    "emptyRoom": "Još ništa. Dodaj šta držiš u ovoj prostoriji, a Pichi će paziti na to.",
+    "rooms": {
+      "add": "+ prostorija",
+      "new": "Nova prostorija",
+      "edit": "Prostorija",
+      "name": "Ime prostorije",
+      "placeholder": "Hodnik",
+      "kind": "Vrsta prostorije",
+      "kinds": {
+        "kitchen": "Kuhinja",
+        "bathroom": "Kupatilo",
+        "other": "Nešto drugo"
+      },
+      "addButton": "Dodaj prostoriju",
+      "delete": "Obriši prostoriju",
+      "deleteText": "Obrisati {{name}} i sve sa njenih polica?",
+      "firstSpot": "Polica"
+    },
+    "spots": {
+      "add": "+ mesto za stvari",
+      "addHere": "+ dodaj",
+      "empty": "Još ništa na ovoj polici.",
+      "new": "Novo mesto u prostoriji {{room}}",
+      "edit": "Mesto za stvari",
+      "name": "Ime mesta",
+      "placeholder": "Drugi ormarić",
+      "placeholderBathroom": "Polica kod kade",
+      "addButton": "Dodaj mesto",
+      "delete": "Obriši mesto",
+      "deleteText_one": "Obrisati {{name}} i {{count}} stvar na njemu?",
+      "deleteText_few": "Obrisati {{name}} i {{count}} stvari na njemu?",
+      "deleteText_other": "Obrisati {{name}} i {{count}} stvari na njemu?",
+      "rename": "Promeni {{name}}",
+      "livesIn": "Stoji u",
+      "goesIn": "Ide u",
+      "moved": "{{item}} premešteno u {{spot}}."
     }
   },
   "household": {

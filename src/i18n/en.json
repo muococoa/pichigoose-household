@@ -408,7 +408,48 @@
         "title": "Ready for the deep clean\nof the bathroom cabinet?",
         "text": "Every shelf in the bathroom cabinet will be cleared."
       },
-      "undo": "This can't be undone."
+      "undo": "This can't be undone.",
+      "room": {
+        "title": "Ready for the deep clean\nof the {{name}}?",
+        "text": "Every shelf in the {{name}} will be cleared."
+      }
+    },
+    "title": "Rooms",
+    "emptyRoom": "Nothing here yet. Add what you keep in this room, and Pichi will keep an eye on it.",
+    "rooms": {
+      "add": "+ room",
+      "new": "New room",
+      "edit": "Room",
+      "name": "Room name",
+      "placeholder": "Hallway",
+      "kind": "Kind of room",
+      "kinds": {
+        "kitchen": "Kitchen",
+        "bathroom": "Bathroom",
+        "other": "Something else"
+      },
+      "addButton": "Add room",
+      "delete": "Delete room",
+      "deleteText": "Delete {{name}} and everything on its shelves?",
+      "firstSpot": "Shelf"
+    },
+    "spots": {
+      "add": "+ storage spot",
+      "addHere": "+ add",
+      "empty": "Nothing on this shelf yet.",
+      "new": "New storage spot in {{room}}",
+      "edit": "Storage spot",
+      "name": "Storage spot name",
+      "placeholder": "Second cabinet",
+      "placeholderBathroom": "Bathtub shelf",
+      "addButton": "Add storage spot",
+      "delete": "Delete storage spot",
+      "deleteText_one": "Delete {{name}} and the {{count}} thing on it?",
+      "deleteText_other": "Delete {{name}} and the {{count}} things on it?",
+      "rename": "Change {{name}}",
+      "livesIn": "Lives in",
+      "goesIn": "Goes in",
+      "moved": "{{item}} moved to {{spot}}."
     }
   },
   "household": {

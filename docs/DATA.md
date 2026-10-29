@@ -185,6 +185,19 @@ What's on the shelves (K1 to K6) [Nora]: the pantry, and the bathroom cabinet.
 - Deleting a pantry thing keeps its list items; they just lose the link.
 - **Groups** [Nora]: rows with the same name in the same place (ignoring capitals and spaces at the ends) are one group, like four bottles of wine. Each row is one bottle with its own level. A bottle that reaches 0 is deleted while others are left; the last one stays at 0. Pichi adds the group to the list only when one is left and it's at or below `low_at`. Buying it fills that last one back up; more bottles are added with "+ One more". No extra columns.
 
+### rooms and storage_spots
+Rooms in the home, and storage spots inside them [Nora, Danko]: Kitchen → Pantry, Bathroom → Bathroom cabinet, Bathtub shelf, a second cabinet...
+
+| table | columns |
+|---|---|
+| rooms | id, household_id, name, kind (`kitchen`, `bathroom`, `other`: which drawings it offers), position, created_at |
+| storage_spots | id, household_id (set from the room), room_id, name, position, created_at |
+
+- A new household gets Kitchen → Pantry and Bathroom → Bathroom cabinet, named in the creator's language (`seed_storage`, run by a trigger).
+- `pantry_items.spot_id` says where a thing lives; moving it is changing that. Deleting a spot or room deletes what's on it (the app asks first). `place` stays in step with the room's kind, for older copies of the app.
+- Groups are per spot: the same name in two spots is two groups.
+- Everyone in the household can read and change everything. Live updates on.
+
 ### messages
 Chat, like WhatsApp [Nora]: each household has one group chat for everyone, and each pair of people in it has a private chat.
 

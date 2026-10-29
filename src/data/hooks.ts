@@ -15,7 +15,9 @@ export type Profile = Row & {
 
 export type Household = Row & { name: string; address: string; secret: string; kind: 'home' | 'event'; created_by?: string | null; created_at: string }
 
-export type Section = 'news' | 'shopping' | 'pantry' | 'bathroom' | 'todos' | 'money' | 'notes'
+// pantry and bathroom are from before rooms: they stand for the first kitchen and bathroom room.
+// Every room has its own note on Home: room:<id>.
+export type Section = 'news' | 'shopping' | 'pantry' | 'bathroom' | 'todos' | 'money' | 'notes' | `room:${string}`
 export type LayoutEntry = { section: Section; visible: boolean }
 
 export type Member = Row & {
@@ -46,8 +48,17 @@ export type Item = Row & {
 export type Place = 'pantry' | 'bathroom'
 export type Container = 'jar' | 'bottle' | 'box' | 'bag' | 'can' | 'carton' | 'tube' | 'pump' | 'spray' | 'dropper' | 'jug' | 'creamjar' | 'lotion' | 'perfume' | 'mist' | 'flatbox'
 
+export type RoomKind = 'kitchen' | 'bathroom' | 'other'
+/** A room in the home (Kitchen, Bathroom, Hallway...). kind decides which drawings it offers. */
+export type Room = Row & { household_id: string; name: string; kind: RoomKind; position: number; created_at: string }
+/** A storage spot inside a room: Pantry, Bathroom cabinet, Bathtub shelf, a second cabinet. */
+export type Spot = Row & { household_id: string; room_id: string; name: string; position: number; created_at: string }
+
 export type PantryItem = Row & {
   household_id: string
+  /** The storage spot it lives in. */
+  spot_id: string | null
+  /** From before rooms; the database keeps it in step with the spot's room. */
   place: Place
   name: string
   container: Container
@@ -197,6 +208,40 @@ export function usePantry(householdId: string | null) {
   )
 }
 
+const byPosition = <T extends { position: number; created_at: string }>(a: T, b: T) => a.position - b.position || a.created_at.localeCompare(b.created_at)
+
+/** The household's rooms, in order. */
+export function useRooms(householdId: string | null) {
+  const c = useCollection<Room>(
+    householdId
+      ? {
+          key: `rooms:${householdId}`,
+          table: 'rooms',
+          belongs: (r) => r.household_id === householdId,
+          load: () => supabase.from('rooms').select('*').eq('household_id', householdId),
+          realtime: `household_id=eq.${householdId}`,
+        }
+      : null,
+  )
+  return { ...c, rows: useMemo(() => [...c.rows].sort(byPosition), [c.rows]) }
+}
+
+/** The storage spots in all rooms, in order. */
+export function useSpots(householdId: string | null) {
+  const c = useCollection<Spot>(
+    householdId
+      ? {
+          key: `spots:${householdId}`,
+          table: 'storage_spots',
+          belongs: (r) => r.household_id === householdId,
+          load: () => supabase.from('storage_spots').select('*').eq('household_id', householdId),
+          realtime: `household_id=eq.${householdId}`,
+        }
+      : null,
+  )
+  return { ...c, rows: useMemo(() => [...c.rows].sort(byPosition), [c.rows]) }
+}
+
 export function useTodos(householdId: string | null) {
   return useCollection<Todo>(
     householdId
@@ -342,14 +387,36 @@ export function useHousehold() {
 
 /** Someone's own home order, with any section that's new since they arranged it (like the pantry)
  *  slotted in where it sits by default, right after the section it follows. */
-export function completeLayout(saved: LayoutEntry[] | undefined | null): LayoutEntry[] {
-  if (!saved?.length) return DEFAULT_LAYOUT
-  const out = [...saved]
+export function completeLayout(saved: LayoutEntry[] | undefined | null, rooms?: Room[]): LayoutEntry[] {
+  let out = saved?.length ? [...saved] : [...DEFAULT_LAYOUT]
   DEFAULT_LAYOUT.forEach((d, i) => {
     if (out.some((s) => s.section === d.section)) return
+    if ((d.section === 'pantry' || d.section === 'bathroom') && out.some((s) => s.section.startsWith('room:'))) return
     const before = i > 0 ? out.findIndex((s) => s.section === DEFAULT_LAYOUT[i - 1].section) : -1
     out.splice(before + 1, 0, d)
   })
+  if (!rooms?.length) return out
+  // Rooms: the old kitchen and bathroom notes become those rooms' notes; rooms that are gone drop
+  // out; new rooms go after the last room (or after shopping).
+  const firstOf = (kind: Room['kind']) => rooms.find((r) => r.kind === kind)
+  out = out.flatMap((e) => {
+    if (e.section === 'pantry' || e.section === 'bathroom') {
+      const r = firstOf(e.section === 'pantry' ? 'kitchen' : 'bathroom')
+      return r ? [{ ...e, section: `room:${r.id}` as Section }] : []
+    }
+    if (e.section.startsWith('room:') && !rooms.some((r) => `room:${r.id}` === e.section)) return []
+    return [e]
+  })
+  out = out.filter((e, i) => out.findIndex((x) => x.section === e.section) === i)
+  for (const r of rooms) {
+    const key = `room:${r.id}` as Section
+    if (out.some((e) => e.section === key)) continue
+    let at = -1
+    out.forEach((e, i) => {
+      if (e.section.startsWith('room:') || e.section === 'shopping') at = i
+    })
+    out.splice(at + 1, 0, { section: key, visible: true })
+  }
   return out
 }
 

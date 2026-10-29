@@ -11,6 +11,9 @@ import {
   useMyProfile,
   useNotes,
   usePantry,
+  useRooms,
+  useSpots,
+  type Room,
   useTodos,
   type Section,
 } from '../data/hooks'
@@ -30,14 +33,16 @@ import { useDesktop } from '../lib/desktop'
 import { DragBoard } from '../components/DragBoard'
 import { CommentCount, useCommentCounts } from '../components/Comments'
 import { db } from '../data/store'
-import { ShelfRows, groupLow, groupThings, useShelfWidth } from '../components/Shelves'
+import { ShelfRows, groupLow, groupThings, useShelfWidth, type Group } from '../components/Shelves'
+import { spotOf } from './Pantry'
 
 // Desktop: the small notes inside the notes section, each a little tilted and held with a paper clip on the left edge
 // (the bottom right corner is for the comment bubble).
 const MINI_TILT = [-2, 2, 1, -1.5]
 
 // Each section is a sticky note in its own pastel, held by its own tape.
-const LOOK: Record<Section, { note: string; tape: TapeKind; tapeStyle: React.CSSProperties; rotate: number }> = {
+type Look = { note: string; tape: TapeKind; tapeStyle: React.CSSProperties; rotate: number }
+const LOOK: Record<string, Look> = {
   news: { note: 'n-lilac', tape: 'ttri', tapeStyle: {}, rotate: 0 },
   todos: { note: 'n-blush', tape: 'tdots', tapeStyle: { top: -10, left: 28, transform: 'rotate(-4deg)' }, rotate: -1 },
   shopping: { note: 'n-butter', tape: 'tm', tapeStyle: { top: -10, right: 34, transform: 'rotate(5deg)' }, rotate: 1 },
@@ -45,6 +50,20 @@ const LOOK: Record<Section, { note: string; tape: TapeKind; tapeStyle: React.CSS
   bathroom: { note: 'n-mint', tape: 'tb', tapeStyle: { top: -10, right: 40, transform: 'rotate(4deg)' }, rotate: 0.7 },
   money: { note: 'n-mist', tape: 'tblocks', tapeStyle: { top: -10, left: '40%', transform: 'rotate(-2deg)' }, rotate: -0.6 },
   notes: { note: 'n-sage', tape: 'tcheck', tapeStyle: { top: -10, left: '30%', transform: 'rotate(3deg)' }, rotate: 0.6 },
+}
+
+// Rooms beyond the kitchen and bathroom get their own pastels in turn.
+const ROOM_LOOKS: Look[] = [
+  { note: 'n-peach', tape: 'tp', tapeStyle: { top: -10, left: 30, transform: 'rotate(-3deg)' }, rotate: 0.8 },
+  { note: 'n-lilac', tape: 'tcheck', tapeStyle: { top: -10, right: 36, transform: 'rotate(4deg)' }, rotate: -0.7 },
+  { note: 'n-mist', tape: 'tdots', tapeStyle: { top: -10, left: '35%', transform: 'rotate(-2deg)' }, rotate: 0.6 },
+  { note: 'n-sage', tape: 'tblocks', tapeStyle: { top: -10, left: 40, transform: 'rotate(3deg)' }, rotate: -0.5 },
+]
+export function roomLook(room: Room | undefined, rooms: Room[]): Look {
+  if (room?.kind === 'kitchen' && rooms.find((r) => r.kind === 'kitchen') === room) return LOOK.pantry
+  if (room?.kind === 'bathroom' && rooms.find((r) => r.kind === 'bathroom') === room) return LOOK.bathroom
+  const others = rooms.filter((r) => r !== rooms.find((x) => x.kind === 'kitchen') && r !== rooms.find((x) => x.kind === 'bathroom'))
+  return ROOM_LOOKS[Math.max(0, others.indexOf(room as Room)) % ROOM_LOOKS.length]
 }
 
 function NoteHead({ title, right, to }: { title: string; right: string; to: string }) {
@@ -63,6 +82,28 @@ function NoteHead({ title, right, to }: { title: string; right: string; to: stri
 
 function Empty({ children }: { children: string }) {
   return <div className="cap" style={{ fontSize: 14, padding: '2px 0 4px' }}>{children}</div>
+}
+
+/** A room's sticky note on Home: its name and one shelf of what's running out first. */
+function RoomNote({ room, groups, look, onOpen }: { room: Room; groups: Group[]; look: Look; onOpen: (path: string) => (e: React.MouseEvent) => void }) {
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const box = useShelfWidth()
+  const to = `/pantry?room=${room.id}`
+  const low = groups.filter((g) => groupLow(g.rows)).length
+  return (
+    <div className={`note ${look.note} note-link`} onClick={onOpen(to)} style={{ transform: `rotate(${look.rotate}deg)` }}>
+      <Tape kind={look.tape} style={look.tapeStyle} />
+      <NoteHead title={room.name.toLocaleLowerCase()} to={to} right={low ? `${t('home.pantryLow', { count: low })} · ${t('common.seeAll')}` : t('common.seeAll')} />
+      {groups.length ? (
+        <div ref={box.ref} style={{ padding: '10px 6px 0' }}>
+          <ShelfRows groups={groups} width={box.width} height={56} maxRows={1} compact onOpen={() => navigate(to)} />
+        </div>
+      ) : (
+        <Empty>{t('home.noPantry')}</Empty>
+      )}
+    </div>
+  )
 }
 
 export function HomeScreen() {
@@ -119,8 +160,9 @@ export function HomeScreen() {
     const room = (g: ReturnType<typeof groupThings>[number]) => (groupLow(g.rows) ? -1 : g.rows.length > 1 ? 2 : (g.rows[0].level - g.rows[0].low_at) / 100)
     return groupThings(pantry.rows).sort((a, b) => room(a) - room(b) || a.name.localeCompare(b.name))
   }, [pantry.rows])
-  // The kitchen and the bathroom each have their own note.
-  const shelfBoxes = { pantry: useShelfWidth(), bathroom: useShelfWidth() }
+  // Every room has its own note.
+  const rooms = useRooms(hid)
+  const spots = useSpots(hid)
   const pinnedNotes = useMemo(
     () => [...notes.rows].sort((a, b) => Number(b.pinned) - Number(a.pinned) || b.updated_at.localeCompare(a.updated_at)),
     [notes.rows],
@@ -150,8 +192,8 @@ export function HomeScreen() {
   }, [toBuy, openTodos, me, people, i18n.language, comments.rows])
 
   const fullLayout = useMemo(() => {
-    return completeLayout(membership?.home_layout)
-  }, [membership])
+    return completeLayout(membership?.home_layout, rooms.rows)
+  }, [membership, rooms.rows])
   const layout = useMemo(() => fullLayout.filter((s) => s.visible && s.section !== 'money'), [fullLayout])
 
   // Desktop: notes moved on the board keep their new order. Hidden sections, money and Pichi's news
@@ -174,7 +216,7 @@ export function HomeScreen() {
   }
 
   function section(s: Section) {
-    const look = LOOK[s]
+    const look = LOOK[s] ?? LOOK.pantry
     if (s === 'news') {
       return (
         <div key="news" style={{ display: 'flex', gap: desktop ? 16 : 12, alignItems: 'flex-start', marginTop: desktop ? 0 : -4 }}>
@@ -293,26 +335,15 @@ export function HomeScreen() {
         </div>
       )
     }
-    if (s === 'pantry' || s === 'bathroom') {
-      // The kitchen note (its section is called "pantry") and the bathroom note: one shelf of what's running out first.
-      const here = shelf.filter((g) => g.rows[0].place === s)
-      const low = here.filter((g) => groupLow(g.rows)).length
-      const to = s === 'bathroom' ? '/pantry?place=bathroom' : '/pantry'
-      const box = shelfBoxes[s]
-      return (
-        <div key={s} className={`note ${look.note} note-link`} onClick={open(to)} style={{ transform: `rotate(${look.rotate}deg)` }}>
-          <Tape kind={look.tape} style={look.tapeStyle} />
-          <NoteHead title={t(`home.shelf.${s}`)} to={to} right={low ? `${t('home.pantryLow', { count: low })} · ${t('common.seeAll')}` : t('common.seeAll')} />
-          {here.length ? (
-            <div ref={box.ref} style={{ padding: '10px 6px 0' }}>
-              <ShelfRows groups={here} width={box.width} height={56} maxRows={1} compact onOpen={() => navigate(to)} />
-            </div>
-          ) : (
-            <Empty>{t('home.noPantry')}</Empty>
-          )}
-        </div>
-      )
+    if (s.startsWith('room:')) {
+      // A room's note: one shelf of what's running out first in that room.
+      const room = rooms.rows.find((r) => `room:${r.id}` === s)
+      if (!room) return null
+      const inRoom = new Set(spots.rows.filter((x) => x.room_id === room.id).map((x) => x.id))
+      const here = shelf.filter((g) => inRoom.has(spotOf(g.rows[0], rooms.rows, spots.rows) ?? ''))
+      return <RoomNote key={s} room={room} groups={here} look={roomLook(room, rooms.rows)} onOpen={open} />
     }
+    if (s === 'pantry' || s === 'bathroom') return null
     return (
       <div key="notes" className={`note ${look.note} note-link`} onClick={open('/notes')} style={{ transform: `rotate(${look.rotate}deg)` }}>
         <Tape kind={look.tape} style={look.tapeStyle} />
