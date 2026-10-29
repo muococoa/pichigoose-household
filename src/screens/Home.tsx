@@ -230,7 +230,8 @@ export function HomeScreen() {
               position: 'relative',
               flex: desktop ? 'none' : 1,
               minWidth: desktop ? 300 : undefined,
-              background: '#FFFFFF',
+              // Pichi's speech bubble in the theme color (Nora, 29 Oct), so each theme shows up on Home too.
+              background: 'var(--hero)',
               borderRadius: '14px 16px 14px 4px',
               padding: desktop ? '14px 18px' : '12px 14px',
               boxShadow: '2px 3px 0 rgba(30,26,48,.10)',
@@ -238,10 +239,10 @@ export function HomeScreen() {
             }}
           >
             {/* The greeting leads; the news sits a step smaller under it. */}
-            <Hand size={desktop ? 31 : 27} lineHeight={desktop ? 34 : 30} color="var(--hero-dark)">
+            <Hand size={desktop ? 31 : 27} lineHeight={desktop ? 34 : 30} color="#FFFFFF">
               {t('home.hi', { name: profile?.display_name ?? '' })}
             </Hand>
-            <div style={{ fontSize: desktop ? 16 : 14, lineHeight: desktop ? '22px' : '20px', fontWeight: 600, marginTop: 2, color: '#463D50' }}>{news}</div>
+            <div style={{ fontSize: desktop ? 16 : 14, lineHeight: desktop ? '22px' : '20px', fontWeight: 600, marginTop: 2, color: 'rgba(255, 255, 255, .82)' }}>{news}</div>
           </div>
         </div>
       )
