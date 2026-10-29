@@ -1,7 +1,7 @@
 // The scrapbook building blocks: ink headlines, stamps, sticky notes, tape, checkboxes,
 // stickers, Pichi's postage stamp and the bottom sheet.
 
-import { useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import pichi from '../../assets/pichi-painted.jpg'
 import poseStandLeft from '../../assets/pichi/stand-left.webp'
@@ -288,20 +288,21 @@ export function PoseStamp({
 /** Pichi as a small round avatar, for the things she does herself (like putting oats on the list).
  *  Her painting, cropped to her head, never redrawn. */
 export function PichiAvatar({ size = 34 }: { size?: number }) {
-  // Framed like everyone's avatar: her head and scarf on a butter circle, cut by the circle below.
-  const clip = `pichi-${useId().replace(/[^a-zA-Z0-9]/g, '')}`
-  // Her head and scarf (about x 0.43 to 0.66, y 0.04 to 0.45 of the painting) fill the circle like a bust.
-  const W = 78
   return (
-    <svg className="av" viewBox="0 0 40 40" width={size} height={size} style={{ width: size, height: size }} role="img" aria-label="Pichi">
-      <defs>
-        <clipPath id={clip}>
-          <circle cx="20" cy="20" r="20" />
-        </clipPath>
-      </defs>
-      <circle cx="20" cy="20" r="20" fill="#F8E6A8" />
-      <image href={POSES.walk} x={20 - 0.53 * W} y={7.5 - 0.08 * W} width={W} height={(W * 716) / 720} clipPath={`url(#${clip})`} />
-    </svg>
+    <span
+      role="img"
+      aria-label="Pichi"
+      className="av"
+      style={{
+        width: size,
+        height: size,
+        backgroundColor: '#F8E6A8',
+        backgroundImage: `url(${POSES.walk})`,
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: '300% auto',
+        backgroundPosition: '57% 1%',
+      }}
+    />
   )
 }
 
