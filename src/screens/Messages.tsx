@@ -91,7 +91,7 @@ function Bubbles({ messages, group, readByAll, onReply }: { messages: Message[];
           <div key={m.id}>
             {newDay && (
               <div className="day-stamp">
-                <Stamp color={STAMP_COLORS.open} rotate={-2}>
+                <Stamp color={STAMP_COLORS.nora} rotate={-2}>
                   {day(m.created_at)}
                 </Stamp>
               </div>
