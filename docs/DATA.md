@@ -172,7 +172,7 @@ What's on the shelves (K1 to K6) [Nora]: the pantry, and the bathroom cabinet.
 | household_id | uuid, references households | |
 | place | text | `'pantry'` or `'bathroom'` (the bathroom cabinet) |
 | name | text | "Oats", 1 to 80 characters |
-| container | text | which drawing it gets. Kitchen: `jar`, `bottle`, `box`, `bag`, `can`, `carton`. Bathroom: `pump`, `lotion`, `creamjar`, `tube`, `dropper`, `spray`, `jug`, `box` [Nora]. The app guesses it from the name [Claude] |
+| container | text | which drawing it gets. Kitchen: `jar`, `bottle`, `box`, `bag`, `can`, `carton`. Bathroom: `pump`, `lotion`, `creamjar`, `tube`, `dropper`, `mist`, `perfume`, `spray`, `jug`, `box` [Nora]. The app guesses it from the name [Claude] |
 | level | smallint | how full, 0 to 100 |
 | low_at | smallint | at or below this, Pichi puts it on the shopping list. Default 20 [Claude] |
 | list_id | uuid, nullable | the list Pichi puts it on. Empty: the household's first list [Claude] |

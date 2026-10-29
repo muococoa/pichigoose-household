@@ -373,7 +373,9 @@
       "dropper": "Pipeta",
       "jug": "Bidon",
       "creamjar": "Teglica",
-      "lotion": "Losion"
+      "lotion": "Losion",
+      "perfume": "Parfem",
+      "mist": "Mist"
     },
     "own": "Drugo",
     "ownLabel": "Tvoj procenat",

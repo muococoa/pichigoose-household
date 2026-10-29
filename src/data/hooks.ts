@@ -44,7 +44,7 @@ export type Item = Row & {
 }
 
 export type Place = 'pantry' | 'bathroom'
-export type Container = 'jar' | 'bottle' | 'box' | 'bag' | 'can' | 'carton' | 'tube' | 'pump' | 'spray' | 'dropper' | 'jug' | 'creamjar' | 'lotion'
+export type Container = 'jar' | 'bottle' | 'box' | 'bag' | 'can' | 'carton' | 'tube' | 'pump' | 'spray' | 'dropper' | 'jug' | 'creamjar' | 'lotion' | 'perfume' | 'mist'
 
 export type PantryItem = Row & {
   household_id: string

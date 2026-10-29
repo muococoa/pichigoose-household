@@ -366,7 +366,9 @@
       "dropper": "Dropper",
       "jug": "Jug",
       "creamjar": "Cream jar",
-      "lotion": "Lotion"
+      "lotion": "Lotion",
+      "perfume": "Perfume",
+      "mist": "Mist"
     },
     "own": "Other",
     "ownLabel": "Your own percentage",

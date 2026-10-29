@@ -107,13 +107,29 @@ const SHAPES: Record<Container, Shape> = {
     top: 58,
     bottom: 79,
   },
-  // A lotion or sunscreen bottle standing on its flip cap.
+  // A lotion bottle standing up, flip cap on top (from Nora's Organic Mimi body lotion).
   lotion: {
-    ink: 'M18 10Q32 5 46 10Q48 40 42 66H22Q16 40 18 10ZM22 66H42V77Q42 80 39 80H25Q22 80 22 77Z',
-    detail: 'M22 71H42',
-    inside: 'M19 11Q32 6.5 45 11Q47 40 41.4 65H22.6Q17 40 19 11Z',
-    top: 9,
-    bottom: 65,
+    ink: 'M25 5H39Q40 5 40 6V22H24V6Q24 5 25 5ZM24 22Q14 24 14 34V76Q14 80 18 80H46Q50 80 50 76V34Q50 24 40 22',
+    detail: 'M24 10.5H40',
+    inside: 'M24 23Q15 25 15 34V76Q15 79 18 79H46Q49 79 49 76V34Q49 25 40 23Z',
+    top: 23,
+    bottom: 79,
+  },
+  // A perfume bottle with cut corners and a flared cap (from Nora's Jawhara), the thin tube inside.
+  perfume: {
+    ink: 'M23 5H41L37 21H27ZM28 21H36V27H28ZM18 27H46L52 33V74L46 80H18L12 74V33Z',
+    detail: 'M32 27V73M16 35V72',
+    inside: 'M18.5 28H45.5L51 33.5V73.5L45.5 79H18.5L13 73.5V33.5Z',
+    top: 28,
+    bottom: 79,
+  },
+  // A tall, slim body mist bottle with a square cap.
+  mist: {
+    ink: 'M21 4H43Q45 4 45 6V24H19V6Q19 4 21 4ZM21 24H43Q46 24 46 27V77Q46 80 43 80H21Q18 80 18 77V27Q18 24 21 24Z',
+    detail: 'M19 9.5H45',
+    inside: 'M21 25H43Q45 25 45 27V77Q45 79 43 79H21Q19 79 19 77V27Q19 25 21 25Z',
+    top: 25,
+    bottom: 79,
   },
 }
 
@@ -122,7 +138,7 @@ export const CONTAINERS = Object.keys(SHAPES) as Container[]
 /** What makes sense where (Nora): no pumps, sprays or tubes in the kitchen; no jars, cans, cartons, bottles or bags in the bathroom. */
 export const CONTAINERS_FOR: Record<Place, Container[]> = {
   pantry: ['jar', 'bottle', 'box', 'bag', 'can', 'carton'],
-  bathroom: ['pump', 'lotion', 'creamjar', 'tube', 'dropper', 'spray', 'jug', 'box'],
+  bathroom: ['pump', 'lotion', 'creamjar', 'tube', 'dropper', 'mist', 'perfume', 'spray', 'jug', 'box'],
 }
 
 /** The gel pen color for how full something is: green when there's plenty, orange when it's going,
@@ -141,6 +157,8 @@ export function insideSpan(kind: Container) {
 
 /** A guess at what something looks like from its name, so most things need no picking. */
 const GUESSES: [RegExp, Container][] = [
+  [/perfume|parfem|parfum|eau de|edp\b|edt\b|toaletna voda/i, 'perfume'],
+  [/mist|victoria|body spray|sprej za telo/i, 'mist'],
   [/serum|dropper|pipet|kapi\b|drops|face oil|ulje za lice/i, 'dropper'],
   [/detergent|deterdžent|deterdzent|softener|omekšiv|omeksiv|bleach|varikin|dish soap|za sudove/i, 'jug'],
   [/sunscreen|spf|za sunčanje|za suncanje|lotion|losion|body milk|mleko za telo/i, 'lotion'],
