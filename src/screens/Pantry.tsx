@@ -201,7 +201,7 @@ export function PantryScreen() {
             <br />
             {t('pantry.clean.undo')}
           </p>
-          <PeekingPichi style={{ right: -30, top: -14 }} />
+          <PeekingPichi style={{ right: -30, top: -26, height: 80 }} />
         </div>
         <div className="row" style={{ gap: 12 }}>
           <button type="button" className="stk sec" style={{ flex: 1, transform: 'rotate(-1deg)' }} onClick={() => setCleaning(false)}>

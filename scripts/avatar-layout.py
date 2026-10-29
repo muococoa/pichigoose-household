@@ -38,9 +38,11 @@ R = 20  # circle radius, on a 40 x 40 grid
 # Per character, per extra: size (times the computed size), nudge (in eye distances), turn (degrees).
 TWEAKS = {
     'frog': {'glasses': {'size': 0.686, 'nudge': (-0.04, 0.08), 'turn': 2}, 'bowtie': {'nudge': (0, -0.2)}, 'partyhat': {'sink': 0.05}, 'witchhat': {'sink': -0.15, 'size': 0.72}, 'bow': {'angle': 80, 'size': 0.8}, 'flower': {'angle': 80, 'size': 0.85}},
-    'lemon': {'bow': {'size': 1.3}},
+    'lemon': {'bow': {'size': 1.3, 'at': (0.38, 0.16), 'abs_rot': -15}, 'bowtie': {'size': 1.9, 'alt': 'red'}, 'mustache': {'nudge': (0, 0.18)}, 'flower': {'flip': True, 'size': 1.5}, 'partyhat': {'turn': -12, 'nudge': (-0.3, 0.05)}, 'witchhat': {'size': 1.5, 'turn': -12, 'nudge': (0.15, 0.2)}},
     'sushi': {'bow': {'side': -1, 'rot': -5}},
     'turtle': {'bow': {'side': -1, 'angle': 35}},
+    'onigiri': {'bow': {'side': -1, 'rot': 18, 'touch': 0.18}, 'bowtie': {'size': 2.0}, 'mustache': {'nudge': (0, 0.22)}, 'flower': {'side': 1, 'rot': 18, 'size': 1.5, 'touch': 0.15}, 'partyhat': {'sink': 0.75}, 'witchhat': {'size': 2.0, 'sink': 0.9}},
+    'toast': {'partyhat': {'at': (0.74, 0.05), 'turn': 22, 'sink': 0.05, 'size': 0.85}, 'witchhat': {'turn': 9}},
     'plant': {'partyhat': {'size': 0.9, 'top': 'highest'}, 'witchhat': {'size': 0.9, 'top': 'highest'}, 'bowtie': {'nudge': (0, -0.35)}},
     'carrot': {'partyhat': {'top_frac': 0.33}, 'witchhat': {'top_frac': 0.33}},
 }
@@ -222,6 +224,14 @@ def place_extra(name, key, me, frame, ex, mode):
     deg = math.degrees(tilt)
 
     def at(center, width, r, anchor=(0.5, 0.5)):
+        placed = _at(center, width, r, anchor)
+        if 'alt' in tw:
+            placed['alt'] = tw['alt']
+        if tw.get('flip'):
+            placed['flip'] = True
+        return placed
+
+    def _at(center, width, r, anchor=(0.5, 0.5)):
         width = max(width, MIN[key] * size)
         nx, ny = tw.get('nudge', (0, 0))
         center = (center[0] + nx * d, center[1] + ny * d)
@@ -250,16 +260,28 @@ def place_extra(name, key, me, frame, ex, mode):
         ang = tilt + side * math.radians(tw.get('angle', 50))
         direction = (math.sin(ang), -math.cos(ang))
         p = to(walk(me['alpha'], me['eye'], direction))
+        if 'at' in tw:
+            p = to((tw['at'][0] * me['w'], tw['at'][1] * me['h']))
         width = max(SIZE[key] * d * size, MIN[key] * size)
         face = ((eye[0] + mouth[0]) / 2, (eye[1] + mouth[1]) / 2)
         clear = 0.8 * d + 0.42 * width
         dist = math.hypot(p[0] - face[0], p[1] - face[1])
-        if dist < clear:
+        if tw.get('touch'):
+            # Sitting right on the outline, a little over it, so it doesn't hover.
+            p = (p[0] - direction[0] * tw['touch'] * width, p[1] - direction[1] * tw['touch'] * width)
+        elif dist < clear and 'at' not in tw:
             p = (face[0] + (p[0] - face[0]) * clear / dist, face[1] + (p[1] - face[1]) * clear / dist)
         r = deg + tw['rot'] if 'rot' in tw else deg + side * 18
+        if 'abs_rot' in tw:
+            r = tw['abs_rot']
+        if 'at' in tw:
+            return at(p, width, r)
         return at(p, width, r)
     if key in ('partyhat', 'witchhat'):
         top = me['top']
+        if 'at' in tw:
+            # A set spot on the drawing (share of width and height), like one of the bread's top curves.
+            top = (tw['at'][0] * me['w'], tw['at'][1] * me['h'])
         if 'top_frac' in tw:
             # A set height on the drawing (like where a carrot's leaves start), above the face.
             top = (me['eye'][0], tw['top_frac'] * me['h'])
@@ -309,7 +331,7 @@ def main():
         f.write('// Per character: full (the avatar builder, whole character) and row (small avatars, zoomed).\n')
         f.write('// Character box and each extra on a 40 x 40 circle: x, y, w, h, turned r degrees around (rx, ry).\n')
         f.write('// fit: [scale, dx, dy] for the whole avatar, so a hat fits in the circle.\n\n')
-        f.write('export type Placed = { x: number; y: number; w: number; h: number; r: number; rx: number; ry: number; fit?: [number, number, number] }\n')
+        f.write('export type Placed = { x: number; y: number; w: number; h: number; r: number; rx: number; ry: number; fit?: [number, number, number]; alt?: string; flip?: boolean }\n')
         f.write('export type CharacterLayout = { x: number; y: number; w: number; h: number; extras: Record<string, Placed> }\n\n')
         f.write(f'export const AVATAR_LAYOUT: Record<string, {{ full: CharacterLayout; row: CharacterLayout }}> = {body}\n')
     print('wrote src/components/avatarLayout.ts')

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
 import { refetchAll } from '../data/store'
 import { useHousehold, type Household } from '../data/hooks'
-import { PeekingPichi, Sheet, showToast } from '../components/Scrapbook'
+import { PeekingPichi, PencilPichi, Sheet } from '../components/Scrapbook'
 import { BroomIcon } from '../components/Icons'
 
 /** "Can't right now": no signal, or something went wrong on the way. */
@@ -24,6 +24,8 @@ export function CleanHouseholdButton({ size = 38 }: { size?: number }) {
   const [asking, setAsking] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  // After cleaning, the same pop-up turns into "Fresh start!" with the happy goose.
+  const [done, setDone] = useState(false)
   if (!household) return null
   const title = t('household.clean.title', { name: name(household) })
 
@@ -35,16 +37,26 @@ export function CleanHouseholdButton({ size = 38 }: { size?: number }) {
     setBusy(false)
     if (error) return setError(failed())
     await refetchAll()
-    setAsking(false)
-    showToast(t('household.clean.done'))
+    setDone(true)
   }
 
   return (
     <>
-      <button type="button" className="stk sec sm" aria-label={title} title={title} style={{ width: size, padding: 0, flex: 'none', transform: 'rotate(2deg)' }} onClick={() => { setError(''); setAsking(true) }}>
+      <button type="button" className="stk sec sm" aria-label={title} title={title} style={{ width: size, padding: 0, flex: 'none', transform: 'rotate(2deg)' }} onClick={() => { setError(''); setDone(false); setAsking(true) }}>
         <BroomIcon />
       </button>
-      <Sheet small open={asking} onClose={() => setAsking(false)} title={title}>
+      <Sheet small open={asking} onClose={() => setAsking(false)} title={done ? t('household.clean.done') : title}>
+        {done ? (
+          <>
+            <div style={{ margin: '0 0 18px' }}>
+              <PencilPichi mood="happy" height={170} />
+            </div>
+            <button type="button" className="stk prim" style={{ width: '100%', transform: 'rotate(-1deg)' }} onClick={() => setAsking(false)}>
+              {t('common.done')}
+            </button>
+          </>
+        ) : (
+        <>
         <div style={{ position: 'relative' }}>
           <p className="body" style={{ margin: '0 0 18px', paddingRight: 44 }}>
             {t('household.clean.text')}
@@ -66,6 +78,8 @@ export function CleanHouseholdButton({ size = 38 }: { size?: number }) {
             {t('pantry.clean.button')}
           </button>
         </div>
+        </>
+        )}
       </Sheet>
     </>
   )

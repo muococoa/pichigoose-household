@@ -3,7 +3,7 @@
 // Character box and each extra on a 40 x 40 circle: x, y, w, h, turned r degrees around (rx, ry).
 // fit: [scale, dx, dy] for the whole avatar, so a hat fits in the circle.
 
-export type Placed = { x: number; y: number; w: number; h: number; r: number; rx: number; ry: number; fit?: [number, number, number] }
+export type Placed = { x: number; y: number; w: number; h: number; r: number; rx: number; ry: number; fit?: [number, number, number]; alt?: string; flip?: boolean }
 export type CharacterLayout = { x: number; y: number; w: number; h: number; extras: Record<string, Placed> }
 
 export const AVATAR_LAYOUT: Record<string, { full: CharacterLayout; row: CharacterLayout }> = {
@@ -15,19 +15,19 @@ export const AVATAR_LAYOUT: Record<string, { full: CharacterLayout; row: Charact
       "h": 24.51,
       "extras": {
         "bow": {
-          "x": 21.04,
-          "y": 4.49,
+          "x": 9.24,
+          "y": 6.37,
           "w": 13.82,
           "h": 10.01,
           "r": 21.9,
-          "rx": 27.95,
-          "ry": 9.49
+          "rx": 16.15,
+          "ry": 11.38
         },
         "bowtie": {
-          "x": 14.3,
-          "y": 18.68,
-          "w": 11.0,
-          "h": 5.96,
+          "x": 8.8,
+          "y": 15.7,
+          "w": 22.0,
+          "h": 11.92,
           "r": 3.9,
           "rx": 19.8,
           "ry": 21.66
@@ -43,39 +43,39 @@ export const AVATAR_LAYOUT: Record<string, { full: CharacterLayout; row: Charact
         },
         "mustache": {
           "x": 13.76,
-          "y": 15.21,
+          "y": 16.43,
           "w": 12.72,
           "h": 3.74,
           "r": 3.9,
           "rx": 20.12,
-          "ry": 17.08
+          "ry": 18.3
         },
         "flower": {
-          "x": 9.86,
-          "y": 5.55,
-          "w": 9.0,
-          "h": 8.2,
-          "r": -14.1,
-          "rx": 14.36,
-          "ry": 9.65
+          "x": 18.28,
+          "y": 5.63,
+          "w": 13.5,
+          "h": 12.3,
+          "r": 21.9,
+          "rx": 25.03,
+          "ry": 11.78
         },
         "partyhat": {
-          "x": 15.1,
-          "y": -8.47,
+          "x": 14.87,
+          "y": -5.0,
           "w": 12.17,
           "h": 16.57,
           "r": -2.1,
-          "rx": 20.82,
-          "ry": 6.43
+          "rx": 20.58,
+          "ry": 9.91
         },
         "witchhat": {
-          "x": 12.74,
-          "y": -2.91,
-          "w": 16.04,
-          "h": 12.61,
+          "x": 4.49,
+          "y": -9.95,
+          "w": 32.07,
+          "h": 25.22,
           "r": 3.9,
-          "rx": 20.75,
-          "ry": 7.43
+          "rx": 20.53,
+          "ry": 10.74
         }
       }
     },
@@ -86,19 +86,19 @@ export const AVATAR_LAYOUT: Record<string, { full: CharacterLayout; row: Charact
       "h": 43.37,
       "extras": {
         "bow": {
-          "x": 21.54,
-          "y": -0.1,
+          "x": 0.67,
+          "y": 3.24,
           "w": 24.46,
           "h": 17.71,
           "r": 21.9,
-          "rx": 33.77,
-          "ry": 8.75
+          "rx": 12.9,
+          "ry": 12.09
         },
         "bowtie": {
-          "x": 10.06,
-          "y": 25.25,
-          "w": 18.59,
-          "h": 10.07,
+          "x": 0.77,
+          "y": 20.22,
+          "w": 37.17,
+          "h": 20.14,
           "r": 3.9,
           "rx": 19.35,
           "ry": 30.28
@@ -114,48 +114,48 @@ export const AVATAR_LAYOUT: Record<string, { full: CharacterLayout; row: Charact
         },
         "mustache": {
           "x": 8.66,
-          "y": 18.87,
+          "y": 21.03,
           "w": 22.5,
           "h": 6.62,
           "r": 3.9,
           "rx": 19.91,
-          "ry": 22.18
+          "ry": 24.34
         },
         "flower": {
-          "x": 1.9,
-          "y": 1.91,
-          "w": 15.65,
-          "h": 14.27,
-          "r": -14.1,
-          "rx": 9.73,
-          "ry": 9.04
+          "x": 16.91,
+          "y": 2.07,
+          "w": 23.48,
+          "h": 21.4,
+          "r": 21.9,
+          "rx": 28.65,
+          "ry": 12.77
         },
         "partyhat": {
-          "x": 11.04,
-          "y": -23.03,
+          "x": 10.62,
+          "y": -16.88,
           "w": 21.52,
           "h": 29.31,
           "r": -2.1,
-          "rx": 21.15,
-          "ry": 3.35,
+          "rx": 20.73,
+          "ry": 9.5,
           "fit": [
-            0.599,
-            8.02,
-            16.04
+            0.663,
+            6.73,
+            13.46
           ]
         },
         "witchhat": {
-          "x": 6.85,
-          "y": -13.19,
-          "w": 28.37,
-          "h": 22.31,
+          "x": -7.74,
+          "y": -25.63,
+          "w": 56.74,
+          "h": 44.62,
           "r": 3.9,
-          "rx": 21.03,
-          "ry": 5.11,
+          "rx": 20.63,
+          "ry": 10.96,
           "fit": [
-            0.702,
-            5.96,
-            11.91
+            0.563,
+            8.74,
+            17.47
           ]
         }
       }
@@ -169,22 +169,23 @@ export const AVATAR_LAYOUT: Record<string, { full: CharacterLayout; row: Charact
       "h": 30.5,
       "extras": {
         "bow": {
-          "x": 18.01,
-          "y": 4.08,
+          "x": 8.14,
+          "y": 2.41,
           "w": 17.9,
           "h": 12.96,
-          "r": 4.1,
-          "rx": 26.96,
-          "ry": 10.56
+          "r": -15.0,
+          "rx": 17.09,
+          "ry": 8.89
         },
         "bowtie": {
-          "x": 16.43,
-          "y": 23.04,
-          "w": 11.0,
-          "h": 5.96,
+          "x": 11.48,
+          "y": 20.36,
+          "w": 20.9,
+          "h": 11.32,
           "r": -13.9,
           "rx": 21.93,
-          "ry": 26.02
+          "ry": 26.02,
+          "alt": "red"
         },
         "glasses": {
           "x": 11.9,
@@ -197,39 +198,40 @@ export const AVATAR_LAYOUT: Record<string, { full: CharacterLayout; row: Charact
         },
         "mustache": {
           "x": 14.5,
-          "y": 19.72,
+          "y": 20.71,
           "w": 12.67,
           "h": 3.73,
           "r": -13.9,
           "rx": 20.83,
-          "ry": 21.58
+          "ry": 22.57
         },
         "flower": {
-          "x": 5.52,
-          "y": 10.63,
-          "w": 9.0,
-          "h": 8.2,
+          "x": 3.27,
+          "y": 8.58,
+          "w": 13.5,
+          "h": 12.3,
           "r": -31.9,
           "rx": 10.02,
-          "ry": 14.74
+          "ry": 14.74,
+          "flip": true
         },
         "partyhat": {
-          "x": 12.22,
-          "y": -5.16,
+          "x": 10.57,
+          "y": -4.89,
           "w": 12.12,
           "h": 16.5,
-          "r": -19.9,
-          "rx": 17.92,
-          "ry": 9.69
+          "r": -31.9,
+          "rx": 16.27,
+          "ry": 9.96
         },
         "witchhat": {
-          "x": 10.17,
-          "y": 0.35,
-          "w": 15.98,
-          "h": 12.56,
-          "r": -13.9,
-          "rx": 18.16,
-          "ry": 10.65
+          "x": 7.0,
+          "y": -3.7,
+          "w": 23.96,
+          "h": 18.85,
+          "r": -25.9,
+          "rx": 18.98,
+          "ry": 11.75
         }
       }
     },
@@ -240,22 +242,23 @@ export const AVATAR_LAYOUT: Record<string, { full: CharacterLayout; row: Charact
       "h": 47.99,
       "extras": {
         "bow": {
-          "x": 15.9,
-          "y": -5.59,
+          "x": 0.37,
+          "y": -8.22,
           "w": 28.17,
           "h": 20.4,
-          "r": 4.1,
-          "rx": 29.99,
-          "ry": 4.61
+          "r": -15.0,
+          "rx": 14.45,
+          "ry": 1.98
         },
         "bowtie": {
-          "x": 13.83,
-          "y": 24.48,
-          "w": 16.47,
-          "h": 8.92,
+          "x": 6.42,
+          "y": 20.46,
+          "w": 31.29,
+          "h": 16.95,
           "r": -13.9,
           "rx": 22.07,
-          "ry": 28.94
+          "ry": 28.94,
+          "alt": "red"
         },
         "glasses": {
           "x": 6.28,
@@ -268,48 +271,49 @@ export const AVATAR_LAYOUT: Record<string, { full: CharacterLayout; row: Charact
         },
         "mustache": {
           "x": 10.37,
-          "y": 19.02,
+          "y": 20.58,
           "w": 19.94,
           "h": 5.87,
           "r": -13.9,
           "rx": 20.34,
-          "ry": 21.95
+          "ry": 23.51
         },
         "flower": {
-          "x": -3.62,
-          "y": 4.86,
-          "w": 13.87,
-          "h": 12.64,
+          "x": -7.08,
+          "y": 1.7,
+          "w": 20.8,
+          "h": 18.96,
           "r": -31.9,
           "rx": 3.32,
-          "ry": 11.18
+          "ry": 11.18,
+          "flip": true
         },
         "partyhat": {
-          "x": 6.79,
-          "y": -20.13,
+          "x": 4.19,
+          "y": -19.7,
           "w": 19.07,
           "h": 25.97,
-          "r": -19.9,
-          "rx": 15.76,
-          "ry": 3.24,
+          "r": -31.9,
+          "rx": 13.15,
+          "ry": 3.67,
           "fit": [
-            0.611,
-            7.78,
-            15.55
+            0.618,
+            7.64,
+            15.29
           ]
         },
         "witchhat": {
-          "x": 3.56,
-          "y": -11.46,
-          "w": 25.14,
-          "h": 19.77,
-          "r": -13.9,
-          "rx": 16.13,
-          "ry": 4.75,
+          "x": -1.42,
+          "y": -17.83,
+          "w": 37.71,
+          "h": 29.66,
+          "r": -25.9,
+          "rx": 17.43,
+          "ry": 6.49,
           "fit": [
-            0.704,
-            5.93,
-            11.85
+            0.597,
+            8.06,
+            16.11
           ]
         }
       }
@@ -522,20 +526,20 @@ export const AVATAR_LAYOUT: Record<string, { full: CharacterLayout; row: Charact
           "ry": 9.82
         },
         "partyhat": {
-          "x": 13.49,
-          "y": -7.18,
-          "w": 13.23,
-          "h": 18.02,
-          "r": 0.6,
-          "rx": 19.71,
-          "ry": 9.04
+          "x": 20.52,
+          "y": -4.67,
+          "w": 11.25,
+          "h": 15.32,
+          "r": 22.6,
+          "rx": 25.81,
+          "ry": 9.12
         },
         "witchhat": {
           "x": 10.86,
           "y": -1.14,
           "w": 17.45,
           "h": 13.72,
-          "r": 6.6,
+          "r": 15.6,
           "rx": 19.59,
           "ry": 10.11
         }
@@ -593,17 +597,17 @@ export const AVATAR_LAYOUT: Record<string, { full: CharacterLayout; row: Charact
           "ry": 2.99
         },
         "partyhat": {
-          "x": 10.9,
-          "y": -28.15,
-          "w": 24.24,
-          "h": 33.0,
-          "r": 0.6,
-          "rx": 22.29,
-          "ry": 1.55,
+          "x": 23.77,
+          "y": -23.55,
+          "w": 20.6,
+          "h": 28.05,
+          "r": 22.6,
+          "rx": 33.45,
+          "ry": 1.69,
           "fit": [
-            0.557,
-            8.87,
-            17.73
+            0.582,
+            8.37,
+            16.73
           ]
         },
         "witchhat": {
@@ -611,13 +615,13 @@ export const AVATAR_LAYOUT: Record<string, { full: CharacterLayout; row: Charact
           "y": -17.08,
           "w": 31.95,
           "h": 25.13,
-          "r": 6.6,
+          "r": 15.6,
           "rx": 22.06,
           "ry": 3.52,
           "fit": [
-            0.646,
-            7.07,
-            14.14
+            0.627,
+            7.46,
+            14.92
           ]
         }
       }

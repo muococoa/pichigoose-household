@@ -380,3 +380,4 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
   -webkit-mask: var(--doodle) 50% 0 / 120px auto no-repeat, linear-gradient(#000 62%, transparent 98%); -webkit-mask-composite: source-in;
           mask: var(--doodle) 50% 0 / 120px auto no-repeat, linear-gradient(#000 62%, transparent 98%); mask-composite: intersect;
 }
+.pencil-goose { display: block; aspect-ratio: 292 / 600; margin: 0 auto; background: #63586B; opacity: .5; -webkit-mask: var(--doodle) center / contain no-repeat; mask: var(--doodle) center / contain no-repeat }

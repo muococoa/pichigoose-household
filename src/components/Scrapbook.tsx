@@ -356,6 +356,11 @@ export function PeekingPichi({ mood = 'normal', style }: { mood?: PeekMood; styl
   return <span className="peek" aria-hidden style={{ ['--doodle' as string]: `url(${PEEKS[mood]})`, ...style }} />
 }
 
+/** The whole goose in light pencil, standing, like the doodles: for little moments like "Fresh start!". */
+export function PencilPichi({ mood = 'happy', height = 150 }: { mood?: PeekMood; height?: number }) {
+  return <span className="pencil-goose" aria-hidden style={{ ['--doodle' as string]: `url(${PEEKS[mood]})`, height }} />
+}
+
 /** A paper clip holding a small note to the one behind it. Drawn as a loop of metal wire. */
 export function PaperClip({ side = 'right', style }: { side?: 'left' | 'right'; style?: CSSProperties }) {
   return (

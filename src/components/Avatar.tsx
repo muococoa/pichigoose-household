@@ -24,6 +24,7 @@ import mustacheImg from '../../assets/avatars/extras/mustache.webp'
 import flowerImg from '../../assets/avatars/extras/flower.webp'
 import partyHatImg from '../../assets/avatars/extras/party-hat.webp'
 import witchHatImg from '../../assets/avatars/extras/witch-hat.webp'
+import bowTieRedImg from '../../assets/avatars/extras/bow-tie-red.webp'
 
 // Avatars: Nora's painted characters, each on a pastel circle, with her painted extras placed on
 // each one by hand (a hat on the head, glasses on the eyes). Never redrawn, only placed.
@@ -52,6 +53,8 @@ const EXTRA: Record<string, string> = {
   flower: flowerImg,
   partyhat: partyHatImg,
   witchhat: witchHatImg,
+  // Color variants for characters where the usual color disappears (a yellow bow tie on the lemon).
+  'bowtie-red': bowTieRedImg,
 }
 // Load every drawing ahead of time, so switching characters in the builder shows the new one at once
 // (otherwise the old drawing flashes at the new size while the new one loads).
@@ -125,7 +128,7 @@ export function Avatar({ avatar, full, whole, size = 34, label, className = 'av'
         <g transform={fit ? `translate(${fit[1]} ${fit[2]}) scale(${fit[0]})` : undefined}>
           <image key={character} href={ART[character]} x={place.x} y={place.y} width={place.w} height={place.h} />
           {extra && accessory && (
-            <image key={`${character}-${accessory}`} href={EXTRA[accessory]} x={extra.x} y={extra.y} width={extra.w} height={extra.h} transform={`rotate(${extra.r} ${extra.rx} ${extra.ry})`} />
+            <image key={`${character}-${accessory}`} href={EXTRA[extra.alt ? `${accessory}-${extra.alt}` : accessory] ?? EXTRA[accessory]} x={extra.x} y={extra.y} width={extra.w} height={extra.h} transform={`rotate(${extra.r} ${extra.rx} ${extra.ry})${extra.flip ? ` translate(${2 * extra.x + extra.w} 0) scale(-1 1)` : ''}`} />
           )}
         </g>
       </g>
