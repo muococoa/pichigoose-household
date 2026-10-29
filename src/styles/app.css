@@ -54,6 +54,12 @@ html[data-kb="open"] .tabbar { visibility: hidden }
   }
 }
 /* Small phones get a slightly smaller menu (see the tab bar in scrapbook.css). */
+/* Small phones (under 375 px, like an iPhone SE): handwritten titles a step smaller, and the page's text a touch
+   smaller too, so "Our home" and the like stay on one line (Nora, 29 Oct). */
+@media (max-width: 374px) {
+  :root { --hand-scale: .8 }
+  .screen:not(.page) > .scroll > * { zoom: .94 }
+}
 @media (max-width: 374px) { :root { --frame: 4px; --tabbar-gap: 10px; --paper-radius: calc(28px + 10px); --tabbar: calc(56px + var(--tabbar-gap) + var(--frame)) } }
 
 /* Changing screens: the new sheet of paper slides in (kinetic ease-out, 0.35 s). The tab bar stays still. */
@@ -310,7 +316,7 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 .chat-screen .conversation { flex: 1; min-height: 0 }
 /* The chat's header floats too, a strip of paper at the top like the menu and the typing bar (Nora, 29 Oct); the
    messages scroll up behind it. */
-.chat-screen .chat-header {
+.chat-screen .chat-header, .chat-split .chat-header {
   position: absolute; top: 8px; left: 14px; right: 14px; z-index: 3; padding: 6px 16px 6px 12px; border-radius: 28px;
   background: #FFFDF8 url("../../assets/paper-white.png") 0 0 / 512px 512px;
   box-shadow: 0 0 0 1px rgba(30, 26, 48, .06), 0 2px 0 rgba(30, 26, 48, .05), 0 8px 18px -8px rgba(30, 26, 48, .28);
@@ -327,7 +333,7 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 /* Messages don't peek out around the floating header (up by the washi tape) or below the typing bar (Nora, 29 Oct):
    they start fading a few pixels before they reach either one and are gone by its middle, so nothing pokes out
    beside them. A fade, not a blur, so the paper's lines stay clean. (The header is 8 to 62 px from the top.) */
-.chat-screen .bubbles {
+.chat-screen .bubbles, .chat-split .bubbles {
   --fade-top: linear-gradient(to bottom, transparent 0, transparent 35px, #000 66px);
   -webkit-mask-image: var(--fade-top), linear-gradient(to top, transparent 0, transparent calc(var(--composer-at) + var(--composer-h, 50px) / 2), #000 calc(var(--composer-at) + var(--composer-h, 50px) + 4px));
   -webkit-mask-composite: source-in;
@@ -399,11 +405,11 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 /* Stickers: the small button next to Send opens a tray of your pack above the field; a tap sends one.
    A sticker in the chat has no bubble, like WhatsApp: it sits right on the paper, with the time under it. */
 .sticker-box { display: flex; flex: none; align-self: center }
-/* A round button the same size as Send, in a soft tint of the theme with the icon in the theme color, so the two
-   sit together as a pair next to the field. */
-.sticker-btn { display: grid; place-items: center; width: 40px; height: 40px; color: var(--hero); background: color-mix(in srgb, var(--hero) 13%, #FFFFFF); border-radius: 50%; transition: background .15s, transform .2s var(--ease-out) }
-.sticker-btn svg { width: 24px; height: 24px }
-.sticker-btn.on { background: color-mix(in srgb, var(--hero) 24%, #FFFFFF) }
+/* A round button the same size and colors as Send (white icon on the soft theme color, Send's look before you type),
+   so the two sit together as a pair next to the field. */
+.sticker-btn { display: grid; place-items: center; width: 40px; height: 40px; color: #FFFFFF; background: color-mix(in srgb, var(--hero) 38%, #FFFDF8); border-radius: 50%; transition: background .15s, transform .2s var(--ease-out) }
+.sticker-btn svg { display: block; width: 22px; height: 22px }
+.sticker-btn.on { background: var(--hero) }
 .sticker-btn:active { transform: scale(.92) }
 .sticker-tray {
   position: absolute; left: 0; right: 0; bottom: calc(100% + 8px); z-index: 5; display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; padding: 10px;
@@ -491,6 +497,10 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
   .typing-slot .typing-bar.typing { position: fixed; z-index: 60; left: calc(var(--edge) + 14px); right: calc(var(--edge) + 14px); bottom: calc(var(--kb) + var(--frame) + var(--tabbar-gap)); animation: typing-up .25s var(--ease-out) }
 }
 @keyframes typing-up { from { opacity: .4; transform: translateY(12px) } }
+/* Tapping into a typing bar: a tiny drop-of-water bounce. */
+.typing-bar.typing { animation: typing-drop .36s cubic-bezier(.34, 1.56, .64, 1) }
+@keyframes typing-drop { 0% { scale: 1 } 35% { scale: 1.025 .96 } 70% { scale: .995 1.01 } 100% { scale: 1 } }
+@media (prefers-reduced-motion: reduce) { .typing-bar.typing { animation: none } }
 /* Round send button in the theme color: quiet while the field is empty, lit up once you type. */
 .send-btn { flex: none; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--hero); color: #FFFFFF; box-shadow: 1px 2px 3px rgba(30, 26, 48, .2); transition: opacity .2s, transform .25s var(--ease-out) }
 .send-btn:disabled { opacity: .35; box-shadow: none; transform: scale(.92) }

@@ -247,7 +247,7 @@ function Conversation({ chatKey, header, back }: { chatKey: string; header?: boo
   // On a phone the field floats over the messages: they get room at the bottom for it (its height, as
   // --composer-h), and while you're at the newest message, it stays in view as the keyboard or the field moves.
   useEffect(() => {
-    const bubbles = endRef.current?.closest('.chat-screen') ? endRef.current.parentElement : null
+    const bubbles = endRef.current?.closest('.chat-screen, .chat-split') ? endRef.current.parentElement : null
     const composer = fieldRef.current?.closest('.composer') as HTMLElement | null
     if (!bubbles || !composer) return
     const atEnd = () => bubbles.scrollHeight - bubbles.scrollTop - bubbles.clientHeight < 140

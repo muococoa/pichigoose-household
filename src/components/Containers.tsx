@@ -156,13 +156,13 @@ export function containersFor(kind: RoomKind): Container[] {
   return [...new Set([...CONTAINERS_FOR.pantry, ...CONTAINERS_FOR.bathroom])]
 }
 
-/** The gel pen color for how full something is: green when there's plenty, orange when it's going,
- *  the theme color when it's running low. */
+/** The gel pen color for how full something is, in the theme's own hue (Nora, 29 Oct): a light tint when there's
+ *  plenty, deepening as it goes, and the full theme color when it's running low ("we need this ASAP"). */
 export function gelColor(level: number, lowAt: number) {
-  // Colors from Nora's own drawings: the frog's green, the goldfish's orange, the bow's coral.
-  if (level <= lowAt) return '#F4827A'
-  if (level <= 50) return '#FA9A55'
-  return '#8DAA5C'
+  if (level <= lowAt) return 'var(--hero)'
+  // From 30% of the theme color when full to about 75% just above running low.
+  const share = Math.round(30 + ((100 - level) / Math.max(1, 100 - lowAt)) * 45)
+  return `color-mix(in srgb, var(--hero) ${share}%, #FFFDF8)`
 }
 
 /** Where the inside of a container starts and ends, as a share of its height (for dragging the level). */
@@ -228,10 +228,10 @@ export function ContainerDrawing({ kind, level, lowAt, height = 76, title }: { k
       {level > 0 && (
         <g clipPath={`url(#in-${id})`}>
           {/* A soft wash first, then the pencil on top of it, laid down at a slant. */}
-          <rect x="0" y={y} width="64" height={84 - y} fill={color} opacity=".55" />
+          <rect x="0" y={y} width="64" height={84 - y} style={{ fill: color }} opacity=".55" />
           <g clipPath={`url(#lvl-${id})`}>
             <g transform="rotate(-28 32 50)">
-              <rect x="-50" y="-40" width="170" height="170" fill={color} filter={`url(#pencil-${id})`} />
+              <rect x="-50" y="-40" width="170" height="170" style={{ fill: color }} filter={`url(#pencil-${id})`} />
             </g>
           </g>
         </g>

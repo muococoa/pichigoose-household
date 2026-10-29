@@ -68,7 +68,8 @@ export function StickerButton({ onSend }: { onSend: (name: string) => void }) {
           if (e.detail === 0) setOpen((o) => !o)
         }}
       >
-        <svg viewBox="0 0 26 26" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        {/* Framed tightly around the drawing, so it sits in the middle of the circle. */}
+        <svg viewBox="3.3 3.3 18.4 18.4" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
           {/* A sticker with its corner peeling up, and a little smile. */}
           <path d="M20.5 14.5V7.5a3 3 0 0 0-3-3h-10a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h7Z" />
           <path d="M14.5 20.5v-3a3 3 0 0 1 3-3h3" />

@@ -73,8 +73,9 @@ export function Hand({ children, size = 42, lineHeight, color, as: Tag = 'span',
     <Tag
       className="hand"
       style={{
-        fontSize: size,
-        lineHeight: `${lineHeight ?? Math.round(size * 1.05)}px`,
+        // Small phones scale every handwritten title down a step (--hand-scale in app.css).
+        fontSize: `calc(${size}px * var(--hand-scale, 1))`,
+        lineHeight: `calc(${lineHeight ?? Math.round(size * 1.05)}px * var(--hand-scale, 1))`,
         color,
         WebkitMaskPosition: pos,
         maskPosition: pos,

@@ -428,7 +428,7 @@ export function HomeScreen() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ minWidth: 0 }}>
             <button type="button" onClick={() => setSwitching(true)} aria-label={t('home.switch')} style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#1E1A30' }}>
-              <Hand size={42} lineHeight={44}>
+              <Hand size={42} lineHeight={44} style={{ whiteSpace: 'nowrap' }}>
                 {name(household)}
               </Hand>
               {/* Sits low, by the bottom of the letters. */}
@@ -436,7 +436,7 @@ export function HomeScreen() {
                 <InkChevron />
               </span>
             </button>
-            <div className="cap" style={{ marginTop: 2 }}>
+            <div className="cap" style={{ marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {household?.address} · {t('common.people', { count: people.length })}
             </div>
           </div>
