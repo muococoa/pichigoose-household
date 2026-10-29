@@ -17,7 +17,8 @@
     "items_other": "{{count}} items",
     "seeAll": "see all",
     "someone": "Someone",
-    "undo": "Undo"
+    "undo": "Undo",
+    "add": "Add"
   },
   "auth": {
     "tagline": "Planning your household with the people you live with, so everyone stays organized.",
@@ -186,7 +187,11 @@
       "keep": "No, keep it"
     },
     "itemDeleted": "Item deleted",
-    "onList": "On the list"
+    "onList": "On the list",
+    "category": "Category",
+    "addCategory": "+ category",
+    "categoryPlaceholder": "Skin care",
+    "otherCategory": "other"
   },
   "todos": {
     "title": "To-dos",

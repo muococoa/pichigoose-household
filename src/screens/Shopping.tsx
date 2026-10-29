@@ -149,6 +149,29 @@ export function ShoppingScreen() {
     setText('')
   }
 
+  // Categories inside a list (Nora, 29 Oct): once any item has one, items sit under small headings, A to Z, with the
+  // ones without a category under "other" at the end.
+  const categories = useMemo(() => [...new Set(items.rows.map((x) => x.category?.trim()).filter(Boolean) as string[])].sort((a, b) => a.localeCompare(b)), [items.rows])
+  function grouped(rows: Item[]) {
+    if (!categories.length) return rows.map((x) => row(x, false))
+    const groups = [...categories.map((c) => ({ name: c, rows: rows.filter((x) => x.category?.trim() === c) })), { name: t('shopping.otherCategory'), rows: rows.filter((x) => !x.category?.trim()) }]
+    return groups
+      .filter((g) => g.rows.length)
+      .map((g) => (
+        <section key={g.name} style={{ marginTop: 6 }}>
+          <Hand size={24} lineHeight={28} color="var(--hero-dark)" style={{ marginTop: 6 }}>
+            {g.name.toLocaleLowerCase()}
+          </Hand>
+          {g.rows.map((x) => row(x, false))}
+        </section>
+      ))
+  }
+  const [newCategory, setNewCategory] = useState<string | null>(null)
+  function setCategory(item: Item, category: string | null) {
+    db.update('list_items', item.id, { category })
+    if (editing?.id === item.id) setEditing({ ...editing, category })
+  }
+
   // The item pop-up: its name saves a moment after the last key, and when it closes.
   function saveItemName() {
     if (editing && itemName.trim() && itemName.trim() !== editing.name) db.update('list_items', editing.id, { name: itemName.trim() })
@@ -369,7 +392,7 @@ export function ShoppingScreen() {
                 {t('shopping.addButton')}
               </button>
             </form>
-            {toBuy.map((x) => row(x, false))}
+            {grouped(toBuy)}
             {items.loaded && !toBuy.length && (
               <EmptyState pose="stand-left" color="#F8E6A8" zoom={0.95}>
                 {t('shopping.emptyAbove')}
@@ -390,7 +413,7 @@ export function ShoppingScreen() {
         </div>
       ) : (
       <div key={list?.id} className={slide} style={{ padding: '26px 22px 0 40px' }}>
-        {toBuy.map((x) => row(x, false))}
+        {grouped(toBuy)}
         {items.loaded && !toBuy.length && (
           <EmptyState pose="stand-left" color="#F8E6A8" zoom={0.95}>
             {t('shopping.empty')}
@@ -466,6 +489,39 @@ export function ShoppingScreen() {
           </label>
           <input id="item-name" className="input" value={itemName} enterKeyHint="done" onChange={(e) => setItemName(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.currentTarget as HTMLInputElement).blur()} />
         </div>
+        {/* Its category in this list: tap one (again to clear it), or add a new one. */}
+        {editing && (
+          <div style={{ marginTop: 16 }}>
+            <span className="label">{t('shopping.category')}</span>
+            <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
+              {categories.map((c) => (
+                <Chip key={c} on={editing.category?.trim() === c} onClick={() => setCategory(editing, editing.category?.trim() === c ? null : c)}>
+                  {c}
+                </Chip>
+              ))}
+              {newCategory === null ? (
+                <Chip on={false} onClick={() => setNewCategory('')}>
+                  {t('shopping.addCategory')}
+                </Chip>
+              ) : (
+                <form
+                  className="row"
+                  style={{ gap: 8, flex: '1 1 220px' }}
+                  onSubmit={(e) => {
+                    e.preventDefault()
+                    if (newCategory.trim()) setCategory(editing, newCategory.trim())
+                    setNewCategory(null)
+                  }}
+                >
+                  <input className="input" ref={autoFocusField} placeholder={t('shopping.categoryPlaceholder')} aria-label={t('shopping.category')} value={newCategory} enterKeyHint="done" onChange={(e) => setNewCategory(e.target.value)} onBlur={() => !newCategory.trim() && setNewCategory(null)} style={{ flex: 1 }} />
+                  <button type="submit" className="stk prim sm" disabled={!newCategory.trim()}>
+                    {t('common.add')}
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+        )}
         {/* Which list it's on: tap another to move it there, or start a new list for it. */}
         {editing && (
           <div style={{ marginTop: 16 }}>

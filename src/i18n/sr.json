@@ -19,7 +19,8 @@
     "items_other": "{{count}} stavki",
     "seeAll": "sve",
     "someone": "Neko",
-    "undo": "Vrati"
+    "undo": "Vrati",
+    "add": "Dodaj"
   },
   "auth": {
     "tagline": "Planiraj domaćinstvo sa ljudima s kojima živiš, da svi budu organizovani.",
@@ -191,7 +192,11 @@
       "keep": "Ne, ostavi"
     },
     "itemDeleted": "Stavka obrisana",
-    "onList": "Na spisku"
+    "onList": "Na spisku",
+    "category": "Kategorija",
+    "addCategory": "+ kategorija",
+    "categoryPlaceholder": "Nega kože",
+    "otherCategory": "ostalo"
   },
   "todos": {
     "title": "Zadaci",

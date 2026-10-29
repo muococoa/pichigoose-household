@@ -52,6 +52,8 @@ export type Item = Row & {
   position: number
   /** The pantry thing this is for. Buying it fills it up again. */
   pantry_item_id?: string | null
+  /** A heading inside its list, like "skin care" (none: under "other"). */
+  category?: string | null
   /** Pichi put it on the list because it was running low. */
   added_by_pichi?: boolean
 }

@@ -110,6 +110,7 @@ The things to buy (S1, S2, S3).
 | checked_by | uuid, nullable | who bought it (S2) |
 | checked_at | timestamptz, nullable | when set, the item moves to "Bought" |
 | position | int | order on the list |
+| category | text, nullable | a heading inside its list, like "skin care" [Nora]; none: under "other" |
 
 | pantry_item_id | uuid, nullable | the pantry thing it's for. Buying it fills that thing up to 100% again (K5) [Claude] |
 | added_by_pichi | boolean | `true` when Pichi put it on the list because it ran low (K4). Shown with Pichi's face and "Pichi peeked: only 20% left" [Nora] |
