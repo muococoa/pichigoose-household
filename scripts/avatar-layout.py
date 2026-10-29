@@ -308,6 +308,33 @@ def fit_hat_portrait(hat):
     return [round(k, 3), round(20 - 20 * k, 2), round(40 - 40 * k, 2)]
 
 
+# Nora's own placements, measured from her Figma edits (scripts/avatar-placements.json): the center,
+# width and turn of each extra in the avatar builder's circle. They win over the rules above.
+PLACEMENTS = json.load(open('scripts/avatar-placements.json'))
+
+
+def from_nora(name, key, me, full, frame, ex):
+    p = PLACEMENTS.get(name, {}).get(key)
+    if not p:
+        return None
+    sf, oxf, oyf = full
+    fr = PLACEMENTS[name].get('_frame')
+    if fr:
+        # Nora placed these with the character sitting here in her file.
+        sf, oxf, oyf = fr['w'] / me['w'], fr['x'], fr['y']
+    s, ox, oy = frame
+    # Into the drawing's own pixels, then into this frame.
+    px, py, wp = (p['cx'] - oxf) / sf, (p['cy'] - oyf) / sf, p['w'] / sf
+    cx, cy, w = ox + px * s, oy + py * s, wp * s
+    h = w * ex['h'] / ex['w']
+    placed = {'x': round(cx - w / 2, 2), 'y': round(cy - h / 2, 2), 'w': round(w, 2), 'h': round(h, 2), 'r': p['r'], 'rx': round(cx, 2), 'ry': round(cy, 2)}
+    if p.get('flip'):
+        placed['flip'] = True
+    if p.get('alt'):
+        placed['alt'] = p['alt']
+    return placed
+
+
 def main():
     extras = {k: extra_info(k) for k in EXTRAS}
     layout = {}
@@ -316,11 +343,12 @@ def main():
         layout[name] = {}
         # full: the avatar builder, whole character, never moved by an extra (extras may be cropped).
         # row: everywhere else, zoomed to match Pichi's line weight; a hat shrinks it to fit.
-        for mode, frame in (('full', whole_frame(name, me)), ('row', char_frame(name, me))):
+        full = whole_frame(name, me)
+        for mode, frame in (('full', full), ('row', char_frame(name, me))):
             s, ox, oy = frame
             entry = {'x': round(ox, 2), 'y': round(oy, 2), 'w': round(me['w'] * s, 2), 'h': round(me['h'] * s, 2), 'extras': {}}
             for key in EXTRAS:
-                e = place_extra(name, key, me, frame, extras[key], mode)
+                e = from_nora(name, key, me, full, frame, extras[key]) or place_extra(name, key, me, frame, extras[key], mode)
                 if mode == 'row' and key in ('partyhat', 'witchhat'):
                     e['fit'] = fit_hat_portrait(e)
                 entry['extras'][key] = e
