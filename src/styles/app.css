@@ -322,6 +322,15 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 .chat-screen { --composer-at: var(--tabbar-gap) }
 .chat-screen .typing-bar { position: absolute; left: 14px; right: 14px; bottom: var(--composer-at); z-index: 3 }
 .chat-screen .bubbles { padding-top: 74px; padding-bottom: calc(var(--composer-h, 50px) + var(--composer-at) + 14px) }
+/* Messages don't peek out around the floating header (up by the washi tape) or below the typing bar (Nora, 29 Oct):
+   they fade into the paper as they slide under them. A fade, not a blur, so the paper's lines stay clean. */
+.chat-screen .bubbles {
+  --fade-top: linear-gradient(to bottom, transparent 0, transparent 62px, #000 86px);
+  -webkit-mask-image: var(--fade-top), linear-gradient(to top, transparent 0, transparent calc(var(--composer-at) + var(--composer-h, 50px) - 4px), #000 calc(var(--composer-at) + var(--composer-h, 50px) + 16px));
+  -webkit-mask-composite: source-in;
+  mask-image: var(--fade-top), linear-gradient(to top, transparent 0, transparent calc(var(--composer-at) + var(--composer-h, 50px) - 4px), #000 calc(var(--composer-at) + var(--composer-h, 50px) + 16px));
+  mask-composite: intersect;
+}
 .chat-screen .kb-spacer { display: none }
 .chat-header {
   position: sticky; top: 0; z-index: 3; display: flex; gap: 10px; align-items: center; padding: calc(var(--top) + 6px) 16px 10px 24px;
