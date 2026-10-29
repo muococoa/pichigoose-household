@@ -278,16 +278,17 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 .tab-badge { position: absolute; top: -6px; right: -10px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: #8466B8; color: #FFFFFF; font-size: 11px; line-height: 18px; font-weight: 800; text-align: center; box-shadow: 0 0 0 2px #FFFDF8 }
 
 .conversation { display: flex; flex-direction: column }
-.chat-screen .conversation { min-height: 100% }
 /* On a phone the chat fills the screen and the header stays at the top while the keyboard opens; only
    the messages make room, like WhatsApp. */
 .chat-screen { position: fixed; top: var(--vvtop, 0px); bottom: 0; left: 0; right: 0; margin: 0 auto; max-width: 430px; height: auto; min-height: 0 }
-.chat-screen .composer { bottom: 0 }
-/* Pulling past the newest message mustn't drag the field up off the keyboard (Nora, 29 Oct): no rubber
-   band on the chat, and in case a phone bounces anyway, the field's paper reaches far down under it. */
-.chat-screen > .scroll { overscroll-behavior-y: none }
-/* (A shadow, not a block, so it doesn't make the chat scroll further.) */
-.chat-screen .composer { box-shadow: 0 -1px 0 rgba(30, 26, 48, .08), 0 50vh 0 50vh #FFFDF8 }
+/* Only the messages scroll and bounce (Nora, 29 Oct); the header and the field never move. */
+.chat-screen > .scroll { overflow: hidden; display: flex; flex-direction: column }
+.chat-screen .conversation { flex: 1; min-height: 0 }
+.chat-screen .chat-header { position: relative; flex: none }
+.chat-screen .bubbles { flex: 1; min-height: 0; position: relative; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain }
+/* A short chat bounces too (one pixel taller than its box, like every page). */
+.chat-screen .bubbles::after { content: ""; position: absolute; top: 0; left: 0; width: 1px; height: calc(100% + 1px); pointer-events: none }
+.chat-screen .composer { position: relative; flex: none }
 .chat-screen .kb-spacer { display: none }
 /* The field's paper reaches down behind the keyboard; the field itself sits right above it. */
 .chat-screen .composer { padding-bottom: max(var(--bottom), calc(10px + var(--kb))) }

@@ -154,7 +154,8 @@ function Conversation({ chatKey, header, back }: { chatKey: string; header?: boo
   // When the keyboard opens, the typing area grows down there (its paper reaches behind the keyboard).
   // Scroll along by the same amount, so the newest messages stay in view instead of hiding, like WhatsApp.
   useEffect(() => {
-    const scroller = endRef.current?.closest('.chat-screen .scroll') as HTMLElement | null
+    // On a phone only the messages scroll; the field sits under them.
+    const scroller = endRef.current?.closest('.chat-screen') ? endRef.current.parentElement : null
     const composer = fieldRef.current?.closest('.composer') as HTMLElement | null
     if (!scroller || !composer) return
     let last = composer.offsetHeight
@@ -206,7 +207,8 @@ function Conversation({ chatKey, header, back }: { chatKey: string; header?: boo
   }
 
   return (
-    <div className="conversation">
+    // No pull to refresh in a chat: pulling here just bounces the messages.
+    <div className="conversation" data-nobounce>
       {header && (
         <div className="chat-header">
           {back && (
