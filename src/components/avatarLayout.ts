@@ -437,11 +437,11 @@ export const AVATAR_LAYOUT: Record<string, CharacterLayout> = {
       },
       "glasses": {
         "x": 8.22,
-        "y": 9.78,
-        "w": 22.12,
-        "h": 9.39,
+        "y": 9.6,
+        "w": 22.99,
+        "h": 9.76,
         "r": 7.5,
-        "rx": 19.25,
+        "rx": 19.69,
         "ry": 14.57
       },
       "mustache": {
