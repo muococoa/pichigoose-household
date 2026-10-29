@@ -7,7 +7,7 @@ import { useHousehold, useItemsIn, useLists, usePantry, type Container, type Pan
 import { setPantryLevel } from '../data/actions'
 import { Floating, Screen } from '../components/Shell'
 import { EmptyState, Hand, Sheet, showUndo } from '../components/Scrapbook'
-import { BackIcon, PlusIcon } from '../components/Icons'
+import { BackIcon, BroomIcon, PlusIcon } from '../components/Icons'
 import { CONTAINERS_FOR, ContainerDrawing, guessContainer, insideSpan } from '../components/Containers'
 import { GroupDrawing, ShelfRows, groupKey, groupThings, useShelfWidth, type Group } from '../components/Shelves'
 import { useDesktop } from '../lib/desktop'
@@ -106,6 +106,7 @@ export function PantryScreen() {
   const { ref, width } = useShelfWidth()
   const [open, setOpen] = useState<string | null>(null)
   const [adding, setAdding] = useState(false)
+  const [cleaning, setCleaning] = useState(false)
 
   const things = useMemo(
     () => pantry.rows.filter((p) => p.place === place).sort((a, b) => a.position - b.position || a.created_at.localeCompare(b.created_at)),
@@ -126,6 +127,13 @@ export function PantryScreen() {
           <Hand as="h1" size={desktop ? 52 : 42} lineHeight={desktop ? 56 : 44} style={{ margin: 0 }}>
             {t(`pantry.${place}`)}
           </Hand>
+          <span style={{ flex: 1 }} />
+          {/* The deep clean: empties this place in one go, after asking. */}
+          {things.length > 0 && (
+            <button type="button" className="stk sec sm" aria-label={t(`pantry.clean.${place}.title`)} title={t(`pantry.clean.${place}.title`)} style={{ width: desktop ? 42 : 38, padding: 0, transform: `rotate(${desktop ? 3 : 2}deg)` }} onClick={() => setCleaning(true)}>
+              <BroomIcon />
+            </button>
+          )}
         </div>
         {/* The two places as washi-tape tabs, like the shopping lists. */}
         <div style={{ display: 'flex', gap: 10 }}>
@@ -185,6 +193,25 @@ export function PantryScreen() {
       )}
 
       <GroupSheet groupId={open} onClose={() => setOpen(null)} />
+      <Sheet small open={cleaning} onClose={() => setCleaning(false)} title={t(`pantry.clean.${place}.title`)}>
+        <p className="body" style={{ margin: '0 0 18px' }}>{t(`pantry.clean.${place}.text`)}</p>
+        <div className="row" style={{ gap: 12 }}>
+          <button type="button" className="stk sec" style={{ flex: 1, transform: 'rotate(-1deg)' }} onClick={() => setCleaning(false)}>
+            {t('common.cancel')}
+          </button>
+          <button
+            type="button"
+            className="stk prim"
+            style={{ flex: 1.4, transform: 'rotate(1deg)' }}
+            onClick={() => {
+              for (const r of things) db.remove('pantry_items', r.id)
+              setCleaning(false)
+            }}
+          >
+            {t('pantry.clean.button')}
+          </button>
+        </div>
+      </Sheet>
       <AddThingSheet
         open={adding}
         place={place}

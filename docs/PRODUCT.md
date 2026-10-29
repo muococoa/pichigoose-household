@@ -74,6 +74,7 @@ Stories marked **[Nora]** come from Nora. Stories marked **[Claude]** are Claude
 - **K7** As a member, I want several of the same thing, like four bottles of wine or my 60 g oat bags, grouped as one, each with its own level, so Pichi only adds it when we're on the last one and it's almost out. [Nora]
 - **K8** As a member, I want finishing one to be a single tap, and empty ones to disappear from the shelf, because we toss them. [Nora]
 - **K9** As a member, I want to type my own percentage, not only full, 75%, half, 25% or almost out. [Nora]
+- **K10** As a member, I want a broom in the corner for a deep clean that empties the pantry (or the bathroom cabinet) after asking, because it can't be undone. [Nora]
 
 ### Money (who owes who)
 - **M1** As a user, I want to track how much I owe someone, like my dad, so I know what's left to pay back. [Nora]
@@ -115,7 +116,7 @@ A temporary household for something people from different homes do together, lik
 | Shopping list | **hifi/03-shopping.png** (wireframe WF4) | S1 to S4 |
 | To-dos | wireframes/WF5-Todos.png | T1 to T4 |
 | Add a to-do | wireframes/WF6-AddTodo.png | T2 to T4 |
-| Pantry | no design yet: placeholder ink drawings until Nora draws the containers | K1 to K9 |
+| Pantry | no design yet: placeholder ink drawings until Nora draws the containers | K1 to K10 |
 | Notes | wireframes/WF7-Notes.png | N1, N2 |
 | A note | wireframes/WF8-Note.png | A5, N2 |
 | Money | wireframes/WF9-Money.png | M1 to M3, M7 |

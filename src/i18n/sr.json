@@ -383,6 +383,17 @@
     "tossed": "Prazno {{name}} je bačeno.",
     "finishedOne": "Potrošeno jedno",
     "oneMore": "+ Još jedno",
-    "joinsGroup": "Dodaje još jedno uz {{name}} ({{count}} na polici)."
+    "joinsGroup": "Dodaje još jedno uz {{name}} ({{count}} na polici).",
+    "clean": {
+      "button": "Očisti sve",
+      "pantry": {
+        "title": "Spremni za generalno čišćenje ostave?",
+        "text": "Ovo će ukloniti sve iz ostave. Ovo ne može da se poništi."
+      },
+      "bathroom": {
+        "title": "Spremni za generalno čišćenje kupatilskog ormarića?",
+        "text": "Ovo će ukloniti sve iz kupatilskog ormarića. Ovo ne može da se poništi."
+      }
+    }
   }
 }

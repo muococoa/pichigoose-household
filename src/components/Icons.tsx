@@ -34,6 +34,15 @@ export const ShareIcon = (p: P) => (
     <path d="M6 13v8h14v-8" />
   </Svg>
 )
+/** A little broom, for the pantry's deep clean. */
+export const BroomIcon = (p: P) => (
+  <Svg size={20} width={2.2} {...p}>
+    <path d="M22 3.5 14.5 11" />
+    <path d="M12.5 9l4.5 4.5" />
+    <path d="M12.5 9C9 10.5 6 13 4.5 21.5 13 20 15.5 17 17 13.5" />
+    <path d="M8.2 18.2l3-3M11 19.6l2.6-2.6" />
+  </Svg>
+)
 export const PencilIcon = (p: P) => (
   <Svg size={18} width={2.2} {...p}>
     <path d="M5 21l1-4.5L17 5.5l3.5 3.5-11 11Z" />

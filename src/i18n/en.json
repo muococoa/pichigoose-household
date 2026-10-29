@@ -376,6 +376,17 @@
     "tossed": "Tossed the empty {{name}}.",
     "finishedOne": "Finished one",
     "oneMore": "+ One more",
-    "joinsGroup": "Adds one more to your {{name}} ({{count}} on the shelf)."
+    "joinsGroup": "Adds one more to your {{name}} ({{count}} on the shelf).",
+    "clean": {
+      "button": "Clean it all",
+      "pantry": {
+        "title": "Ready for the deep clean of the pantry?",
+        "text": "This will remove everything from the pantry. This cannot be undone."
+      },
+      "bathroom": {
+        "title": "Ready for the deep clean of the bathroom cabinet?",
+        "text": "This will remove everything from the bathroom cabinet. This cannot be undone."
+      }
+    }
   }
 }
