@@ -1,5 +1,5 @@
-import { useMemo, useState, type FormEvent, type ReactNode } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from 'react'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { DndContext, PointerSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
@@ -77,6 +77,13 @@ export function ProjectsScreen() {
   const back = useBack()
   const { hid, projects, lists, progress } = useProjectData()
   const [naming, setNaming] = useKept<string | null>(`projects:${hid}:new`, null)
+  // "A project" in Add something lands here with ?new=1 and opens the name pop-up.
+  const [params, setParams] = useSearchParams()
+  useEffect(() => {
+    if (params.get('new') !== '1') return
+    setNaming('')
+    setParams({}, { replace: true })
+  }, [params, setParams, setNaming])
   const active = projects.rows.filter((p) => !p.done_at).sort(byOrder)
   const finished = projects.rows.filter((p) => p.done_at).sort((a, b) => (b.done_at ?? '').localeCompare(a.done_at ?? ''))
 
@@ -98,6 +105,11 @@ export function ProjectsScreen() {
           <Hand as="h1" style={{ margin: 0 }}>
             {t('projects.title')}
           </Hand>
+          {/* Desktop has no round + button, so the header gets one. */}
+          <button type="button" className="stk prim desktop-only" onClick={() => setNaming('')} style={{ marginLeft: 'auto', transform: 'rotate(-1deg)' }}>
+            <PlusIcon />
+            {t('projects.new')}
+          </button>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 22, marginTop: 24 }}>

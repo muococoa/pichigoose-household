@@ -31,6 +31,9 @@ export function AddSheet({ open, onClose }: { open: boolean; onClose: () => void
           <button type="button" className="stk sec" style={{ transform: 'rotate(-.5deg)' }} onClick={() => go('/notes/new')}>
             {t('home.addNote')}
           </button>
+          <button type="button" className="stk sec" style={{ transform: 'rotate(1deg)' }} onClick={() => go('/projects?new=1')}>
+            {t('home.addProject')}
+          </button>
           {/* People get the violet sticker. */}
           <button
             type="button"

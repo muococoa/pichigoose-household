@@ -135,6 +135,7 @@
     "addItem": "Nešto za kupovinu",
     "addTodo": "Zadatak",
     "addNote": "Belešku",
+    "addProject": "Projekat",
     "addSomeone": "Dodaj nekoga u domaćinstvo",
     "newsCommented": "{{name}}: novi komentar na {{item}}.",
     "pantryLow_one": "{{count}} pri kraju",

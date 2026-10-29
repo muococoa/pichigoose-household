@@ -131,6 +131,7 @@
     "addItem": "Something to buy",
     "addTodo": "A to-do",
     "addNote": "A note",
+    "addProject": "A project",
     "addSomeone": "Add someone to the household",
     "newsCommented": "{{name}} commented on {{item}}.",
     "pantryLow_one": "{{count}} running low",
