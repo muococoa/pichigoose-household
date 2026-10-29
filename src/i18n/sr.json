@@ -391,11 +391,11 @@
       "button": "Očisti sve",
       "pantry": {
         "title": "Spremni za generalno čišćenje\nostave?",
-        "text": "Ovo će ukloniti sve iz ostave."
+        "text": "Sve police u ostavi biće ispražnjene."
       },
       "bathroom": {
         "title": "Spremni za generalno čišćenje\nkupatilskog ormarića?",
-        "text": "Ovo će ukloniti sve iz kupatilskog ormarića."
+        "text": "Sve police u kupatilskom ormariću biće ispražnjene."
       },
       "undo": "Ovo ne može da se poništi."
     }

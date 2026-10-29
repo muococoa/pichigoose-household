@@ -6,7 +6,7 @@ import { db } from '../data/store'
 import { useHousehold, useItemsIn, useLists, usePantry, type Container, type PantryItem, type Place } from '../data/hooks'
 import { setPantryLevel } from '../data/actions'
 import { Floating, Screen } from '../components/Shell'
-import { EmptyState, Hand, Sheet, showUndo } from '../components/Scrapbook'
+import { EmptyState, Hand, PeekingPichi, Sheet, showUndo } from '../components/Scrapbook'
 import { BackIcon, BroomIcon, PlusIcon } from '../components/Icons'
 import { CONTAINERS_FOR, ContainerDrawing, guessContainer, insideSpan } from '../components/Containers'
 import { GroupDrawing, ShelfRows, groupKey, groupThings, useShelfWidth, type Group } from '../components/Shelves'
@@ -194,11 +194,15 @@ export function PantryScreen() {
 
       <GroupSheet groupId={open} onClose={() => setOpen(null)} />
       <Sheet small open={cleaning} onClose={() => setCleaning(false)} title={t(`pantry.clean.${place}.title`)}>
-        <p className="body" style={{ margin: '0 0 18px' }}>
-          {t(`pantry.clean.${place}.text`)}
-          <br />
-          {t('pantry.clean.undo')}
-        </p>
+        {/* Pichi peeks in from the right edge, looking at you: are you sure? */}
+        <div style={{ position: 'relative' }}>
+          <p className="body" style={{ margin: '0 0 18px', paddingRight: 44 }}>
+            {t(`pantry.clean.${place}.text`)}
+            <br />
+            {t('pantry.clean.undo')}
+          </p>
+          <PeekingPichi style={{ right: -30, top: -14 }} />
+        </div>
         <div className="row" style={{ gap: 12 }}>
           <button type="button" className="stk sec" style={{ flex: 1, transform: 'rotate(-1deg)' }} onClick={() => setCleaning(false)}>
             {t('common.cancel')}

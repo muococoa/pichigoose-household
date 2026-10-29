@@ -331,6 +331,12 @@ export function DoodleSpot({ pose }: { pose: DoodlePose }) {
   )
 }
 
+/** Pichi peeking in from the side of a pop-up: just her head, in the same light pencil as the doodles,
+ *  her neck fading out like an unfinished sketch. Nora's drawing, never redrawn. */
+export function PeekingPichi({ style }: { style?: CSSProperties }) {
+  return <span className="peek" aria-hidden style={{ ['--doodle' as string]: `url(${DOODLES['stand-left']})`, ...style }} />
+}
+
 /** A paper clip holding a small note to the one behind it. Drawn as a loop of metal wire. */
 export function PaperClip({ side = 'right', style }: { side?: 'left' | 'right'; style?: CSSProperties }) {
   return (

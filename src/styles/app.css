@@ -205,7 +205,7 @@ textarea.input { height: auto; padding: 12px 16px; resize: none }
 .sheet {
   /* One rule for both: up to 88% of the screen plus the keyboard it reaches behind, never past the top.
      It follows the keyboard smoothly, without switching sizes halfway. */
-  width: 100%; max-width: 430px; max-height: min(calc(88dvh + var(--kb)), calc(100% - var(--top) - 4px)); overflow-y: auto; border-radius: 22px 26px 0 0;
+  width: 100%; max-width: 430px; max-height: min(calc(88dvh + var(--kb)), calc(100% - var(--top) - 4px)); overflow-y: auto; overflow-x: hidden; border-radius: 22px 26px 0 0;
   padding: 10px 22px calc(24px + var(--bottom)) 22px; box-shadow: 0 -6px 14px rgba(30, 26, 48, .12); animation: rise .2s ease-out;
 }
 /* Pop-ups are a separate sheet of paper: a lighter off-white than the notebook page, same fibers, no ruled lines. */
@@ -369,3 +369,8 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 .pick-ring path { stroke-dasharray: 1; stroke-dashoffset: 1; animation: circle-on .4s cubic-bezier(.16, 1, .3, 1) .05s forwards }
 .group-pick { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 14px; padding: 10px 0 4px }
 .group-pick button { position: relative; padding: 8px 10px }
+.peek {
+  position: absolute; width: 64px; height: 84px; background: #63586B; opacity: .5; pointer-events: none; transform: rotate(-8deg);
+  -webkit-mask: var(--doodle) 0 0 / 150px auto no-repeat, linear-gradient(#000 60%, transparent 96%); -webkit-mask-composite: source-in;
+          mask: var(--doodle) 0 0 / 150px auto no-repeat, linear-gradient(#000 60%, transparent 96%); mask-composite: intersect;
+}
