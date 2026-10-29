@@ -35,9 +35,12 @@ export function PichiScreen() {
           {PARTS.map((p) => (
             <section key={p.key} className={`note ${p.note}`} style={{ transform: `rotate(${p.rotate}deg)` }}>
               <Tape kind={p.tape} style={p.tapeStyle} />
-              <Hand as="h2" size={26} style={{ margin: '0 0 8px' }}>
-                {t(`pichi.${p.key}Title`)}
-              </Hand>
+              {/* Hand keeps its own margin (for the ink), so the space under the title sits on a wrapper. */}
+              <div style={{ marginBottom: 14 }}>
+                <Hand as="h2" size={36}>
+                  {t(`pichi.${p.key}Title`)}
+                </Hand>
+              </div>
               {(t(`pichi.${p.key}`, { returnObjects: true }) as string[]).map((line, i) => (
                 <p key={i} style={{ margin: i ? '10px 0 0' : 0, fontSize: 16, lineHeight: 1.5 }}>
                   {line}
