@@ -14,6 +14,7 @@ import { DndContext, MouseSensor, TouchSensor, closestCenter, useSensor, useSens
 import { SortableContext, arrayMove, horizontalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useDesktop } from '../lib/desktop'
+import { useKept } from '../lib/kept'
 import { TabHighlight, useSlideDirection, useSwipeBetween } from '../components/Slide'
 import { PersonLink } from './Person'
 import { CommentCount, Comments, useCommentCounts } from '../components/Comments'
@@ -56,16 +57,18 @@ export function ShoppingScreen() {
   const [picked, setPicked] = useState<string | null>(() => (hid ? savedList(hid) : null))
   const list = sortedLists.find((l) => l.id === picked) ?? sortedLists[0] ?? null
   const items = useItems(list?.id ?? null)
-  const [text, setText] = useState('')
+  // What you were typing, and any pop-up you had open, stay as they were if you step away and come back.
+  const keep = `shopping:${hid}`
+  const [text, setText] = useKept(`${keep}:text`, '')
   const inputRef = useRef<HTMLInputElement>(null)
-  const [newList, setNewList] = useState<string | null>(null)
-  const [editingList, setEditingList] = useState<List | null>(null)
-  const [listName, setListName] = useState('')
-  const [editing, setEditing] = useState<Item | null>(null)
-  const [itemName, setItemName] = useState('')
+  const [newList, setNewList] = useKept<string | null>(`${keep}:newList`, null)
+  const [editingList, setEditingList] = useKept<List | null>(`${keep}:editingList`, null)
+  const [listName, setListName] = useKept(`${keep}:listName`, '')
+  const [editing, setEditing] = useKept<Item | null>(`${keep}:editing`, null)
+  const [itemName, setItemName] = useKept(`${keep}:itemName`, '')
 
-  // The add field opens only when someone taps +.
-  const [adding, setAdding] = useState(() => Boolean(params.get('add')))
+  // The add field opens only when someone taps + (or it was open when you stepped away).
+  const [adding, setAdding] = useKept(`${keep}:adding`, Boolean(params.get('add')))
   // Lets the Not synced stamp step above the open add bar.
   useEffect(() => {
     document.body.classList.toggle('adding', adding)

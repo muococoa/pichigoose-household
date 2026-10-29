@@ -25,9 +25,7 @@ function save() {
   }, 150)
 }
 
-const empty = (v: unknown) => v === null || v === undefined || v === '' || v === false
-
-/** Like useState, but kept under `key` while you're away. Empty values (null, '', false) aren't kept. */
+/** Like useState, but kept under `key` while you're away. Back at its starting value, nothing is kept. */
 export function useKept<T>(key: string | null, initial: T): [T, (next: T | ((prev: T) => T)) => void] {
   const read = (k: string | null) => (k && k in kept ? (kept[k] as T) : initial)
   const [value, setValue] = useState<T>(() => read(key))
@@ -43,7 +41,7 @@ export function useKept<T>(key: string | null, initial: T): [T, (next: T | ((pre
       setValue((prev) => {
         const v = typeof next === 'function' ? (next as (p: T) => T)(prev) : next
         if (key) {
-          if (empty(v) || Object.is(v, initial)) delete kept[key]
+          if (v === undefined || Object.is(v, initial)) delete kept[key]
           else kept[key] = v
           save()
         }

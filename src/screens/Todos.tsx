@@ -11,6 +11,7 @@ import { Check, Hand, Struck, Tick, useArrivals, EmptyState, Sheet, Stamp, STAMP
 import { ChevronDown, PlusIcon } from '../components/Icons'
 import { MyHouseholds } from './MyHouseholds'
 import { useDesktop } from '../lib/desktop'
+import { forget, useKept } from '../lib/kept'
 import { PersonLink } from './Person'
 import { CommentCount, Comments, useCommentCounts } from '../components/Comments'
 import { addDays, capitalize, daysFromToday, dueLabel, fromDateString, toDateString, weekdayName } from '../lib/time'
@@ -74,7 +75,8 @@ export function TodosScreen() {
   }
   useEffect(() => () => window.clearTimeout(switchTimer.current), [])
   const [switching, setSwitching] = useState(false)
-  const [editing, setEditing] = useState<Todo | 'new' | null>(null)
+  // The to-do pop-up (and what you typed in it) stays open if you step away and come back.
+  const [editing, setEditing] = useKept<Todo | 'new' | null>(`todos:${hid}:editing`, null)
 
   useEffect(() => {
     if (params.get('add')) {
@@ -250,7 +252,7 @@ export function TodosScreen() {
       </Floating>
 
       <MyHouseholds open={switching} onClose={() => setSwitching(false)} />
-      {editing && hid && <TodoSheet key={editing === 'new' ? 'new' : editing.id} todo={editing === 'new' ? null : editing} householdId={hid} people={people} onClose={() => setEditing(null)} />}
+      {editing && hid && <TodoSheet key={editing === 'new' ? 'new' : editing.id} todo={editing === 'new' ? null : editing} householdId={hid} people={people} onClose={() => { forget('todo:'); setEditing(null) }} />}
     </Screen>
   )
 }
@@ -259,10 +261,11 @@ function TodoSheet({ todo, householdId, people, onClose }: { todo: Todo | null; 
   const { t, i18n } = useTranslation()
   const me = useMe()
   const today = new Date()
-  const [title, setTitle] = useState(todo?.title ?? '')
-  const [assignee, setAssignee] = useState<string | null>(todo ? todo.assignee_id : me)
-  const [due, setDue] = useState<string | null>(todo ? todo.due_date : toDateString(today))
-  const [repeat, setRepeat] = useState<Todo['repeat']>(todo?.repeat ?? null)
+  const keep = `todo:${todo?.id ?? 'new'}`
+  const [title, setTitle] = useKept(`${keep}:title`, todo?.title ?? '')
+  const [assignee, setAssignee] = useKept<string | null>(`${keep}:assignee`, todo ? todo.assignee_id : me)
+  const [due, setDue] = useKept<string | null>(`${keep}:due`, todo ? todo.due_date : toDateString(today))
+  const [repeat, setRepeat] = useKept<Todo['repeat']>(`${keep}:repeat`, todo?.repeat ?? null)
   const [picking, setPicking] = useState(false)
 
   const quick = [

@@ -11,6 +11,7 @@ import { BackIcon, BroomIcon, PlusIcon } from '../components/Icons'
 import { ContainerDrawing, containersFor, guessContainer, insideSpan } from '../components/Containers'
 import { GroupDrawing, ShelfRows, groupKey, groupThings, useShelfWidth, type Group } from '../components/Shelves'
 import { useDesktop } from '../lib/desktop'
+import { forget, useKept } from '../lib/kept'
 import { TabHighlight, useSlideDirection, useSwipeBetween } from '../components/Slide'
 import { Chip } from './Todos'
 import { useBack } from '../lib/back'
@@ -115,12 +116,13 @@ export function PantryScreen() {
   const spots = useSpots(hid)
   const setLevel = usePantryLevel()
   const { ref, width } = useShelfWidth()
-  const [open, setOpen] = useState<string | null>(null)
-  const [adding, setAdding] = useState<string | null>(null)
+  // Pop-ups stay open (with whatever you typed) if you step away and come back.
+  const [open, setOpen] = useKept<string | null>(`pantry:${hid}:open`, null)
+  const [adding, setAdding] = useKept<string | null>(`pantry:${hid}:adding`, null)
   const [cleaning, setCleaning] = useState(false)
   // Rooms and spots: adding (a blank one) or changing one.
-  const [roomEdit, setRoomEdit] = useState<{ id: string | null; name: string; kind: RoomKind } | null>(null)
-  const [spotEdit, setSpotEdit] = useState<{ id: string | null; name: string } | null>(null)
+  const [roomEdit, setRoomEdit] = useKept<{ id: string | null; name: string; kind: RoomKind } | null>(`pantry:${hid}:room`, null)
+  const [spotEdit, setSpotEdit] = useKept<{ id: string | null; name: string } | null>(`pantry:${hid}:spot`, null)
 
   // The room on screen: from the link (?room=, or ?place=bathroom from before rooms), else the first.
   const wanted = params.get('room')
@@ -439,23 +441,18 @@ function GroupSheet({ groupId, onClose }: { groupId: string | null; onClose: () 
   const setLevelOf = usePantryLevel()
   const group: Group | null = useMemo(() => (groupId ? groupThings(pantry.rows).find((g) => g.key === groupId) ?? null : null), [groupId, pantry.rows])
   // Which one you're changing: the one you tapped, or else the open one (the least full).
-  const [picked, setPicked] = useState<string | null>(null)
+  const [picked, setPicked] = useKept<string | null>(groupId ? `pantry-group:${groupId}:picked` : null, null)
   const rows = group?.rows ?? []
   const p = rows.find((r) => r.id === picked) ?? [...rows].sort((a, b) => a.level - b.level)[0] ?? null
   const setLevel = (thing: PantryItem, n: number) => setLevelOf(thing, n, rows)
   // Keep showing the group name while the sheet closes, even after it changes.
   const lastName = useRef('')
   if (group) lastName.current = group.name
-  const [name, setName] = useState('')
+  // The name as you type it (kept while you're away), saved when you leave the field or close.
+  const [name, setName] = useKept(groupId ? `pantry-group:${groupId}:name` : null, group?.name ?? '')
   // While dragging, the drawing follows the finger; letting go saves.
   const [dragLevel, setDragLevel] = useState<number | null>(null)
   const dragRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (group) setName(group.name)
-    setPicked(null)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [groupId])
 
   // Shared by the whole group.
   function save(patch: Partial<PantryItem>) {
@@ -502,7 +499,7 @@ function GroupSheet({ groupId, onClose }: { groupId: string | null; onClose: () 
   }
 
   return (
-    <Sheet open={Boolean(p)} onClose={() => { commitName(); onClose() }} title={lastName.current}>
+    <Sheet open={Boolean(p)} onClose={() => { commitName(); forget('pantry-group:'); onClose() }} title={lastName.current}>
       {p && group && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
           {rows.length > 1 && (
@@ -684,17 +681,22 @@ function AddThingSheet({
   onAdd: (spotId: string, name: string, container: Container, level: number) => void
 }) {
   const { t } = useTranslation()
-  const [name, setName] = useState('')
-  const [picked, setPicked] = useState<Container | null>(null)
-  const [level, setLevel] = useState(100)
-  const [goesIn, setGoesIn] = useState<string | null>(spot)
-
+  // What you've filled in so far is kept while you're away; it starts fresh each time you open it yourself.
+  const [name, setName] = useKept('pantry-add:name', '')
+  const [picked, setPicked] = useKept<Container | null>('pantry-add:picked', null)
+  const [level, setLevel] = useKept('pantry-add:level', 100)
+  const [goesIn, setGoesIn] = useKept<string | null>('pantry-add:goesIn', spot)
+  const wasOpen = useRef(open)
   useEffect(() => {
-    if (!open) return
-    setName('')
-    setPicked(null)
-    setLevel(100)
-    setGoesIn(spot)
+    if (open && !wasOpen.current) {
+      setName('')
+      setPicked(null)
+      setLevel(100)
+      setGoesIn(spot)
+    }
+    if (!open && wasOpen.current) forget('pantry-add:')
+    wasOpen.current = open
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, spot])
 
   const target = goesIn ?? spots[0]?.id ?? null
