@@ -387,7 +387,8 @@
       "creamjar": "Teglica",
       "lotion": "Losion",
       "perfume": "Parfem",
-      "mist": "Mist"
+      "mist": "Mist",
+      "flatbox": "Plitka kutija"
     },
     "own": "Drugo",
     "ownLabel": "Tvoj procenat",

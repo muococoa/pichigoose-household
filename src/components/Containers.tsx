@@ -131,6 +131,14 @@ const SHAPES: Record<Container, Shape> = {
     top: 25,
     bottom: 79,
   },
+  // A flat box, half the height of the box, like daily liners come in.
+  flatbox: {
+    ink: 'M11 48H53V80H11ZM11 48L16 43H48L53 48',
+    detail: 'M16 43L19 48M48 43L45 48',
+    inside: 'M12 49H52V79H12Z',
+    top: 49,
+    bottom: 79,
+  },
 }
 
 export const CONTAINERS = Object.keys(SHAPES) as Container[]
@@ -138,7 +146,7 @@ export const CONTAINERS = Object.keys(SHAPES) as Container[]
 /** What makes sense where (Nora): no pumps, sprays or tubes in the kitchen; no jars, cans, cartons, bottles or bags in the bathroom. */
 export const CONTAINERS_FOR: Record<Place, Container[]> = {
   pantry: ['jar', 'bottle', 'box', 'bag', 'can', 'carton'],
-  bathroom: ['pump', 'lotion', 'creamjar', 'tube', 'dropper', 'mist', 'perfume', 'spray', 'jug', 'box'],
+  bathroom: ['pump', 'lotion', 'creamjar', 'tube', 'dropper', 'mist', 'perfume', 'spray', 'jug', 'box', 'flatbox'],
 }
 
 /** The gel pen color for how full something is: green when there's plenty, orange when it's going,
@@ -157,6 +165,7 @@ export function insideSpan(kind: Container) {
 
 /** A guess at what something looks like from its name, so most things need no picking. */
 const GUESSES: [RegExp, Container][] = [
+  [/liner|dnevn|ulož|uloš|panty/i, 'flatbox'],
   [/perfume|parfem|parfum|eau de|edp\b|edt\b|toaletna voda/i, 'perfume'],
   [/mist|victoria|body spray|sprej za telo/i, 'mist'],
   [/serum|dropper|pipet|kapi\b|drops|face oil|ulje za lice/i, 'dropper'],

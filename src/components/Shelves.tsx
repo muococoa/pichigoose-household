@@ -129,9 +129,35 @@ export function ShelfGroup({ g, height, onOpen, compact, children }: { g: Group;
 
 /** Shelves full of groups: as many per shelf as fit the width. */
 export function ShelfRows({ groups, width, height, onOpen, maxRows, compact }: { groups: Group[]; width: number; height: number; onOpen: (g: Group) => void; maxRows?: number; compact?: boolean }) {
-  const rows = packShelves(groups, width, height, compact).slice(0, maxRows)
+  // After drawing, check that nothing sticks out past the shelf (Safari can lay things out a little
+  // wider than planned). If something does, plan again with that much less room, so it moves down.
+  const box = useRef<HTMLDivElement>(null)
+  const [less, setLess] = useState(0)
+  const key = `${width}|${height}|${groups.map((g) => `${g.key}:${g.rows.length}`).join(',')}`
+  const lastKey = useRef(key)
+  if (lastKey.current !== key) {
+    lastKey.current = key
+    if (less) setLess(0)
+  }
+  const rows = packShelves(groups, width - less, height, compact).slice(0, maxRows)
+  useLayoutEffect(() => {
+    const el = box.current
+    if (!el) return
+    const check = () => {
+      let over = 0
+      el.querySelectorAll<HTMLElement>('.shelf-row').forEach((row) => {
+        over = Math.max(over, row.scrollWidth - row.clientWidth)
+      })
+      if (over > 0) setLess((l) => (l < width ? l + over + 1 : l))
+    }
+    check()
+    // Check again whenever something on the shelf changes size (a font finishing loading, say).
+    const watch = new ResizeObserver(check)
+    el.querySelectorAll('.shelf-thing').forEach((t) => watch.observe(t, { box: 'border-box' }))
+    return () => watch.disconnect()
+  })
   return (
-    <>
+    <div ref={box}>
       {rows.map((row, i) => (
         <Shelf key={i} height={height}>
           {row.map((g) => (
@@ -139,6 +165,6 @@ export function ShelfRows({ groups, width, height, onOpen, maxRows, compact }: {
           ))}
         </Shelf>
       ))}
-    </>
+    </div>
   )
 }

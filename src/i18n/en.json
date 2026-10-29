@@ -380,7 +380,8 @@
       "creamjar": "Cream jar",
       "lotion": "Lotion",
       "perfume": "Perfume",
-      "mist": "Mist"
+      "mist": "Mist",
+      "flatbox": "Flat box"
     },
     "own": "Other",
     "ownLabel": "Your own percentage",
