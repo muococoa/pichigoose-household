@@ -67,19 +67,21 @@ const RENAMED: Record<string, string> = { hat: 'partyhat' }
 
 type Props = {
   avatar?: Partial<AvatarData> | null
+  /** The avatar builder: the whole character, which never moves when an extra is added. */
+  full?: boolean
   size?: number
   label?: string
   className?: string
   style?: React.CSSProperties
 }
 
-export function Avatar({ avatar, size = 34, label, className = 'av', style }: Props) {
+export function Avatar({ avatar, full, size = 34, label, className = 'av', style }: Props) {
   const character = avatar?.character && ART[avatar.character] ? avatar.character : 'onigiri'
   const color = COLOR_HEX[avatar?.color ?? ''] ?? COLOR_HEX.blush
   const accessory = avatar?.accessory ? (RENAMED[avatar.accessory] ?? avatar.accessory) : null
   const clip = `av-${useId().replace(/[^a-zA-Z0-9]/g, '')}`
   // Where everything goes comes from scripts/avatar-layout.py, measured from the drawings themselves.
-  const place = AVATAR_LAYOUT[character]
+  const place = AVATAR_LAYOUT[character][full ? 'full' : 'row']
   const extra = accessory && EXTRA[accessory] ? place.extras[accessory] : null
   const fit = extra?.fit
   return (

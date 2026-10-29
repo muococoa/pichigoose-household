@@ -95,7 +95,7 @@ export function ProfileScreen() {
             <div style={{ flex: 'none', width: 380, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <div className="row" style={{ gap: 14 }}>
                 {step !== 'color' && <Arrow dir={-1} onClick={() => cycle(-1)} label={t('profile.previous')} />}
-                <Avatar avatar={avatar} size={240} label={caption} className="" style={{ filter: 'drop-shadow(2px 4px 0 rgba(30,26,48,.12))' }} />
+                <Avatar full avatar={avatar} size={240} label={caption} className="" style={{ filter: 'drop-shadow(2px 4px 0 rgba(30,26,48,.12))' }} />
                 {step !== 'color' && <Arrow dir={1} onClick={() => cycle(1)} label={t('profile.nextOne')} />}
               </div>
               <div style={{ marginTop: 16, fontSize: 24, lineHeight: '30px', fontWeight: 800, color: '#1E1A30' }}>{caption}</div>
@@ -173,7 +173,7 @@ export function ProfileScreen() {
                         boxShadow: o.on ? 'inset 0 0 0 2px #1E1A30, 2px 3px 0 rgba(30,26,48,.10)' : '0 0 0 1px rgba(30,26,48,.08), 2px 3px 0 rgba(30,26,48,.08)',
                       }}
                     >
-                      <Avatar avatar={o.preview} size={56} className="" />
+                      <Avatar full avatar={o.preview} size={56} className="" />
                       <span style={{ fontSize: 14, fontWeight: 800, color: '#1E1A30' }}>{o.label}</span>
                     </button>
                   ))}
@@ -281,7 +281,7 @@ export function ProfileScreen() {
 
         <div className="row" style={{ justifyContent: 'center', gap: 10, marginTop: 28 }}>
           {step !== 'color' && <Arrow dir={-1} onClick={() => cycle(-1)} label={t('profile.previous')} />}
-          <Avatar avatar={avatar} size={190} label={caption} className="" style={{ filter: 'drop-shadow(2px 4px 0 rgba(30,26,48,.12))' }} />
+          <Avatar full avatar={avatar} size={190} label={caption} className="" style={{ filter: 'drop-shadow(2px 4px 0 rgba(30,26,48,.12))' }} />
           {step !== 'color' && <Arrow dir={1} onClick={() => cycle(1)} label={t('profile.nextOne')} />}
         </div>
         <div style={{ textAlign: 'center', marginTop: 14, fontSize: 22, lineHeight: '28px', fontWeight: 800, color: '#1E1A30' }}>{caption}</div>

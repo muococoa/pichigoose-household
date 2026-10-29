@@ -37,11 +37,12 @@ R = 20  # circle radius, on a 40 x 40 grid
 
 # Per character, per extra: size (times the computed size), nudge (in eye distances), turn (degrees).
 TWEAKS = {
-    'frog': {'glasses': {'size': 0.686, 'nudge': (-0.04, 0.08), 'turn': 2}, 'bowtie': {'nudge': (0, -0.2)}, 'partyhat': {'sink': 0.05}, 'witchhat': {'sink': 0.12}, 'bow': {'nudge': (0.42, -0.42), 'size': 0.72}, 'flower': {'nudge': (-0.45, -0.4), 'size': 0.8}},
-    'lemon': {'bow': {'nudge': (0.35, -0.35)}},
+    'frog': {'glasses': {'size': 0.686, 'nudge': (-0.04, 0.08), 'turn': 2}, 'bowtie': {'nudge': (0, -0.2)}, 'partyhat': {'sink': 0.05}, 'witchhat': {'sink': -0.15, 'size': 0.72}, 'bow': {'angle': 80, 'size': 0.8}, 'flower': {'angle': 80, 'size': 0.85}},
+    'lemon': {'bow': {'size': 1.3}},
+    'sushi': {'bow': {'side': -1, 'rot': -5}},
+    'turtle': {'bow': {'side': -1, 'angle': 35}},
     'plant': {'partyhat': {'size': 0.9, 'top': 'highest'}, 'witchhat': {'size': 0.9, 'top': 'highest'}, 'bowtie': {'nudge': (0, -0.35)}},
     'carrot': {'partyhat': {'top_frac': 0.33}, 'witchhat': {'top_frac': 0.33}},
-    'goldfish': {'bow': {'nudge': (0.4, 0.2)}},
 }
 
 
@@ -174,17 +175,12 @@ def char_frame(name, me):
     return s, f.get('x', 20) - fx * s, f.get('y', 20.5) - fy * s
 
 
-def char_frame_old(name, me):
-    """Scale (circle units per drawing pixel) and offset, optically centered."""
-    if name in PORTRAITS:
-        p = PORTRAITS[name]
-        s = p['d'] / me['d']
-        return s, p['x'] - me['eye'][0] * s, p['y'] - me['eye'][1] * s
+def whole_frame(name, me):
+    """The whole character, optically centered (its visual weight in the middle). Used in the avatar
+    builder, where characters are always fully visible (busts are drawn cut off, so they stay so)."""
     if name in BUSTS:
         s = 33 / me['w']
-        cx = 20 - me['centroid'][0] * s
-        top = 24 - me['h'] * s / 2
-        return s, cx, top
+        return s, 20 - me['centroid'][0] * s, 24 - me['h'] * s / 2
     s = math.sqrt(470 / me['mass'])
     s = min(s, 31 / me['h'], 31.5 / me['w'])
     while True:
@@ -203,10 +199,16 @@ def rot(p, c, ang):
 
 
 # Never smaller than this (circle units), so extras read on small faces too.
-MIN = {'glasses': 13, 'mustache': 7.5, 'bowtie': 8, 'bow': 11, 'flower': 8, 'partyhat': 10.5, 'witchhat': 15}
+MIN = {'glasses': 13, 'mustache': 10, 'bowtie': 11, 'bow': 12, 'flower': 9, 'partyhat': 11, 'witchhat': 15}
+# How big each extra is, in eye distances.
+SIZE = {'mustache': 2.3, 'bowtie': 1.9, 'bow': 2.5, 'flower': 1.6, 'partyhat': 2.2, 'witchhat': 2.9}
+# Hats: the point that sits on the top of the head (share of the drawing), and how the drawing leans.
+HAT_SEAT = {'partyhat': (0.47, 0.9), 'witchhat': (0.5, 0.82)}
+HAT_LEAN = {'partyhat': 6, 'witchhat': 0}
+HAT_SINK = {'partyhat': 0.12, 'witchhat': 0.3}
 
 
-def place_extra(name, key, me, frame, ex):
+def place_extra(name, key, me, frame, ex, mode):
     s, ox, oy = frame
     to = lambda p: (ox + p[0] * s, oy + p[1] * s)
     d = me['d'] * s
@@ -236,29 +238,27 @@ def place_extra(name, key, me, frame, ex):
         c = (eye[0] + up[0] * 0.12 * d, eye[1] + up[1] * 0.12 * d)
         return at(c, width, deg, (np.mean([l1, l2]) / ex['w'], ay))
     if key == 'mustache':
-        c = (mouth[0] - up[0] * 0.04 * d, mouth[1] - up[1] * 0.04 * d)
-        return at(c, 1.55 * d * size, deg)
+        # Comically big, right over the mouth, clear of the eyes.
+        c = (mouth[0] - up[0] * 0.02 * d, mouth[1] - up[1] * 0.02 * d)
+        return at(c, SIZE[key] * d * size, deg)
     if key == 'bowtie':
-        c = (mouth[0] - up[0] * 0.8 * d, mouth[1] - up[1] * 0.8 * d)
-        return at(c, 1.3 * d * size, deg)
+        c = (mouth[0] - up[0] * 0.85 * d, mouth[1] - up[1] * 0.85 * d)
+        return at(c, SIZE[key] * d * size, deg)
     if key in ('bow', 'flower'):
-        side = 1 if key == 'bow' else -1
-        ang = tilt + side * math.radians(42)
+        # In the hair: up at the edge of the head, out to the side, never over the face.
+        side = tw.get('side', 1 if key == 'bow' else -1)
+        ang = tilt + side * math.radians(tw.get('angle', 50))
         direction = (math.sin(ang), -math.cos(ang))
-        edge = walk(me['alpha'], me['eye'], direction)
-        p = to(edge)
-        p = (p[0] - direction[0] * 0.06 * d, p[1] - direction[1] * 0.06 * d)
-        width = max((2.1 if key == 'bow' else 1.35) * d * size, MIN[key] * size)
-        # Keep it inside the circle (busts reach the edge).
-        dist = math.hypot(p[0] - 20, p[1] - 20)
-        room = 19.2 - 0.42 * width
-        if dist > room:
-            p = (20 + (p[0] - 20) * room / dist, 20 + (p[1] - 20) * room / dist)
-        return at(p, width, deg + side * 14)
+        p = to(walk(me['alpha'], me['eye'], direction))
+        width = max(SIZE[key] * d * size, MIN[key] * size)
+        face = ((eye[0] + mouth[0]) / 2, (eye[1] + mouth[1]) / 2)
+        clear = 0.8 * d + 0.42 * width
+        dist = math.hypot(p[0] - face[0], p[1] - face[1])
+        if dist < clear:
+            p = (face[0] + (p[0] - face[0]) * clear / dist, face[1] + (p[1] - face[1]) * clear / dist)
+        r = deg + tw['rot'] if 'rot' in tw else deg + side * 18
+        return at(p, width, r)
     if key in ('partyhat', 'witchhat'):
-        (bl, br) = ex['base']
-        base_angle = math.degrees(math.atan2(br[1] - bl[1], br[0] - bl[0]))
-        anchor = (((bl[0] + br[0]) / 2) / ex['w'], ((bl[1] + br[1]) / 2) / ex['h'])
         top = me['top']
         if 'top_frac' in tw:
             # A set height on the drawing (like where a carrot's leaves start), above the face.
@@ -270,31 +270,15 @@ def place_extra(name, key, me, frame, ex):
             i = np.argmin(ys[near])
             top = (xs[near][i], ys[near][i])
         top = to(top)
-        sink = tw.get('sink', 0.3 if key == 'partyhat' else 0.42) * d
+        sink = tw.get('sink', HAT_SINK[key]) * d
         p = (top[0] - up[0] * sink, top[1] - up[1] * sink)
-        width = (2.0 if key == 'partyhat' else 2.9) * d * size
-        return at(p, width, deg - base_angle * 0.85, anchor)
+        return at(p, SIZE[key] * d * size, deg - HAT_LEAN[key], HAT_SEAT[key])
     raise ValueError(key)
 
 
-def fit_hat(char_box, hat):
-    """Shrink and lower the whole avatar so the hat fits inside the circle. Returns [k, dx, dy]."""
-    cx, cy = hat['rx'], hat['ry']
-    corners = [(hat['x'], hat['y']), (hat['x'] + hat['w'], hat['y']), (hat['x'], hat['y'] + hat['h']), (hat['x'] + hat['w'], hat['y'] + hat['h'])]
-    corners = [rot(p, (cx, cy), math.radians(hat['r'])) for p in corners]
-    top = min(p[1] for p in corners)
-    bottom = char_box[1] + char_box[3]
-    span = bottom - top
-    k = min(1.0, 34.5 / span)
-    # Center the hat + character vertically, a touch high.
-    dy = 19.6 - (top + span / 2) * k
-    dx = 20 - 20 * k
-    return [round(k, 3), round(dx, 2), round(dy, 2)]
-
-
 def fit_hat_portrait(hat):
-    """Portraits and busts stay cut off at the bottom: shrink toward the bottom of the circle just
-    enough for the hat to fit, so the face stays big."""
+    """Small avatars are cut off at the bottom: shrink toward the bottom of the circle just enough
+    for the hat to fit, so the face stays big."""
     cx, cy = hat['rx'], hat['ry']
     corners = [(hat['x'], hat['y']), (hat['x'] + hat['w'], hat['y']), (hat['x'], hat['y'] + hat['h']), (hat['x'] + hat['w'], hat['y'] + hat['h'])]
     top = min(rot(p, (cx, cy), math.radians(hat['r']))[1] for p in corners)
@@ -307,24 +291,27 @@ def main():
     layout = {}
     for name in CHARACTERS:
         me = measure(name)
-        frame = char_frame(name, me)
-        s, ox, oy = frame
-        box = (ox, oy, me['w'] * s, me['h'] * s)
-        entry = {'x': round(box[0], 2), 'y': round(box[1], 2), 'w': round(box[2], 2), 'h': round(box[3], 2), 'extras': {}}
-        for key in EXTRAS:
-            e = place_extra(name, key, me, frame, extras[key])
-            if key in ('partyhat', 'witchhat'):
-                e['fit'] = fit_hat_portrait(e)
-            entry['extras'][key] = e
-        layout[name] = entry
+        layout[name] = {}
+        # full: the avatar builder, whole character, never moved by an extra (extras may be cropped).
+        # row: everywhere else, zoomed to match Pichi's line weight; a hat shrinks it to fit.
+        for mode, frame in (('full', whole_frame(name, me)), ('row', char_frame(name, me))):
+            s, ox, oy = frame
+            entry = {'x': round(ox, 2), 'y': round(oy, 2), 'w': round(me['w'] * s, 2), 'h': round(me['h'] * s, 2), 'extras': {}}
+            for key in EXTRAS:
+                e = place_extra(name, key, me, frame, extras[key], mode)
+                if mode == 'row' and key in ('partyhat', 'witchhat'):
+                    e['fit'] = fit_hat_portrait(e)
+                entry['extras'][key] = e
+            layout[name][mode] = entry
     body = json.dumps(layout, indent=2)
     with open('src/components/avatarLayout.ts', 'w') as f:
         f.write('// Made by scripts/avatar-layout.py from Nora\'s drawings. Rerun it instead of editing by hand.\n')
+        f.write('// Per character: full (the avatar builder, whole character) and row (small avatars, zoomed).\n')
         f.write('// Character box and each extra on a 40 x 40 circle: x, y, w, h, turned r degrees around (rx, ry).\n')
         f.write('// fit: [scale, dx, dy] for the whole avatar, so a hat fits in the circle.\n\n')
         f.write('export type Placed = { x: number; y: number; w: number; h: number; r: number; rx: number; ry: number; fit?: [number, number, number] }\n')
         f.write('export type CharacterLayout = { x: number; y: number; w: number; h: number; extras: Record<string, Placed> }\n\n')
-        f.write(f'export const AVATAR_LAYOUT: Record<string, CharacterLayout> = {body}\n')
+        f.write(f'export const AVATAR_LAYOUT: Record<string, {{ full: CharacterLayout; row: CharacterLayout }}> = {body}\n')
     print('wrote src/components/avatarLayout.ts')
 
 
