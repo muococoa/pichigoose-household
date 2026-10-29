@@ -1,5 +1,6 @@
 import { useMemo, useRef, type FormEvent } from 'react'
 import { useKept } from '../lib/kept'
+import { focusField } from '../lib/keyboard'
 import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
 import { db } from '../data/store'
@@ -125,7 +126,8 @@ export function Comments({ target }: { target: CommentTarget }) {
           hearts={heartsOn({ comment_id: c.id })}
           onReply={() => {
             setReplyTo(c.id)
-            fieldRef.current?.focus()
+            // Focused the app's way, so the iPhone doesn't push the page; the field then scrolls into view.
+            focusField(fieldRef.current)
           }}
         />
       ))}

@@ -12,6 +12,7 @@ import { Avatar } from '../components/Avatar'
 import { Stamp, STAMP_COLORS } from '../components/Scrapbook'
 import { BackIcon, CloseIcon, HomeIcon, ReplyIcon, SendIcon } from '../components/Icons'
 import { useKept } from '../lib/kept'
+import { focusField } from '../lib/keyboard'
 import { useDesktop } from '../lib/desktop'
 import { PersonLink } from './Person'
 import { useBackInApp } from '../lib/back'
@@ -314,7 +315,7 @@ function Conversation({ chatKey, header, back }: { chatKey: string; header?: boo
 
   function reply(m: Message) {
     setReplyTo(m.id)
-    fieldRef.current?.focus()
+    focusField(fieldRef.current)
   }
 
   function key(e: KeyboardEvent<HTMLTextAreaElement>) {

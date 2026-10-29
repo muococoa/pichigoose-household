@@ -125,16 +125,24 @@ export function watchKeyboard() {
     }
     // If no keyboard came after all (a hardware keyboard on an iPad), settle back down.
     window.setTimeout(update, 950)
-    // Bars and sheets already sit above the keyboard. Only a field inside the page itself may need
-    // its page scrolled a little so it isn't hidden, and that scroll glides.
-    if (el.closest('.add-bar, .composer, .sheet-back')) return
-    window.setTimeout(() => {
-      const scroller = el.closest('.scroll') as HTMLElement | null
+    // Floating bars already sit above the keyboard. A field inside a page or a pop-up may need its page (or
+    // pop-up) scrolled so it isn't hidden behind the keyboard, or behind a pop-up's pinned buttons; that
+    // scroll glides. Checked again once the keyboard's real height is known. A reply's "Replying to" sits
+    // right above its field, so it comes into view with it.
+    if (el.closest('.add-bar, .composer')) return
+    const reveal = () => {
+      if (document.activeElement !== el) return
+      const sheet = el.closest('.sheet') as HTMLElement | null
+      const scroller = sheet ?? (el.closest('.scroll') as HTMLElement | null)
       if (!scroller) return
-      const visibleBottom = window.innerHeight - target - 16
+      const actions = sheet?.querySelector<HTMLElement>('.sheet-actions')
+      const pinned = actions && !actions.contains(el) ? (actions.firstElementChild as HTMLElement | null)?.offsetHeight ?? 0 : 0
+      const visibleBottom = window.innerHeight - target - (pinned ? pinned + 30 : 0) - 16
       const r = el.getBoundingClientRect()
       if (r.bottom > visibleBottom) scroller.scrollBy({ top: r.bottom - visibleBottom, behavior: 'smooth' })
-    }, 60)
+    }
+    window.setTimeout(reveal, 60)
+    window.setTimeout(reveal, 450)
   })
 
   // Letting go of a field: slide down right away, unless focus just moved to another field.
