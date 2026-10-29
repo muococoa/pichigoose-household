@@ -31,13 +31,13 @@ export const AVATAR_LAYOUT: Record<string, CharacterLayout> = {
         "ry": 21.38
       },
       "glasses": {
-        "x": 13.61,
-        "y": 12.42,
-        "w": 13.25,
-        "h": 5.63,
+        "x": 11.86,
+        "y": 10.98,
+        "w": 16.85,
+        "h": 7.15,
         "r": 3.9,
-        "rx": 20.21,
-        "ry": 15.29
+        "rx": 20.26,
+        "ry": 14.63
       },
       "mustache": {
         "x": 15.82,
@@ -112,13 +112,13 @@ export const AVATAR_LAYOUT: Record<string, CharacterLayout> = {
         "ry": 25.75
       },
       "glasses": {
-        "x": 13.84,
-        "y": 16.99,
-        "w": 13.2,
-        "h": 5.61,
+        "x": 11.9,
+        "y": 15.57,
+        "w": 16.79,
+        "h": 7.13,
         "r": -13.9,
-        "rx": 20.43,
-        "ry": 19.84
+        "rx": 20.27,
+        "ry": 19.2
       },
       "mustache": {
         "x": 16.59,
@@ -193,13 +193,13 @@ export const AVATAR_LAYOUT: Record<string, CharacterLayout> = {
         "ry": 25.96
       },
       "glasses": {
-        "x": 11.36,
-        "y": 16.74,
-        "w": 14.29,
-        "h": 6.06,
+        "x": 9.57,
+        "y": 15.2,
+        "w": 18.16,
+        "h": 7.71,
         "r": 12.0,
-        "rx": 18.48,
-        "ry": 19.83
+        "rx": 18.63,
+        "ry": 19.13
       },
       "mustache": {
         "x": 13.48,
@@ -274,13 +274,13 @@ export const AVATAR_LAYOUT: Record<string, CharacterLayout> = {
         "ry": 24.96
       },
       "glasses": {
-        "x": 11.41,
-        "y": 15.47,
-        "w": 14.42,
-        "h": 6.12,
+        "x": 9.55,
+        "y": 13.91,
+        "w": 18.33,
+        "h": 7.78,
         "r": 6.6,
-        "rx": 18.6,
-        "ry": 18.58
+        "rx": 18.69,
+        "ry": 17.87
       },
       "mustache": {
         "x": 13.63,
@@ -355,13 +355,13 @@ export const AVATAR_LAYOUT: Record<string, CharacterLayout> = {
         "ry": 26.74
       },
       "glasses": {
-        "x": 10.62,
-        "y": 14.42,
-        "w": 18.81,
-        "h": 7.99,
+        "x": 8.14,
+        "y": 12.37,
+        "w": 23.91,
+        "h": 10.15,
         "r": 3.7,
-        "rx": 20.0,
-        "ry": 18.48
+        "rx": 20.06,
+        "ry": 17.54
       },
       "mustache": {
         "x": 13.65,
@@ -436,13 +436,13 @@ export const AVATAR_LAYOUT: Record<string, CharacterLayout> = {
         "ry": 27.47
       },
       "glasses": {
-        "x": 8.83,
-        "y": 10.16,
-        "w": 22.41,
-        "h": 9.51,
+        "x": 5.92,
+        "y": 7.53,
+        "w": 28.49,
+        "h": 12.09,
         "r": 5.5,
-        "rx": 20.0,
-        "ry": 15.0
+        "rx": 20.13,
+        "ry": 13.69
       },
       "mustache": {
         "x": 10.41,
@@ -517,13 +517,13 @@ export const AVATAR_LAYOUT: Record<string, CharacterLayout> = {
         "ry": 32.35
       },
       "glasses": {
-        "x": 10.61,
-        "y": 16.28,
-        "w": 22.23,
-        "h": 9.44,
+        "x": 7.47,
+        "y": 13.87,
+        "w": 28.26,
+        "h": 11.99,
         "r": -7.3,
-        "rx": 21.7,
-        "ry": 21.08
+        "rx": 21.55,
+        "ry": 19.98
       },
       "mustache": {
         "x": 15.4,
@@ -598,13 +598,13 @@ export const AVATAR_LAYOUT: Record<string, CharacterLayout> = {
         "ry": 25.07
       },
       "glasses": {
-        "x": 13.52,
-        "y": 11.94,
-        "w": 17.59,
-        "h": 7.46,
+        "x": 10.94,
+        "y": 10.05,
+        "w": 22.35,
+        "h": 9.49,
         "r": -12.9,
-        "rx": 22.29,
-        "ry": 15.74
+        "rx": 22.09,
+        "ry": 14.88
       },
       "mustache": {
         "x": 20.3,
@@ -679,13 +679,13 @@ export const AVATAR_LAYOUT: Record<string, CharacterLayout> = {
         "ry": 24.35
       },
       "glasses": {
-        "x": 11.4,
-        "y": 12.77,
-        "w": 17.26,
-        "h": 7.33,
+        "x": 9.27,
+        "y": 10.92,
+        "w": 21.94,
+        "h": 9.31,
         "r": 13.9,
-        "rx": 20.0,
-        "ry": 16.5
+        "rx": 20.21,
+        "ry": 15.66
       },
       "mustache": {
         "x": 13.62,
@@ -760,13 +760,13 @@ export const AVATAR_LAYOUT: Record<string, CharacterLayout> = {
         "ry": 24.33
       },
       "glasses": {
-        "x": 5.46,
-        "y": 14.87,
-        "w": 14.03,
-        "h": 5.96,
+        "x": 3.67,
+        "y": 13.35,
+        "w": 17.83,
+        "h": 7.57,
         "r": 8.5,
-        "rx": 12.46,
-        "ry": 17.9
+        "rx": 12.56,
+        "ry": 17.21
       },
       "mustache": {
         "x": 7.05,
@@ -841,13 +841,13 @@ export const AVATAR_LAYOUT: Record<string, CharacterLayout> = {
         "ry": 26.84
       },
       "glasses": {
-        "x": 10.74,
-        "y": 10.84,
-        "w": 21.57,
-        "h": 9.16,
+        "x": 7.53,
+        "y": 8.53,
+        "w": 27.42,
+        "h": 11.64,
         "r": -15.9,
-        "rx": 21.5,
-        "ry": 15.5
+        "rx": 21.2,
+        "ry": 14.46
       },
       "mustache": {
         "x": 17.15,
@@ -922,13 +922,13 @@ export const AVATAR_LAYOUT: Record<string, CharacterLayout> = {
         "ry": 25.69
       },
       "glasses": {
-        "x": 11.4,
-        "y": 13.77,
-        "w": 17.26,
-        "h": 7.33,
+        "x": 9.22,
+        "y": 11.91,
+        "w": 21.94,
+        "h": 9.31,
         "r": 10.8,
-        "rx": 20.0,
-        "ry": 17.5
+        "rx": 20.16,
+        "ry": 16.65
       },
       "mustache": {
         "x": 13.71,
@@ -1003,13 +1003,13 @@ export const AVATAR_LAYOUT: Record<string, CharacterLayout> = {
         "ry": 29.07
       },
       "glasses": {
-        "x": 11.87,
-        "y": 19.98,
-        "w": 16.3,
-        "h": 6.92,
+        "x": 9.67,
+        "y": 18.21,
+        "w": 20.72,
+        "h": 8.8,
         "r": -0.3,
         "rx": 20.0,
-        "ry": 23.5
+        "ry": 22.68
       },
       "mustache": {
         "x": 14.65,
@@ -1084,13 +1084,13 @@ export const AVATAR_LAYOUT: Record<string, CharacterLayout> = {
         "ry": 25.82
       },
       "glasses": {
-        "x": 10.19,
-        "y": 16.03,
-        "w": 15.04,
-        "h": 6.38,
+        "x": 8.23,
+        "y": 14.4,
+        "w": 19.12,
+        "h": 8.12,
         "r": 5.8,
-        "rx": 17.69,
-        "ry": 19.28
+        "rx": 17.77,
+        "ry": 18.53
       },
       "mustache": {
         "x": 12.59,
@@ -1165,13 +1165,13 @@ export const AVATAR_LAYOUT: Record<string, CharacterLayout> = {
         "ry": 29.67
       },
       "glasses": {
-        "x": 12.95,
-        "y": 21.15,
-        "w": 13.07,
-        "h": 5.55,
+        "x": 11.2,
+        "y": 19.73,
+        "w": 16.61,
+        "h": 7.05,
         "r": 1.5,
-        "rx": 19.46,
-        "ry": 23.97
+        "rx": 19.48,
+        "ry": 23.32
       },
       "mustache": {
         "x": 15.06,
@@ -1246,13 +1246,13 @@ export const AVATAR_LAYOUT: Record<string, CharacterLayout> = {
         "ry": 29.12
       },
       "glasses": {
-        "x": 11.57,
-        "y": 19.1,
-        "w": 15.45,
-        "h": 6.56,
+        "x": 9.5,
+        "y": 17.42,
+        "w": 19.65,
+        "h": 8.34,
         "r": 0.8,
-        "rx": 19.28,
-        "ry": 22.44
+        "rx": 19.29,
+        "ry": 21.66
       },
       "mustache": {
         "x": 14.27,

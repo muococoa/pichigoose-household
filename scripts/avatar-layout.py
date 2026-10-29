@@ -171,7 +171,7 @@ def rot(p, c, ang):
 
 
 # Never smaller than this (circle units), so extras read on small faces too.
-MIN = {'glasses': 9.5, 'mustache': 7.5, 'bowtie': 8, 'bow': 11, 'flower': 8, 'partyhat': 10.5, 'witchhat': 15}
+MIN = {'glasses': 13, 'mustache': 7.5, 'bowtie': 8, 'bow': 11, 'flower': 8, 'partyhat': 10.5, 'witchhat': 15}
 
 
 def place_extra(name, key, me, frame, ex):
@@ -198,9 +198,11 @@ def place_extra(name, key, me, frame, ex):
 
     if key == 'glasses':
         (l1, _), (l2, _) = ex['lenses']
-        width = d / ((l2 - l1) / ex['w']) * 1.18 * size
+        # Big, so Nora's line art reads at small sizes too, and a little above the eyes.
+        width = d / ((l2 - l1) / ex['w']) * 1.5 * size
         ay = np.mean([p[1] for p in ex['lenses']]) / ex['h']
-        return at(eye, width, deg, (np.mean([l1, l2]) / ex['w'], ay))
+        c = (eye[0] + up[0] * 0.12 * d, eye[1] + up[1] * 0.12 * d)
+        return at(c, width, deg, (np.mean([l1, l2]) / ex['w'], ay))
     if key == 'mustache':
         c = (mouth[0] - up[0] * 0.04 * d, mouth[1] - up[1] * 0.04 * d)
         return at(c, 1.55 * d * size, deg)
