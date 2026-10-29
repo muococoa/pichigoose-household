@@ -223,7 +223,8 @@ Chat, like WhatsApp [Nora]: each household has one group chat for everyone, and 
 | household_id | uuid, references households | |
 | author_id | uuid, references profiles | must be the person writing it |
 | to_user | uuid, nullable | empty: the household's group chat. Set: a private message to that person (who must be in the household) |
-| body | text | 1 to 4000 characters |
+| body | text | up to 4000 characters; empty only when there is a sticker |
+| sticker | text, nullable | one of Nora's stickers, like `ramen/kiss` [Nora] |
 | created_at | timestamptz | |
 
 Group messages: everyone in the household reads them. Private ones: only the two people. You can delete your own. Live updates on.
