@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate, useNavigationType } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { BasketFilled, BasketIcon, HomeFilled, HomeIcon, MessagesFilled, MessagesIcon, NoteFilled, NoteIcon, TodoFilled, TodoIcon } from './Icons'
 import { DoodleSpot, Stamp, STAMP_COLORS, type DoodlePose } from './Scrapbook'
@@ -8,6 +8,7 @@ import { flush, refetchAll, useOutboxCount } from '../data/store'
 import { useDesktop } from '../lib/desktop'
 import { useUnreadTotal } from '../data/chats'
 import { useBounce } from '../lib/bounce'
+import { browserOwnsLeftEdge, useEdgeSwipe } from '../lib/swipe'
 import { Sidebar } from './Sidebar'
 
 /** Screens inside a household. On desktop they sit on the notebook page next to the sidebar. */
@@ -31,6 +32,8 @@ export function Screen({ children, tabbar, footer, className = '', wide, center,
   const scrollRef = useRef<HTMLDivElement>(null)
   const inkRef = useRef<HTMLDivElement>(null)
   useBounce(scrollRef, inkRef, refresh)
+  useSwipeBack(!desktop)
+  useScrollMemory(scrollRef)
   if (desktop && framed) {
     // Desktop: sidebar on the left, the notebook page fills the rest. Screens not laid out
     // for desktop yet keep a comfortable reading width instead of stretching.
@@ -74,6 +77,50 @@ export function Screen({ children, tabbar, footer, className = '', wide, center,
   )
 }
 
+/** From the left edge to the right goes back on every screen but Home: Shopping, To-dos and Notes go Home;
+ *  everything else (Messages, Pantry, a note, a profile) back to wherever you were before. */
+function useSwipeBack(phone: boolean) {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const path = location.pathname
+  const action =
+    !phone || path === '/' || browserOwnsLeftEdge()
+      ? null
+      : () => {
+          if (['/shopping', '/todos', '/notes'].includes(path) || location.key === 'default') navigate('/', { state: { back: true } })
+          else navigate(-1)
+        }
+  useEdgeSwipe('left', action)
+}
+
+// Where each screen was scrolled to, so going back lands you where you left off (Nora, 29 Oct): reply to Danko,
+// swipe back, and you're at the same shelf in Pantry. Kept by visit, and by page for "back to Home".
+const scrolledByVisit = new Map<string, number>()
+const scrolledByPage = new Map<string, number>()
+function useScrollMemory(ref: React.RefObject<HTMLDivElement | null>) {
+  const location = useLocation()
+  const type = useNavigationType()
+  const back = type === 'POP' || Boolean((location.state as { back?: boolean } | null)?.back)
+  const page = location.pathname + location.search
+  useLayoutEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const saved = back ? (scrolledByVisit.get(location.key) ?? scrolledByPage.get(page)) : undefined
+    if (saved) {
+      el.scrollTop = saved
+      // Once more after the first paint, in case the page was still growing.
+      requestAnimationFrame(() => (el.scrollTop = saved))
+    }
+    const remember = () => {
+      scrolledByVisit.set(location.key, el.scrollTop)
+      scrolledByPage.set(page, el.scrollTop)
+    }
+    el.addEventListener('scroll', remember, { passive: true })
+    return () => el.removeEventListener('scroll', remember)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.key])
+}
+
 // The bottom menu, floating like WhatsApp's: a frosted paper pill with the lists scrolling behind it.
 const ICON = 34
 const STROKE = (2 * 26) / ICON // the same 2 px line as every other icon, at the bigger size
@@ -98,7 +145,9 @@ export function TabBar() {
   const [shown, setShown] = useState(lastTab >= 0 && index >= 0 ? lastTab : index)
   const barRef = useRef<HTMLElement>(null)
   const pillRef = useRef<HTMLSpanElement>(null)
-  useSwipeToMessages()
+  // Swiping in from the right edge opens Messages, like Instagram's direct messages.
+  const navigate = useNavigate()
+  useEdgeSwipe('right', () => navigate('/messages'))
   useLayoutEffect(() => {
     const from = lastTab
     lastTab = index
@@ -132,41 +181,6 @@ export function TabBar() {
       ))}
     </nav>
   )
-}
-
-/** Swiping in from the right edge of the screen opens Messages, like Instagram's direct messages. */
-function useSwipeToMessages() {
-  const navigate = useNavigate()
-  useEffect(() => {
-    let start: { x: number; y: number } | null = null
-    function down(e: TouchEvent) {
-      const t = e.touches[0]
-      // Only from the very edge, and not while a pop-up is open.
-      start = e.touches.length === 1 && t.clientX > window.innerWidth - 28 && !document.querySelector('.sheet-back') ? { x: t.clientX, y: t.clientY } : null
-    }
-    function move(e: TouchEvent) {
-      if (!start) return
-      const t = e.touches[0]
-      const dx = start.x - t.clientX
-      const dy = Math.abs(t.clientY - start.y)
-      if (dy > 40 && dy > dx) start = null
-      else if (dx > 56 && dy < dx * 0.6) {
-        start = null
-        navigate('/messages')
-      }
-    }
-    const up = () => (start = null)
-    document.addEventListener('touchstart', down, { passive: true })
-    document.addEventListener('touchmove', move, { passive: true })
-    document.addEventListener('touchend', up)
-    document.addEventListener('touchcancel', up)
-    return () => {
-      document.removeEventListener('touchstart', down)
-      document.removeEventListener('touchmove', move)
-      document.removeEventListener('touchend', up)
-      document.removeEventListener('touchcancel', up)
-    }
-  }, [navigate])
 }
 
 /** Pull to refresh: send anything waiting on this phone, then load everything new. */
