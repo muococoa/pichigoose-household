@@ -396,7 +396,7 @@ export function PichiPolaroid({ width = 150, rotate = -3, tape = 'tp' as TapeKin
   )
 }
 
-type SheetProps = { open: boolean; onClose: () => void; title?: string; children: ReactNode; labelledBy?: string; small?: boolean }
+type SheetProps = { open: boolean; onClose: () => void; title?: string; children: ReactNode; labelledBy?: string; small?: boolean; /** A small button at the end of the title row, like the trash can. */ action?: ReactNode }
 
 // The pop-up paper, loaded up front so the first pop-up doesn't flash plain and then fill in.
 const preload = new Image()
@@ -405,12 +405,12 @@ preload.src = paperWhite
 const CLOSE_MS = 220
 
 /** A bottom sheet of notebook paper. It slides up when it opens and drops away when it closes. */
-export function Sheet({ open, onClose, title, children, small }: SheetProps) {
+export function Sheet({ open, onClose, title, children, small, action }: SheetProps) {
   const ref = useRef<HTMLDivElement>(null)
   const [closing, setClosing] = useState(false)
   // While it drops away, keep showing what it showed last, even if the screen already moved on.
-  const last = useRef<{ title?: string; children: ReactNode }>({ title, children })
-  if (open) last.current = { title, children }
+  const last = useRef<{ title?: string; children: ReactNode; action?: ReactNode }>({ title, children, action })
+  if (open) last.current = { title, children, action }
 
   const [mounted, setMounted] = useState(open)
   useEffect(() => {
@@ -436,18 +436,19 @@ export function Sheet({ open, onClose, title, children, small }: SheetProps) {
     return () => window.removeEventListener('keydown', onKey)
   }, [open, onClose])
   if (!open && !mounted) return null
-  const shown = open ? { title, children } : last.current
+  const shown = open ? { title, children, action } : last.current
   return createPortal(
     <div className={`sheet-back${small ? ' small' : ''}${closing ? ' closing' : ''}`} onClick={closing ? undefined : onClose}>
       <div ref={ref} className="sheet" role="dialog" aria-modal="true" aria-label={shown.title} onClick={(e) => e.stopPropagation()}>
         <div className="grab" />
         {shown.title && (
-          <div style={{ marginBottom: 14 }}>
+          <div style={{ marginBottom: 14, display: 'flex', alignItems: 'flex-start', gap: 10 }}>
             {/* Balanced lines, so a long title splits evenly instead of leaving one word alone.
                 A title can also say exactly where it breaks, with a new line in its text. */}
-            <Hand size={34} lineHeight={36} style={{ textWrap: 'balance', whiteSpace: 'pre-line' }}>
+            <Hand size={34} lineHeight={36} style={{ flex: 1, textWrap: 'balance', whiteSpace: 'pre-line' }}>
               {shown.title}
             </Hand>
+            {shown.action}
           </div>
         )}
         {shown.children}

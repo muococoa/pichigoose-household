@@ -7,8 +7,8 @@ import { useHousehold, useTodos, type Profile, type Todo } from '../data/hooks'
 import { recentlyDone, toggleTodo } from '../data/actions'
 import { Floating, Screen } from '../components/Shell'
 import { Avatar, NobodyAvatar } from '../components/Avatar'
-import { Check, Hand, Struck, Tick, useArrivals, EmptyState, Sheet, Stamp, STAMP_COLORS, tilt } from '../components/Scrapbook'
-import { ChevronDown, PlusIcon } from '../components/Icons'
+import { Check, Hand, Struck, Tick, useArrivals, EmptyState, Sheet, Stamp, STAMP_COLORS, showUndo, tilt } from '../components/Scrapbook'
+import { ChevronDown, PlusIcon, TrashIcon } from '../components/Icons'
 import { MyHouseholds } from './MyHouseholds'
 import { useDesktop } from '../lib/desktop'
 import { forget, useKept } from '../lib/kept'
@@ -275,26 +275,62 @@ function TodoSheet({ todo, householdId, people, onClose }: { todo: Todo | null; 
   ]
   const isQuick = quick.some((q) => q.value === due)
 
-  function save(e: FormEvent) {
-    e.preventDefault()
-    if (!title.trim()) return
-    const fields = { title: title.trim(), assignee_id: assignee, due_date: due, repeat }
-    if (todo) db.update('todos', todo.id, fields)
-    else
-      db.insert('todos', {
-        ...fields,
-        household_id: householdId,
-        created_by: me,
-        created_at: new Date().toISOString(),
-        done_at: null,
-        done_by: null,
-      })
+  // A new to-do is created with its button. An existing one saves itself as you change it (no Save button,
+  // Nora, 29 Oct): right away for the chips, a moment after the last key for the text, and on closing.
+  const fields = { title: title.trim(), assignee_id: assignee, due_date: due, repeat }
+  const changed = Boolean(todo && fields.title && (fields.title !== todo.title || fields.assignee_id !== todo.assignee_id || fields.due_date !== todo.due_date || fields.repeat !== todo.repeat))
+  const latest = useRef({ fields, changed })
+  latest.current = { fields, changed }
+  function commit() {
+    if (todo && latest.current.changed) db.update('todos', todo.id, latest.current.fields)
+  }
+  useEffect(() => {
+    if (!changed) return
+    const timer = window.setTimeout(commit, title.trim() !== todo?.title ? 500 : 0)
+    return () => window.clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [title, assignee, due, repeat])
+  const close = () => {
+    commit()
     onClose()
   }
 
+  function add(e: FormEvent) {
+    e.preventDefault()
+    if (todo || !title.trim()) return
+    db.insert('todos', {
+      ...fields,
+      household_id: householdId,
+      created_by: me,
+      created_at: new Date().toISOString(),
+      done_at: null,
+      done_by: null,
+    })
+    onClose()
+  }
+
+  function remove() {
+    if (!todo) return
+    const { id, ...rest } = todo
+    db.remove('todos', id)
+    onClose()
+    showUndo(t('todos.deleted'), t('common.undo'), () => db.insert('todos', { ...rest, id }))
+  }
+
   return (
-    <Sheet open onClose={onClose} title={todo ? t('todos.edit') : t('todos.new')}>
-      <form id="todo-form" onSubmit={save} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+    <Sheet
+      open
+      onClose={close}
+      title={todo ? t('todos.edit') : t('todos.new')}
+      action={
+        todo && (
+          <button type="button" className="sheet-trash" aria-label={t('common.delete')} title={t('common.delete')} onClick={remove}>
+            <TrashIcon />
+          </button>
+        )
+      }
+    >
+      <form id="todo-form" onSubmit={add} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
         <div>
           <label className="label" htmlFor="todo-title">
             {t('todos.what')}
@@ -383,24 +419,14 @@ function TodoSheet({ todo, householdId, people, onClose }: { todo: Todo | null; 
           <Comments target={{ todo_id: todo.id }} />
         </div>
       )}
-        <div className="row sheet-actions" style={{ gap: 12, marginTop: 20 }}>
-          {todo && (
-            <button
-              type="button"
-              className="stk sec"
-              style={{ flex: 1, color: '#A8335A' }}
-              onClick={() => {
-                db.remove('todos', todo.id)
-                onClose()
-              }}
-            >
-              {t('common.delete')}
-            </button>
-          )}
-          <button type="submit" form="todo-form" className="stk prim" style={{ flex: 1.6, transform: 'rotate(-.6deg)' }} disabled={!title.trim()}>
-            {todo ? t('common.save') : t('todos.add')}
+      {/* Only a new to-do has a button: it creates it. */}
+      {!todo && (
+        <div className="row sheet-actions" style={{ marginTop: 20 }}>
+          <button type="submit" form="todo-form" className="stk prim" style={{ flex: 1, transform: 'rotate(-.6deg)' }} disabled={!title.trim()}>
+            {t('todos.add')}
           </button>
         </div>
+      )}
     </Sheet>
   )
 }

@@ -234,3 +234,11 @@ export const ReplyIcon = (p: P) => (
     <path d="M4.8 12h9.7c3.6 0 6.5 2.9 6.5 6.5v1" />
   </Svg>
 )
+
+/** Delete: a small trash can, in a pop-up's title row. */
+export const TrashIcon = (p: P) => (
+  <Svg size={22} {...p}>
+    <path d="M5 7.5h16M10.5 7.5V5.5h5v2M7 7.5l1 13h10l1-13" />
+    <path d="M11 11.5v5.5M15 11.5v5.5" />
+  </Svg>
+)

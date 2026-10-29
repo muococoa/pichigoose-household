@@ -21,8 +21,11 @@ a { color: inherit; text-decoration: none }
   --frame: 8px;
   /* From the screen's edge to the paper's edge (the app is at most 430 px wide, centered). */
   --edge: calc(max(0px, 50vw - 215px) + var(--frame));
-  /* The floating menu: how far it sits above the paper's bottom edge, and the room it takes from the screen's bottom. */
-  --tabbar-gap: calc(max(var(--bottom), 30px) - 10px - var(--frame));
+  /* The floating menu: how far it sits above the paper's bottom edge (the same as from its sides, so the corners run
+     parallel), and the room it takes from the screen's bottom. */
+  --tabbar-gap: 14px;
+  /* The paper's corners wrap around the menu's: its corner (half its height) plus the gap between them. */
+  --paper-radius: calc(31px + 14px);
   --tabbar: calc(62px + var(--tabbar-gap) + var(--frame));
   /* Height of the on-screen keyboard, set from src/lib/keyboard.ts. */
   --kb: 0px;
@@ -36,7 +39,7 @@ a { color: inherit; text-decoration: none }
 @media (max-width: 1023px) {
   html, body { background: #D6C8E6 }
   .screen:not(.page) {
-    --top: 10px; height: calc(100dvh - var(--status) - var(--frame)); min-height: 0; margin: var(--status) var(--frame) var(--frame); border-radius: 18px;
+    --top: 10px; height: calc(100dvh - var(--status) - var(--frame)); min-height: 0; margin: var(--status) var(--frame) var(--frame); border-radius: var(--paper-radius);
     box-shadow: 0 1px 0 rgba(30, 26, 48, .06), 0 10px 26px -12px rgba(30, 26, 48, .35);
   }
   .screen.chat-screen { top: calc(var(--vvtop, 0px) + var(--status)); bottom: var(--frame); left: var(--frame); right: var(--frame); max-width: calc(430px - 2 * var(--frame)); height: auto; margin: 0 auto }
@@ -46,7 +49,7 @@ a { color: inherit; text-decoration: none }
   }
 }
 /* Small phones get a slightly smaller menu (see the tab bar in scrapbook.css). */
-@media (max-width: 374px) { :root { --frame: 4px; --tabbar: calc(56px + var(--tabbar-gap) + var(--frame)) } }
+@media (max-width: 374px) { :root { --frame: 4px; --tabbar-gap: 10px; --paper-radius: calc(28px + 10px); --tabbar: calc(56px + var(--tabbar-gap) + var(--frame)) } }
 
 /* Changing screens: the new sheet of paper slides in (kinetic ease-out, 0.35 s). The tab bar stays still. */
 html[data-nav="forward"] .screen > .scroll { animation: sheet-in-right .35s cubic-bezier(.16, 1, .3, 1) }
@@ -215,6 +218,9 @@ textarea.input { height: auto; min-height: 40px; padding: 9px 16px; resize: none
 .fab:active, .add-bar .add-fab:active { scale: .86; transition-duration: .45s, .2s, .1s }
 
 /* Bottom sheets */
+/* The trash can in a pop-up's title row (to-dos, shopping items). */
+.sheet-trash { flex: none; display: grid; place-items: center; width: 40px; height: 40px; margin: -2px -8px 0 0; border-radius: 50%; color: var(--error-dark) }
+.sheet-trash:active { background: rgba(168, 51, 90, .1) }
 .sheet-back { position: fixed; inset: 0; background: rgba(30, 26, 48, .35); z-index: 50; display: flex; align-items: flex-end; justify-content: center; animation: fade .15s ease-out;
   /* The pop-up's paper reaches the bottom of the screen, behind the keyboard; its content and button sit above it. */
   --bottom: max(env(safe-area-inset-bottom, 0px), var(--kb)) }

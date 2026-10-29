@@ -187,7 +187,8 @@
       "text": "Ali u ostavi je {{item}} skoro nestalo. Sigurno želiš da ga obrišeš sa spiska za kupovinu?",
       "delete": "Da, obriši",
       "keep": "Ne, ostavi"
-    }
+    },
+    "itemDeleted": "Stavka obrisana"
   },
   "todos": {
     "title": "Zadaci",
@@ -218,7 +219,8 @@
     "repeatDaily": "Svaki dan",
     "repeatWeekly": "Svake nedelje",
     "repeatMonthly": "Svakog meseca",
-    "add": "Dodaj zadatak"
+    "add": "Dodaj zadatak",
+    "deleted": "Zadatak obrisan"
   },
   "notes": {
     "title": "Beleške",

@@ -182,7 +182,8 @@
       "text": "But in the pantry, {{item}} is almost out. Are you sure you want to delete it from the shopping list?",
       "delete": "Yes, delete",
       "keep": "No, keep it"
-    }
+    },
+    "itemDeleted": "Item deleted"
   },
   "todos": {
     "title": "To-dos",
@@ -213,7 +214,8 @@
     "repeatDaily": "Every day",
     "repeatWeekly": "Every week",
     "repeatMonthly": "Every month",
-    "add": "Add to-do"
+    "add": "Add to-do",
+    "deleted": "To-do deleted"
   },
   "notes": {
     "title": "Notes",

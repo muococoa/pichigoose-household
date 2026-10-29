@@ -7,8 +7,8 @@ import { useHousehold, useItems, useLists, usePantry, type Item, type List } fro
 import { recentlyBought, toggleItem } from '../data/actions'
 import { Floating, Screen } from '../components/Shell'
 import { Avatar } from '../components/Avatar'
-import { Check, Hand, PichiAvatar, PoseStamp, Struck, Tick, useArrivals, EmptyState, Sheet, Stamp, STAMP_COLORS, showToast, tilt, type TapeKind } from '../components/Scrapbook'
-import { BackIcon, PlusIcon, ShareIcon } from '../components/Icons'
+import { Check, Hand, PichiAvatar, PoseStamp, Struck, Tick, useArrivals, EmptyState, Sheet, Stamp, STAMP_COLORS, showToast, showUndo, tilt, type TapeKind } from '../components/Scrapbook'
+import { BackIcon, PlusIcon, ShareIcon, TrashIcon } from '../components/Icons'
 import { ago } from '../lib/time'
 import { DndContext, MouseSensor, TouchSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, arrayMove, horizontalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
@@ -139,6 +139,34 @@ export function ShoppingScreen() {
       position: 0,
     })
     setText('')
+  }
+
+  // The item pop-up: its name saves a moment after the last key, and when it closes.
+  function saveItemName() {
+    if (editing && itemName.trim() && itemName.trim() !== editing.name) db.update('list_items', editing.id, { name: itemName.trim() })
+  }
+  useEffect(() => {
+    if (!editing) return
+    const timer = window.setTimeout(saveItemName, 500)
+    return () => window.clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [itemName])
+  function closeItem() {
+    saveItemName()
+    setEditing(null)
+  }
+  function removeItem() {
+    if (!editing) return
+    // Still almost out in the pantry? Pichi checks first.
+    if (stillNeeded(editing)) {
+      setChecking(editing)
+      setEditing(null)
+      return
+    }
+    const { id, ...rest } = editing
+    db.remove('list_items', id)
+    setEditing(null)
+    showUndo(t('shopping.itemDeleted'), t('common.undo'), () => db.insert('list_items', { ...rest, id }))
   }
 
   // Lists keep the order people give them (shared by the household). Groceries always stays first.
@@ -403,51 +431,28 @@ export function ShoppingScreen() {
         </form>
       </Sheet>
 
-      <Sheet open={Boolean(editing)} onClose={() => setEditing(null)} title={t('shopping.editItem')}>
-        <form
-          id="item-form"
-          onSubmit={(e) => {
-            e.preventDefault()
-            if (editing && itemName.trim()) db.update('list_items', editing.id, { name: itemName.trim() })
-            setEditing(null)
-          }}
-          style={{ display: 'flex', flexDirection: 'column', gap: 14 }}
-        >
-          <div>
-            <label className="label" htmlFor="item-name">
-              {t('shopping.itemName')}
-            </label>
-            <input id="item-name" className="input" value={itemName} onChange={(e) => setItemName(e.target.value)} />
-          </div>
-        </form>
+      {/* An item saves its name as you type (no Save button, Nora, 29 Oct); the trash can sits in the title row. */}
+      <Sheet
+        open={Boolean(editing)}
+        onClose={closeItem}
+        title={t('shopping.editItem')}
+        action={
+          <button type="button" className="sheet-trash" aria-label={t('common.delete')} title={t('common.delete')} onClick={removeItem}>
+            <TrashIcon />
+          </button>
+        }
+      >
+        <div>
+          <label className="label" htmlFor="item-name">
+            {t('shopping.itemName')}
+          </label>
+          <input id="item-name" className="input" value={itemName} enterKeyHint="done" onChange={(e) => setItemName(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.currentTarget as HTMLInputElement).blur()} />
+        </div>
         {editing && (
           <div style={{ marginTop: 18 }}>
             <Comments target={{ item_id: editing.id }} />
           </div>
         )}
-        <div className="row sheet-actions" style={{ gap: 12, marginTop: 18 }}>
-            <button
-              type="button"
-              className="stk sec"
-              style={{ flex: 1, color: '#A8335A' }}
-              onClick={() => {
-                if (!editing) return
-                // Still almost out in the pantry? Pichi checks first.
-                if (stillNeeded(editing)) {
-                  setChecking(editing)
-                  setEditing(null)
-                  return
-                }
-                db.remove('list_items', editing.id)
-                setEditing(null)
-              }}
-            >
-              {t('common.delete')}
-            </button>
-            <button type="submit" form="item-form" className="stk prim" style={{ flex: 1.4 }}>
-              {t('common.save')}
-            </button>
-        </div>
       </Sheet>
 
       <Sheet small open={Boolean(checking)} onClose={() => setChecking(null)} title={t('shopping.pantryCheck.title')}>
