@@ -318,7 +318,8 @@
       "yellow": "Limun",
       "brown": "Tost",
       "black": "Onigiri"
-    }
+    },
+    "yourProfile": "Tvoj profil"
   },
   "invite": {
     "title": "Pozovi nekoga",

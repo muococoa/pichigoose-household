@@ -10,9 +10,9 @@ import { useHousehold, useItemsIn, useLists, useProjects, useTodos, type Item, t
 import { toggleItem, toggleTodo } from '../data/actions'
 import { Floating, Screen } from '../components/Shell'
 import { Avatar, NobodyAvatar } from '../components/Avatar'
-import { Check, EmptyState, Hand, Menu, Sheet, Stamp, STAMP_COLORS, Struck, Tick, Tape, tilt } from '../components/Scrapbook'
-import { BackIcon, DotsIcon, GripIcon, PlusIcon } from '../components/Icons'
-import { CommentCount, useCommentCounts } from '../components/Comments'
+import { Check, EmptyState, Hand, Menu, Sheet, showUndo, Stamp, STAMP_COLORS, Struck, Tick, Tape, tilt } from '../components/Scrapbook'
+import { BackIcon, DotsIcon, GripIcon, PlusIcon, TrashIcon } from '../components/Icons'
+import { CommentCount, Comments, useCommentCounts } from '../components/Comments'
 import { TypingBar } from '../components/TypingBar'
 import { autoFocusField } from '../lib/keyboard'
 import { useKept } from '../lib/kept'
@@ -171,6 +171,61 @@ export function ProjectsScreen() {
   )
 }
 
+/** A thing to buy in a project, like Edit item in Shopping: the name saves as you type, the trash can sits in the
+ *  title row, and comments underneath (where "from IKEA" and a link go). */
+function BuySheet({ item, onClose }: { item: Item; onClose: () => void }) {
+  const { t } = useTranslation()
+  const [name, setName] = useState(item.name)
+  function save() {
+    if (name.trim() && name.trim() !== item.name) db.update('list_items', item.id, { name: name.trim() })
+  }
+  useEffect(() => {
+    const timer = window.setTimeout(save, 500)
+    return () => window.clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [name])
+  function close() {
+    save()
+    onClose()
+  }
+  function remove() {
+    const { id, ...rest } = item
+    db.remove('list_items', id)
+    onClose()
+    showUndo(t('shopping.itemDeleted'), t('common.undo'), () => db.insert('list_items', { ...rest, id }))
+  }
+  return (
+    <Sheet
+      open
+      onClose={close}
+      title={t('shopping.editItem')}
+      action={
+        <button type="button" className="sheet-trash" aria-label={t('common.delete')} title={t('common.delete')} onClick={remove}>
+          <TrashIcon />
+        </button>
+      }
+    >
+      <label className="label" htmlFor="buy-name">
+        {t('shopping.itemName')}
+      </label>
+      <input id="buy-name" className="input" value={name} enterKeyHint="done" onChange={(e) => setName(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.currentTarget as HTMLInputElement).blur()} />
+      <div style={{ marginTop: 18 }}>
+        <Comments target={{ item_id: item.id }} />
+      </div>
+    </Sheet>
+  )
+}
+
+/** A finished row: no dragging, but lined up with the rows above (an empty space where the six dots would be). */
+function FinishedRow({ children }: { children: ReactNode }) {
+  return (
+    <div className="project-row">
+      <span className="grip" aria-hidden style={{ visibility: 'hidden', cursor: 'default' }} />
+      {children}
+    </div>
+  )
+}
+
 /** A row you can drag into place by its six dots. */
 function SortableRow({ id, label, children }: { id: string; label: string; children: ReactNode }) {
   const { t } = useTranslation()
@@ -234,6 +289,45 @@ export function ProjectScreen() {
   const list = listOf(project)
   const { done, count } = progress(project)
   const person = (pid: string | null) => people.find((p) => p.id === pid)
+  const [buying, setBuying] = useState<Item | null>(null)
+  // Like Shopping and To-dos (Nora, 29 Oct): ticked steps move under a Done stamp, bought things under Bought.
+  const openSteps = steps.filter((x) => !x.done_at)
+  const doneSteps = steps.filter((x) => x.done_at)
+  const openBuys = buys.filter((x) => !x.checked_at)
+  const boughtBuys = buys.filter((x) => x.checked_at)
+  const stepRow = (x: Todo) => {
+    const who = person(x.assignee_id)
+    return (
+      <Tick checked={Boolean(x.done_at)} onCommit={() => toggleTodo(x, me)}>
+        {(on, toggle) => (
+          <div className={`ln${on ? ' row-done' : ''}`} style={{ flex: 1, minWidth: 0, minHeight: 56 }}>
+            <Check checked={on} onToggle={toggle} label={x.title} rotate={tilt(x.id)} />
+            <button type="button" onClick={() => setEditing(x)} style={{ flex: 1, minWidth: 0, fontSize: 17, padding: '8px 0', textAlign: 'left' }}>
+              <Struck on={on}>{x.title}</Struck>
+              <CommentCount n={commentsOn(x.id)} />
+            </button>
+            <span className={`av-fade${on ? ' done' : ''}`}>
+              {who ? <PersonLink id={who.id}><Avatar avatar={who.avatar} label={who.display_name} /></PersonLink> : <NobodyAvatar />}
+            </span>
+          </div>
+        )}
+      </Tick>
+    )
+  }
+  const buyRow = (x: Item) => (
+    <Tick checked={Boolean(x.checked_at)} onCommit={() => toggleItem(x, me)}>
+      {(on, toggle) => (
+        <div className={`ln${on ? ' row-done' : ''}`} style={{ flex: 1, minWidth: 0, minHeight: 52 }}>
+          <Check checked={on} onToggle={toggle} label={x.name} rotate={tilt(x.id)} />
+          {/* Tap the name for its pop-up: rename it, delete it, or add a comment like "from IKEA" with a link. */}
+          <button type="button" onClick={() => setBuying(x)} style={{ flex: 1, minWidth: 0, fontSize: 17, padding: '8px 0', textAlign: 'left' }}>
+            <Struck on={on}>{x.name}</Struck>
+            <CommentCount n={commentsOn(x.id)} />
+          </button>
+        </div>
+      )}
+    </Tick>
+  )
 
   function addStep(title: string) {
     if (!project) return
@@ -326,34 +420,30 @@ export function ProjectScreen() {
             {t('projects.toDo')}
           </Stamp>
           <div style={{ marginTop: 8 }}>
-            <Sortable rows={steps} table="todos">
-              {(x) => {
-                const who = person(x.assignee_id)
-                return (
-                  <SortableRow key={x.id} id={x.id} label={x.title}>
-                    <Tick checked={Boolean(x.done_at)} onCommit={() => toggleTodo(x, me)}>
-                      {(on, toggle) => (
-                        <div className={`ln${on ? ' row-done' : ''}`} style={{ flex: 1, minWidth: 0, minHeight: 56 }}>
-                          <Check checked={on} onToggle={toggle} label={x.title} rotate={tilt(x.id)} />
-                          <button type="button" onClick={() => setEditing(x)} style={{ flex: 1, minWidth: 0, fontSize: 17, padding: '8px 0', textAlign: 'left' }}>
-                            <Struck on={on}>{x.title}</Struck>
-                            <CommentCount n={commentsOn(x.id)} />
-                          </button>
-                          <span className={`av-fade${on ? ' done' : ''}`}>
-                            {who ? <PersonLink id={who.id}><Avatar avatar={who.avatar} label={who.display_name} /></PersonLink> : <NobodyAvatar />}
-                          </span>
-                        </div>
-                      )}
-                    </Tick>
-                  </SortableRow>
-                )
-              }}
+            <Sortable rows={openSteps} table="todos">
+              {(x) => (
+                <SortableRow key={x.id} id={x.id} label={x.title}>
+                  {stepRow(x)}
+                </SortableRow>
+              )}
             </Sortable>
             {!steps.length && <div className="cap" style={{ fontSize: 14, padding: '4px 0 10px' }}>{t('projects.emptyTodo')}</div>}
           </div>
           <div className="typing-slot" style={{ marginTop: 8 }}>
             <TypingBar value={step} onChange={setStep} onSend={addStep} placeholder={t('projects.addTodo')} />
           </div>
+          {doneSteps.length > 0 && (
+            <div style={{ marginTop: 18 }}>
+              <Stamp color={STAMP_COLORS.locked} rotate={-2}>
+                {t('todos.done')}
+              </Stamp>
+              <div style={{ marginTop: 6 }}>
+                {doneSteps.map((x) => (
+                  <FinishedRow key={x.id}>{stepRow(x)}</FinishedRow>
+                ))}
+              </div>
+            </div>
+          )}
         </section>
 
         {/* Things to buy: the project's own list, also a tab in Shopping. */}
@@ -363,20 +453,10 @@ export function ProjectScreen() {
           </Stamp>
           {list && !finished && <div className="cap" style={{ marginTop: 6 }}>{t('projects.onList', { name: list.name })}</div>}
           <div style={{ marginTop: 8 }}>
-            <Sortable rows={buys} table="list_items">
+            <Sortable rows={openBuys} table="list_items">
               {(x: Item) => (
                 <SortableRow key={x.id} id={x.id} label={x.name}>
-                  <Tick checked={Boolean(x.checked_at)} onCommit={() => toggleItem(x, me)}>
-                    {(on, toggle) => (
-                      <div className={`ln${on ? ' row-done' : ''}`} style={{ flex: 1, minWidth: 0, minHeight: 52 }}>
-                        <Check checked={on} onToggle={toggle} label={x.name} rotate={tilt(x.id)} />
-                        <span style={{ flex: 1, minWidth: 0, fontSize: 17 }}>
-                          <Struck on={on}>{x.name}</Struck>
-                          <CommentCount n={commentsOn(x.id)} />
-                        </span>
-                      </div>
-                    )}
-                  </Tick>
+                  {buyRow(x)}
                 </SortableRow>
               )}
             </Sortable>
@@ -385,10 +465,23 @@ export function ProjectScreen() {
           <div className="typing-slot" style={{ marginTop: 8 }}>
             <TypingBar value={buy} onChange={setBuy} onSend={addBuy} placeholder={t('projects.addBuy')} />
           </div>
+          {boughtBuys.length > 0 && (
+            <div style={{ marginTop: 18 }}>
+              <Stamp color={STAMP_COLORS.locked} rotate={2}>
+                {t('shopping.bought')}
+              </Stamp>
+              <div style={{ marginTop: 6 }}>
+                {boughtBuys.map((x) => (
+                  <FinishedRow key={x.id}>{buyRow(x)}</FinishedRow>
+                ))}
+              </div>
+            </div>
+          )}
         </section>
       </div>
 
       {editing && <TodoSheet key={editing.id} todo={editing} householdId={hid} people={people} onClose={() => setEditing(null)} />}
+      {buying && <BuySheet key={buying.id} item={buying} onClose={() => setBuying(null)} />}
 
       <Sheet small open={renaming !== null} onClose={() => setRenaming(null)} title={t('projects.rename')}>
         <form onSubmit={rename} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>

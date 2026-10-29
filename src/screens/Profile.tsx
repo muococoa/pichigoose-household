@@ -8,7 +8,7 @@ import { useMyProfile, type Avatar as AvatarData } from '../data/hooks'
 import { Screen } from '../components/Shell'
 import { ACCESSORIES, Avatar, CHARACTERS, COLORS, COLOR_HEX } from '../components/Avatar'
 import { Hand } from '../components/Scrapbook'
-import { BackIcon } from '../components/Icons'
+import { BackIcon, PencilIcon } from '../components/Icons'
 import { LangSwitch } from '../components/LangSwitch'
 import { useDesktop } from '../lib/desktop'
 import { THEMES } from '../lib/theme'
@@ -349,7 +349,8 @@ export function SettingsScreen() {
           </Hand>
         </div>
 
-        <Link to="/profile" className="flag-note row" style={{ gap: 14, transform: 'rotate(-.6deg)' }}>
+        {/* Your name opens your own profile (Nora, 29 Oct); changing your character has its own row under Theme. */}
+        <Link to={`/people/${me}`} className="flag-note row" style={{ gap: 14, transform: 'rotate(-.6deg)' }}>
           {/* The note, cut into an arrow, and its boomerang-shaped end in the theme color. */}
           <span className="flag-bg" aria-hidden />
           <span className="flag-tip" aria-hidden />
@@ -357,7 +358,7 @@ export function SettingsScreen() {
           <span className="grow">
             <span style={{ display: 'block', fontSize: 18, fontWeight: 800, color: '#1E1A30' }}>{profile?.display_name}</span>
             <span className="cap" style={{ fontSize: 14 }}>
-              {t('settings.changeCharacter')}
+              {t('settings.yourProfile')}
             </span>
           </span>
         </Link>
@@ -413,6 +414,13 @@ export function SettingsScreen() {
             </div>
           </div>
         </section>
+
+        <Link to="/profile" className="row" style={{ justifyContent: 'space-between', gap: 12 }}>
+          <span className="body">{t('settings.changeCharacter')}</span>
+          <span className="stk sec sm" aria-hidden style={{ width: 38, padding: 0, transform: 'rotate(3deg)' }}>
+            <PencilIcon />
+          </span>
+        </Link>
 
         <div className="row" style={{ justifyContent: 'space-between', gap: 12, marginTop: 6 }}>
           <span className="cap" style={{ fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis' }}>

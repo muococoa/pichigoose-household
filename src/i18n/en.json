@@ -313,7 +313,8 @@
       "yellow": "Lemon",
       "brown": "Toast",
       "black": "Onigiri"
-    }
+    },
+    "yourProfile": "Your profile"
   },
   "invite": {
     "title": "Invite someone",

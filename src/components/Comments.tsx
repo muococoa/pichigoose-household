@@ -12,6 +12,7 @@ import { HeartBurst, HeartButton, HeartedBy, useDoubleTap, useHeartActions, useH
 import { CloseIcon } from './Icons'
 import { showUndo } from './Scrapbook'
 import { PersonLink } from '../screens/Person'
+import { Linkify } from './Linkify'
 
 /** What a comment is about: one shopping item, to-do or note. */
 export type CommentTarget = { item_id: string } | { todo_id: string } | { note_id: string }
@@ -125,7 +126,7 @@ function CommentRow({ c, hearts }: { c: Comment; hearts: Heart[] }) {
         <div className="cap" style={{ fontSize: 13 }}>
           <b style={{ color: '#1E1A30', fontWeight: 800 }}>{who?.display_name ?? t('common.someone')}</b> · {ago(c.created_at, i18n.language)}
         </div>
-        {c.sticker ? <StickerImage name={c.sticker} size={96} /> : <div className="comment-body">{c.body}</div>}
+        {c.sticker ? <StickerImage name={c.sticker} size={96} /> : <div className="comment-body"><Linkify text={c.body} /></div>}
         <HeartedBy hearts={hearts} className="under-comment" />
       </div>
       <HeartButton target={target} hearts={hearts} />

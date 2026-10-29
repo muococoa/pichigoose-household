@@ -17,6 +17,7 @@ import { focusField } from '../lib/keyboard'
 import { useDesktop } from '../lib/desktop'
 import { PersonLink } from './Person'
 import { useBackInApp } from '../lib/back'
+import { Linkify } from '../components/Linkify'
 
 
 function sameDay(a: Date, b: Date) {
@@ -137,7 +138,7 @@ function Bubble({ m, mine, first, lastOfRun, group, who, time, read, hearts, quo
         <div className={`bubble${m.sticker ? ' sticker' : ''}`} onClick={tap.onClick}>
           {group && !mine && first && <div className="bubble-name">{who?.display_name}</div>}
           {quote && <Quote m={quote} name={quoteName} />}
-          {m.sticker ? <StickerImage name={m.sticker} size={128} /> : <span className="bubble-text">{m.body}</span>}
+          {m.sticker ? <StickerImage name={m.sticker} size={128} /> : <span className="bubble-text"><Linkify text={m.body} /></span>}
           <span className="bubble-time">
             {time}
             {/* One tick when sent, two once everyone else has read it. */}
