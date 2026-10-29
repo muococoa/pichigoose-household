@@ -467,7 +467,8 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
   left: 0; right: 0; background: url("../../assets/note-fresh.png") 0 0 / 512px 512px, var(--theme-note); background-blend-mode: multiply;
   clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 50%, calc(100% - 22px) 100%, 0 100%);
 }
-.flag-tip { right: 0; width: 46px; background: var(--hero); clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 50%, calc(100% - 22px) 100%, 0 100%, 22px 50%) }
+/* The band is 12 px thick (34 px box, 22 px point). */
+.flag-tip { right: 0; width: 34px; background: var(--hero); clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 50%, calc(100% - 22px) 100%, 0 100%, 22px 50%) }
 .day-stamp { display: flex; justify-content: center; margin: 18px 0 4px }
 .say-hi { text-align: center; color: #63586B; font-size: 15px; font-weight: 600; margin: 48px 0 }
 /* One typing bar for every place you type a short text (Nora, 29 Oct): chat, comments and Shopping's add field. A strip
