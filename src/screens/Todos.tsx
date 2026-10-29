@@ -308,7 +308,7 @@ function TodoSheet({ todo, householdId, people, onClose }: { todo: Todo | null; 
                 aria-pressed={assignee === p.id}
                 aria-label={p.display_name}
                 onClick={() => setAssignee(p.id)}
-                style={{ borderRadius: '50%', padding: 3, boxShadow: assignee === p.id ? 'inset 0 0 0 2px #1E1A30' : undefined }}
+                className="pick-av"
               >
                 <Avatar avatar={p.avatar} size={40} />
               </button>

@@ -373,6 +373,10 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 .bubble.sticker .bubble-time, .msg.mine .bubble.sticker .bubble-time { float: none; margin: 0 6px; color: #857A8C }
 .bubble.sticker .ticks { color: #A79DAD }
 .bubble.sticker .ticks.read { color: var(--hero) }
+/* Picking a person by their avatar: the black ring is drawn on top of the avatar, so it shows at the
+   same 2 px as the ring around "anyone" (the avatar's own white edge used to cover half of it). */
+.pick-av { position: relative; display: flex; padding: 3px; border-radius: 50% }
+.pick-av[aria-pressed="true"]::after { content: ""; position: absolute; inset: 0; border-radius: 50%; box-shadow: inset 0 0 0 2px #1E1A30; pointer-events: none }
 .day-stamp { display: flex; justify-content: center; margin: 18px 0 4px }
 .say-hi { text-align: center; color: #63586B; font-size: 15px; font-weight: 600; margin: 48px 0 }
 .composer {
