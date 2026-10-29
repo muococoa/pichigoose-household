@@ -383,13 +383,14 @@
     "clean": {
       "button": "Clean it all",
       "pantry": {
-        "title": "Ready for the deep clean of the pantry?",
-        "text": "This will remove everything from the pantry. This cannot be undone."
+        "title": "Ready for the deep clean\nof the pantry?",
+        "text": "This will remove everything from the pantry."
       },
       "bathroom": {
-        "title": "Ready for the deep clean of the bathroom cabinet?",
-        "text": "This will remove everything from the bathroom cabinet. This cannot be undone."
-      }
+        "title": "Ready for the deep clean\nof the bathroom cabinet?",
+        "text": "This will remove everything from the bathroom cabinet."
+      },
+      "undo": "This can't be undone."
     }
   }
 }

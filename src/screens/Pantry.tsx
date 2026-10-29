@@ -194,7 +194,11 @@ export function PantryScreen() {
 
       <GroupSheet groupId={open} onClose={() => setOpen(null)} />
       <Sheet small open={cleaning} onClose={() => setCleaning(false)} title={t(`pantry.clean.${place}.title`)}>
-        <p className="body" style={{ margin: '0 0 18px' }}>{t(`pantry.clean.${place}.text`)}</p>
+        <p className="body" style={{ margin: '0 0 18px' }}>
+          {t(`pantry.clean.${place}.text`)}
+          <br />
+          {t('pantry.clean.undo')}
+        </p>
         <div className="row" style={{ gap: 12 }}>
           <button type="button" className="stk sec" style={{ flex: 1, transform: 'rotate(-1deg)' }} onClick={() => setCleaning(false)}>
             {t('common.cancel')}

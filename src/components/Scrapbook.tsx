@@ -413,7 +413,9 @@ export function Sheet({ open, onClose, title, children, small }: SheetProps) {
         <div className="grab" />
         {shown.title && (
           <div style={{ marginBottom: 14 }}>
-            <Hand size={34} lineHeight={36}>
+            {/* Balanced lines, so a long title splits evenly instead of leaving one word alone.
+                A title can also say exactly where it breaks, with a new line in its text. */}
+            <Hand size={34} lineHeight={36} style={{ textWrap: 'balance', whiteSpace: 'pre-line' }}>
               {shown.title}
             </Hand>
           </div>

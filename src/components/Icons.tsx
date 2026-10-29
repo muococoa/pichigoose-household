@@ -34,13 +34,14 @@ export const ShareIcon = (p: P) => (
     <path d="M6 13v8h14v-8" />
   </Svg>
 )
-/** A little broom, for the pantry's deep clean. */
+/** A broom mid-sweep, for the pantry's deep clean: a long handle, a head that curves as it pushes, a puff of dust. */
 export const BroomIcon = (p: P) => (
-  <Svg size={20} width={2.2} {...p}>
-    <path d="M22 3.5 14.5 11" />
-    <path d="M12.5 9l4.5 4.5" />
-    <path d="M12.5 9C9 10.5 6 13 4.5 21.5 13 20 15.5 17 17 13.5" />
-    <path d="M8.2 18.2l3-3M11 19.6l2.6-2.6" />
+  <Svg size={24} width={1.8} {...p}>
+    <path d="M24.5 1.5 13.6 12.4" />
+    <path d="M11.2 11.2l5.6 5.6" />
+    <path d="M11.6 11.8C8.4 12.8 5 14.6 1.8 17.2C3.4 20.6 5.6 23 9.2 24.6C11.8 22.4 14 19.6 15.8 16.4" />
+    <path d="M12.6 14.6C10 16.6 7.6 19.2 5.6 22.2" />
+    <path d="M.8 21.2l1.6.3M1.8 24.4l1.2-1" />
   </Svg>
 )
 export const PencilIcon = (p: P) => (
