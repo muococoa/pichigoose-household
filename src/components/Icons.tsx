@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import inkPatch from '../../assets/ink-patch.png'
 
 // Line icons from the hi-fi screens: 26 px, 2 px stroke, round caps.
@@ -182,45 +183,46 @@ export function InkCircle({ className = 'tab-circle' }: { className?: string }) 
   )
 }
 
-// The bottom menu's selected tab: the same drawings, filled with ink, details cut out in paper.
-const PAPER = '#FFFDF8'
-function Filled({ size = 26, children }: { size?: number; children: React.ReactNode }) {
+// The bottom menu's selected tab: the same drawings, filled with ink, with the details cut out as real holes,
+// so the highlight behind shows through them (Nora, 29 Oct).
+function Filled({ size = 26, holes, children }: { size?: number; holes: React.ReactNode; children: React.ReactNode }) {
+  const id = `fill-${useId().replace(/[^a-zA-Z0-9]/g, '')}`
   return (
     <svg viewBox="0 0 26 26" width={size} height={size} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      {children}
+      <defs>
+        <mask id={id} maskUnits="userSpaceOnUse" x="0" y="0" width="26" height="26">
+          <rect width="26" height="26" fill="#FFFFFF" stroke="none" />
+          <g stroke="#000000" fill="none">{holes}</g>
+        </mask>
+      </defs>
+      <g mask={`url(#${id})`}>{children}</g>
     </svg>
   )
 }
 export const HomeFilled = ({ size }: { size?: number }) => (
-  <Filled size={size}>
+  <Filled size={size} holes={<path d="M11 21v-5.5h4V21Z" fill="#000000" strokeWidth={1.4} />}>
     <path d="M6.5 10.5 13 4.9l6.5 5.6V21h-13Z" fill="currentColor" />
     <path d="M4 12.2 13 4.5l9 7.7" />
-    <path d="M11 21v-5.5h4V21Z" fill={PAPER} stroke={PAPER} strokeWidth={1.4} />
   </Filled>
 )
 export const BasketFilled = ({ size }: { size?: number }) => (
-  <Filled size={size}>
+  <Filled size={size} holes={<path d="M10 13.6v4M13 13.6v4M16 13.6v4" strokeWidth={1.8} />}>
     <path d="M9 9.5 11.5 4M17 9.5 14.5 4" />
     <path d="M4 9.5h18l-2 11.5H6Z" fill="currentColor" />
-    <path d="M10 13.6v4M13 13.6v4M16 13.6v4" stroke={PAPER} strokeWidth={1.8} />
   </Filled>
 )
 export const TodoFilled = ({ size }: { size?: number }) => (
-  <Filled size={size}>
+  <Filled size={size} holes={<path d="M8.5 13.2l3 3 6-6.5" strokeWidth={2.2} />}>
     <rect x="4.5" y="4.5" width="17" height="17" rx="3" fill="currentColor" />
-    <path d="M8.5 13.2l3 3 6-6.5" stroke={PAPER} strokeWidth={2.2} />
   </Filled>
 )
 export const NoteFilled = ({ size }: { size?: number }) => (
-  <Filled size={size}>
+  <Filled size={size} holes={<><path d="M16 4.5v4h4" strokeWidth={1.6} /><path d="M9 13h8M9 17h6" strokeWidth={1.8} /></>}>
     <path d="M6 4.5h10l4 4V21.5H6Z" fill="currentColor" />
-    <path d="M16 4.5v4h4" stroke={PAPER} strokeWidth={1.6} />
-    <path d="M9 13h8M9 17h6" stroke={PAPER} strokeWidth={1.8} />
   </Filled>
 )
 export const MessagesFilled = ({ size }: { size?: number }) => (
-  <Filled size={size}>
+  <Filled size={size} holes={<path d="M9.6 12.4h.01M13.3 12.4h.01M17 12.4h.01" strokeWidth="2.6" />}>
     <path d="M13.4 4.6c5 0 8.6 3.4 8.6 7.7s-3.6 7.6-8.6 7.6c-1.3 0-2.5-.2-3.6-.6L5.2 21.4l1.3-4.3C5 15.8 4.4 14.1 4.4 12.3c0-4.3 3.9-7.7 9-7.7Z" fill="currentColor" />
-    <path d="M9.6 12.4h.01M13.3 12.4h.01M17 12.4h.01" stroke={PAPER} strokeWidth="2.6" />
   </Filled>
 )

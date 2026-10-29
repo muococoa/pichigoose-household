@@ -127,11 +127,50 @@ function Bubble({ m, mine, first, lastOfRun, group, who, time, read, hearts }: {
   )
 }
 
+/** On a phone, a swipe from the left edge to the right goes back, like on an iPhone, so the thumb doesn't have
+ *  to reach the back arrow. (Swiping a message itself stays free for replying.) */
+function useSwipeBack(goBack: (() => void) | null) {
+  const latest = useRef(goBack)
+  latest.current = goBack
+  const on = Boolean(goBack)
+  useEffect(() => {
+    if (!on) return
+    let start: { x: number; y: number } | null = null
+    function down(e: TouchEvent) {
+      const t = e.touches[0]
+      start = e.touches.length === 1 && t.clientX < 40 && !document.querySelector('.sheet-back') ? { x: t.clientX, y: t.clientY } : null
+    }
+    function move(e: TouchEvent) {
+      if (!start) return
+      const t = e.touches[0]
+      const dx = t.clientX - start.x
+      const dy = Math.abs(t.clientY - start.y)
+      if (dy > 40 && dy > dx) start = null
+      else if (dx > 56 && dy < dx * 0.6) {
+        start = null
+        latest.current?.()
+      }
+    }
+    const up = () => (start = null)
+    document.addEventListener('touchstart', down, { passive: true })
+    document.addEventListener('touchmove', move, { passive: true })
+    document.addEventListener('touchend', up)
+    document.addEventListener('touchcancel', up)
+    return () => {
+      document.removeEventListener('touchstart', down)
+      document.removeEventListener('touchmove', move)
+      document.removeEventListener('touchend', up)
+      document.removeEventListener('touchcancel', up)
+    }
+  }, [on])
+}
+
 /** One chat: the bubbles, with the writing field pinned under them. */
 function Conversation({ chatKey, header, back }: { chatKey: string; header?: boolean; back?: boolean }) {
   const { t } = useTranslation()
   const me = useMe()
   const goBack = useBackInApp()
+  useSwipeBack(back ? goBack : null)
   const { household, name, people } = useHousehold()
   const chats = useChats()
   const chat = chats.find((c) => c.key === chatKey)

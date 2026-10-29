@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { BasketFilled, BasketIcon, HomeFilled, HomeIcon, MessagesFilled, MessagesIcon, NoteFilled, NoteIcon, TodoFilled, TodoIcon } from './Icons'
 import { DoodleSpot, Stamp, STAMP_COLORS, type DoodlePose } from './Scrapbook'
@@ -98,6 +98,7 @@ export function TabBar() {
   const [shown, setShown] = useState(lastTab >= 0 && index >= 0 ? lastTab : index)
   const barRef = useRef<HTMLElement>(null)
   const pillRef = useRef<HTMLSpanElement>(null)
+  useSwipeToMessages()
   useLayoutEffect(() => {
     const from = lastTab
     lastTab = index
@@ -131,6 +132,41 @@ export function TabBar() {
       ))}
     </nav>
   )
+}
+
+/** Swiping in from the right edge of the screen opens Messages, like Instagram's direct messages. */
+function useSwipeToMessages() {
+  const navigate = useNavigate()
+  useEffect(() => {
+    let start: { x: number; y: number } | null = null
+    function down(e: TouchEvent) {
+      const t = e.touches[0]
+      // Only from the very edge, and not while a pop-up is open.
+      start = e.touches.length === 1 && t.clientX > window.innerWidth - 28 && !document.querySelector('.sheet-back') ? { x: t.clientX, y: t.clientY } : null
+    }
+    function move(e: TouchEvent) {
+      if (!start) return
+      const t = e.touches[0]
+      const dx = start.x - t.clientX
+      const dy = Math.abs(t.clientY - start.y)
+      if (dy > 40 && dy > dx) start = null
+      else if (dx > 56 && dy < dx * 0.6) {
+        start = null
+        navigate('/messages')
+      }
+    }
+    const up = () => (start = null)
+    document.addEventListener('touchstart', down, { passive: true })
+    document.addEventListener('touchmove', move, { passive: true })
+    document.addEventListener('touchend', up)
+    document.addEventListener('touchcancel', up)
+    return () => {
+      document.removeEventListener('touchstart', down)
+      document.removeEventListener('touchmove', move)
+      document.removeEventListener('touchend', up)
+      document.removeEventListener('touchcancel', up)
+    }
+  }, [navigate])
 }
 
 /** Pull to refresh: send anything waiting on this phone, then load everything new. */
