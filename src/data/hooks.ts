@@ -15,7 +15,7 @@ export type Profile = Row & {
 
 export type Household = Row & { name: string; address: string; secret: string; kind: 'home' | 'event'; created_at: string }
 
-export type Section = 'news' | 'shopping' | 'pantry' | 'todos' | 'money' | 'notes'
+export type Section = 'news' | 'shopping' | 'pantry' | 'bathroom' | 'todos' | 'money' | 'notes'
 export type LayoutEntry = { section: Section; visible: boolean }
 
 export type Member = Row & {
@@ -357,6 +357,7 @@ export const DEFAULT_LAYOUT: LayoutEntry[] = [
   { section: 'news', visible: true },
   { section: 'shopping', visible: true },
   { section: 'pantry', visible: true },
+  { section: 'bathroom', visible: true },
   { section: 'todos', visible: true },
   { section: 'money', visible: true },
   { section: 'notes', visible: true },

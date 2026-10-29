@@ -136,7 +136,6 @@
     "addNote": "Belešku",
     "addSomeone": "Dodaj nekoga u domaćinstvo",
     "newsCommented": "{{name}}: novi komentar na {{item}}.",
-    "pantry": "police",
     "pantryLow_one": "{{count}} pri kraju",
     "pantryLow_few": "{{count}} pri kraju",
     "pantryLow_other": "{{count}} pri kraju",

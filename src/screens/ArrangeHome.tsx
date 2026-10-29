@@ -13,7 +13,8 @@ const LOOK: Record<Section, { note: string; tape: TapeKind; rotate: number; labe
   news: { note: 'n-lilac', tape: 'ttri', rotate: -0.8, label: 'home.news' },
   todos: { note: 'n-blush', tape: 'tdots', rotate: -0.4, label: 'home.todos' },
   shopping: { note: 'n-butter', tape: 'tm', rotate: 0.8, label: 'home.toBuy' },
-  pantry: { note: 'n-sand', tape: 'ty', rotate: -0.6, label: 'home.pantry' },
+  pantry: { note: 'n-sand', tape: 'ty', rotate: -0.6, label: 'home.shelf.pantry' },
+  bathroom: { note: 'n-mint', tape: 'tb', rotate: 0.5, label: 'home.shelf.bathroom' },
   money: { note: 'n-mist', tape: 'tblocks', rotate: -0.5, label: 'home.money' },
   notes: { note: 'n-sage', tape: 'tcheck', rotate: 0.6, label: 'home.notes' },
 }

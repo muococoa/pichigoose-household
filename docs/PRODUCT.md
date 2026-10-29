@@ -25,7 +25,7 @@ Planning your household with the people you live with, so everyone stays organiz
 | Money in version 1 | Only "who owes who". Personal, tied to the profile, never to a household. Each person can turn money off |
 | Navigation in version 1 | Home, Shopping, To-dos, Notes, Money |
 | Home | Each member arranges their own home, like to-dos first for Nora and shopping first for Danko |
-| Pantry | Lives on Home as its own note ("shelves"), not in the bottom menu. Two places: the pantry and the bathroom cabinet. Pichi puts things on the list when they run low [Nora] |
+| Pantry | Lives on Home as two notes, "kitchen" and "bathroom", not in the bottom menu. Two places: the pantry and the bathroom cabinet. Pichi puts things on the list when they run low [Nora] |
 | Price, later | $2.22 a month or $13.32 a year. One person pays for the household, everyone they invite joins free. Not in the first builds |
 
 ---

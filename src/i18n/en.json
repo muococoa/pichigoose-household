@@ -132,7 +132,6 @@
     "addNote": "A note",
     "addSomeone": "Add someone to the household",
     "newsCommented": "{{name}} commented on {{item}}.",
-    "pantry": "shelves",
     "pantryLow_one": "{{count}} running low",
     "pantryLow_other": "{{count}} running low",
     "noPantry": "Nothing on the shelves yet.",

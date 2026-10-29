@@ -42,6 +42,7 @@ const LOOK: Record<Section, { note: string; tape: TapeKind; tapeStyle: React.CSS
   todos: { note: 'n-blush', tape: 'tdots', tapeStyle: { top: -10, left: 28, transform: 'rotate(-4deg)' }, rotate: -1 },
   shopping: { note: 'n-butter', tape: 'tm', tapeStyle: { top: -10, right: 34, transform: 'rotate(5deg)' }, rotate: 1 },
   pantry: { note: 'n-sand', tape: 'ty', tapeStyle: { top: -10, left: 36, transform: 'rotate(-3deg)' }, rotate: -0.8 },
+  bathroom: { note: 'n-mint', tape: 'tb', tapeStyle: { top: -10, right: 40, transform: 'rotate(4deg)' }, rotate: 0.7 },
   money: { note: 'n-mist', tape: 'tblocks', tapeStyle: { top: -10, left: '40%', transform: 'rotate(-2deg)' }, rotate: -0.6 },
   notes: { note: 'n-sage', tape: 'tcheck', tapeStyle: { top: -10, left: '30%', transform: 'rotate(3deg)' }, rotate: 0.6 },
 }
@@ -118,8 +119,8 @@ export function HomeScreen() {
     const room = (g: ReturnType<typeof groupThings>[number]) => (groupLow(g.rows) ? -1 : g.rows.length > 1 ? 2 : (g.rows[0].level - g.rows[0].low_at) / 100)
     return groupThings(pantry.rows).sort((a, b) => room(a) - room(b) || a.name.localeCompare(b.name))
   }, [pantry.rows])
-  const lowCount = shelf.filter((g) => groupLow(g.rows)).length
-  const shelfBox = useShelfWidth()
+  // The kitchen and the bathroom each have their own note.
+  const shelfBoxes = { pantry: useShelfWidth(), bathroom: useShelfWidth() }
   const pinnedNotes = useMemo(
     () => [...notes.rows].sort((a, b) => Number(b.pinned) - Number(a.pinned) || b.updated_at.localeCompare(a.updated_at)),
     [notes.rows],
@@ -292,31 +293,19 @@ export function HomeScreen() {
         </div>
       )
     }
-    if (s === 'pantry') {
+    if (s === 'pantry' || s === 'bathroom') {
+      // The kitchen note (its section is called "pantry") and the bathroom note: one shelf of what's running out first.
+      const here = shelf.filter((g) => g.rows[0].place === s)
+      const low = here.filter((g) => groupLow(g.rows)).length
+      const to = s === 'bathroom' ? '/pantry?place=bathroom' : '/pantry'
+      const box = shelfBoxes[s]
       return (
-        <div key="pantry" className={`note ${look.note} note-link`} onClick={open('/pantry')} style={{ transform: `rotate(${look.rotate}deg)` }}>
+        <div key={s} className={`note ${look.note} note-link`} onClick={open(to)} style={{ transform: `rotate(${look.rotate}deg)` }}>
           <Tape kind={look.tape} style={look.tapeStyle} />
-          <NoteHead
-            title={t('home.pantry')}
-            to="/pantry"
-            right={lowCount ? `${t('home.pantryLow', { count: lowCount })} · ${t('common.seeAll')}` : t('common.seeAll')}
-          />
-          {shelf.length ? (
-            // Kitchen and bathroom, each one shelf of what's running out first.
-            <div ref={shelfBox.ref} style={{ padding: '6px 6px 0', display: 'flex', flexDirection: 'column', gap: 4 }}>
-              {(['pantry', 'bathroom'] as const).map((place) => {
-                const here = shelf.filter((g) => g.rows[0].place === place)
-                if (!here.length) return null
-                const to = place === 'bathroom' ? '/pantry?place=bathroom' : '/pantry'
-                return (
-                  <div key={place}>
-                    <Link to={to} className="cap" style={{ display: 'inline-block', fontWeight: 800, marginBottom: 6 }}>
-                      {t(`home.shelf.${place}`)}
-                    </Link>
-                    <ShelfRows groups={here} width={shelfBox.width} height={56} maxRows={1} compact onOpen={() => navigate(to)} />
-                  </div>
-                )
-              })}
+          <NoteHead title={t(`home.shelf.${s}`)} to={to} right={low ? `${t('home.pantryLow', { count: low })} · ${t('common.seeAll')}` : t('common.seeAll')} />
+          {here.length ? (
+            <div ref={box.ref} style={{ padding: '10px 6px 0' }}>
+              <ShelfRows groups={here} width={box.width} height={56} maxRows={1} compact onOpen={() => navigate(to)} />
             </div>
           ) : (
             <Empty>{t('home.noPantry')}</Empty>
