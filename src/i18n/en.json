@@ -561,5 +561,24 @@
     "about": "About Pichigoose",
     "watching": "Keeping an eye on",
     "low": "Running low"
+  },
+  "wishes": {
+    "title": "Wish list",
+    "add": "Add a wish...",
+    "empty": "Nothing on the wish list yet.",
+    "got": "Got it",
+    "claim": "I'll get this",
+    "claimedByMe": "You're getting this",
+    "unclaim": "Tap to let it go",
+    "claimedBy": "{{name}} is getting this",
+    "secret": "{{name}} won't see who's getting what.",
+    "edit": "Edit wish",
+    "name": "Wish",
+    "price": "Price",
+    "pricePlaceholder": "€40",
+    "link": "Link",
+    "note": "Note",
+    "notePlaceholder": "Size M, the green one",
+    "deleted": "Wish deleted"
   }
 }

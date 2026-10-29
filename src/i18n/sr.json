@@ -569,5 +569,24 @@
     "about": "O aplikaciji Pichigoose",
     "watching": "Pazi na",
     "low": "Pri kraju"
+  },
+  "wishes": {
+    "title": "Lista želja",
+    "add": "Dodaj želju...",
+    "empty": "Lista želja je još prazna.",
+    "got": "Ostvareno",
+    "claim": "Ja ću ovo kupiti",
+    "claimedByMe": "Ti ovo kupuješ",
+    "unclaim": "Dodirni da odustaneš",
+    "claimedBy": "{{name}} ovo kupuje",
+    "secret": "{{name}} ne vidi ko šta kupuje.",
+    "edit": "Uredi želju",
+    "name": "Želja",
+    "price": "Cena",
+    "pricePlaceholder": "40 €",
+    "link": "Link",
+    "note": "Napomena",
+    "notePlaceholder": "Veličina M, zelena",
+    "deleted": "Želja je obrisana"
   }
 }

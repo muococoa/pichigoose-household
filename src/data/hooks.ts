@@ -146,6 +146,21 @@ export type Heart = Row & {
   created_at: string
 }
 
+/** A wish on someone's wish list (personal, like money: it belongs to the person, not a household). */
+export type Wish = Row & {
+  owner_id: string
+  name: string
+  price: string | null
+  link: string | null
+  note: string | null
+  got_at: string | null
+  position: number
+  created_at: string
+}
+
+/** "I'll get this": who's quietly getting a wish. The wish's owner can never read these. */
+export type WishClaim = Row & { wish_id: string; claimed_by: string; created_at: string }
+
 export type ChatRead = Row & { user_id: string; household_id: string; chat: string; read_at: string }
 
 // ---------------------------------------------------------------------------
@@ -359,6 +374,36 @@ export function useHearts(householdId: string | null) {
           belongs: (r) => r.household_id === householdId,
           load: () => supabase.from('hearts').select('*').eq('household_id', householdId),
           realtime: `household_id=eq.${householdId}`,
+        }
+      : null,
+  )
+}
+
+/** One person's wish list. */
+export function useWishes(ownerId: string | null | undefined) {
+  return useCollection<Wish>(
+    ownerId
+      ? {
+          key: `wishes:${ownerId}`,
+          table: 'wishes',
+          belongs: (r) => r.owner_id === ownerId,
+          load: () => supabase.from('wishes').select('*').eq('owner_id', ownerId),
+          realtime: `owner_id=eq.${ownerId}`,
+        }
+      : null,
+  )
+}
+
+/** The claims on a set of wishes (empty for your own wishes: the database never shows you those). */
+export function useWishClaims(wishIds: string[]) {
+  const ids = [...wishIds].sort()
+  return useCollection<WishClaim>(
+    ids.length
+      ? {
+          key: `wish-claims:${ids.join(',')}`,
+          table: 'wish_claims',
+          belongs: (r) => ids.includes(r.wish_id as string),
+          load: () => supabase.from('wish_claims').select('*').in('wish_id', ids),
         }
       : null,
   )

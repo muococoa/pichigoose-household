@@ -8,6 +8,7 @@ import { Avatar } from '../components/Avatar'
 import { Hand } from '../components/Scrapbook'
 import { BackIcon, MessagesIcon } from '../components/Icons'
 import { useBackInApp } from '../lib/back'
+import { WishList } from './Wishes'
 
 /** Wraps an avatar so tapping it opens that person's profile. */
 export function PersonLink({ id, children }: { id: string | null | undefined; children: ReactNode }) {
@@ -80,6 +81,7 @@ export function PersonScreen() {
                 </div>
               ))}
             </div>
+            <WishList ownerId={person.id} ownerName={person.display_name} />
           </>
         )}
       </div>
