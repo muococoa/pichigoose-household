@@ -11,6 +11,8 @@
   /* Errors stay pink-red in every theme, so they always read as errors. */
   --error: #D34471;
   --error-dark: #A8335A;
+  /* Hearts: the warm red of the hearts in Nora's stickers. */
+  --heart: #E9505A;
   --white: #FFFFFF;
   --ink-headline: #1E1A30;
   --ink-body: #2E2638;

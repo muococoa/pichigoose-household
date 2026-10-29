@@ -3,7 +3,8 @@ import { Navigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
 import { db } from '../data/store'
-import { useHousehold, type Message, type Profile } from '../data/hooks'
+import { useHousehold, type Heart, type Message, type Profile } from '../data/hooks'
+import { HeartBurst, HeartButton, HeartedBy, useDoubleTap, useHeartActions, useHeartsOn } from '../components/Hearts'
 import { useChats, useMarkRead, type Chat } from '../data/chats'
 import { Screen } from '../components/Shell'
 import { Avatar } from '../components/Avatar'
@@ -67,6 +68,7 @@ function Bubbles({ messages, group, readByAll }: { messages: Message[]; group: b
   const { people } = useHousehold()
   const { time, day } = useTimeLabels()
   const person = (id: string | null): Profile | undefined => people.find((p) => p.id === id)
+  const heartsOn = useHeartsOn()
   return (
     <>
       {messages.map((m, i) => {
@@ -88,23 +90,39 @@ function Bubbles({ messages, group, readByAll }: { messages: Message[]; group: b
                 </Stamp>
               </div>
             )}
-            <div className={`msg${mine ? ' mine' : ''}${first ? ' first' : ''}${lastOfRun ? ' last' : ''}`}>
-              {/* Like WhatsApp: in the group chat, the avatar sits at the bottom of each run, by the bubble's tail. */}
-              {group && !mine && <span className="msg-avatar">{lastOfRun && who ? <PersonLink id={who.id}><Avatar avatar={who.avatar} size={34} /></PersonLink> : null}</span>}
-              <div className="bubble">
-                {group && !mine && first && <div className="bubble-name">{who?.display_name}</div>}
-                <span className="bubble-text">{m.body}</span>
-                <span className="bubble-time">
-                  {time(m.created_at)}
-                  {/* One tick when sent, two once everyone else has read it. */}
-                  {mine && <Ticks read={readByAll(m)} />}
-                </span>
-              </div>
-            </div>
+            <Bubble m={m} mine={mine} first={first} lastOfRun={lastOfRun} group={group} who={who} time={time(m.created_at)} read={mine && readByAll(m)} hearts={heartsOn({ message_id: m.id })} />
           </div>
         )
       })}
     </>
+  )
+}
+
+/** One speech bubble. Double-tap it, or tap the small heart beside it, to heart it. Who hearted it
+ *  shows on a little tag hanging under the bubble, like Instagram. */
+function Bubble({ m, mine, first, lastOfRun, group, who, time, read, hearts }: { m: Message; mine: boolean; first: boolean; lastOfRun: boolean; group: boolean; who?: Profile; time: string; read: boolean; hearts: Heart[] }) {
+  const { add } = useHeartActions()
+  const target = { message_id: m.id }
+  const tap = useDoubleTap(() => add(target, hearts))
+  return (
+    <div className={`msg${mine ? ' mine' : ''}${first ? ' first' : ''}${lastOfRun ? ' last' : ''}${hearts.length ? ' hearted' : ''}`}>
+      {/* Like WhatsApp: in the group chat, the avatar sits at the bottom of each run, by the bubble's tail. */}
+      {group && !mine && <span className="msg-avatar">{lastOfRun && who ? <PersonLink id={who.id}><Avatar avatar={who.avatar} size={34} /></PersonLink> : null}</span>}
+      <div className="bubble-wrap">
+        <div className="bubble" onClick={tap.onClick}>
+          {group && !mine && first && <div className="bubble-name">{who?.display_name}</div>}
+          <span className="bubble-text">{m.body}</span>
+          <span className="bubble-time">
+            {time}
+            {/* One tick when sent, two once everyone else has read it. */}
+            {mine && <Ticks read={read} />}
+          </span>
+          <HeartBurst burst={tap.burst} />
+        </div>
+        <HeartedBy hearts={hearts} className="under-bubble" />
+      </div>
+      <HeartButton target={target} hearts={hearts} size={16} />
+    </div>
   )
 }
 

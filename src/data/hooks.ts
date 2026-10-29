@@ -112,6 +112,16 @@ export type Message = Row & {
   created_at: string
 }
 
+/** A heart on a comment, chat message or note: one per person per thing. */
+export type Heart = Row & {
+  household_id: string
+  user_id: string
+  comment_id: string | null
+  message_id: string | null
+  note_id: string | null
+  created_at: string
+}
+
 export type ChatRead = Row & { user_id: string; household_id: string; chat: string; read_at: string }
 
 // ---------------------------------------------------------------------------
@@ -294,6 +304,21 @@ export function useMessages(householdId: string | null) {
           table: 'messages',
           belongs: (r) => r.household_id === householdId,
           load: () => supabase.from('messages').select('*').eq('household_id', householdId).order('created_at'),
+          realtime: `household_id=eq.${householdId}`,
+        }
+      : null,
+  )
+}
+
+/** Every heart I can see in the household, on comments, chat messages and notes. */
+export function useHearts(householdId: string | null) {
+  return useCollection<Heart>(
+    householdId
+      ? {
+          key: `hearts:${householdId}`,
+          table: 'hearts',
+          belongs: (r) => r.household_id === householdId,
+          load: () => supabase.from('hearts').select('*').eq('household_id', householdId),
           realtime: `household_id=eq.${householdId}`,
         }
       : null,

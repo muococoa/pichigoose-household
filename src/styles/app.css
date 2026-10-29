@@ -119,7 +119,7 @@ textarea.input { height: auto; padding: 12px 16px; resize: none }
 /* Comments: a short chat under an item, to-do or note. */
 .comments { display: flex; flex-direction: column; gap: 12px; padding-top: 16px; margin-top: 4px; border-top: 2px dashed #E6DFE3 }
 .comments .label { margin: 0 }
-.comment { display: flex; gap: 10px; align-items: flex-start }
+.comment { position: relative; display: flex; gap: 10px; align-items: flex-start; touch-action: manipulation }
 .comment-body { font-size: 15px; line-height: 21px; font-weight: 600; color: #2E2638; white-space: pre-wrap; overflow-wrap: anywhere; margin-top: 1px }
 .comment-delete { display: flex; padding: 6px; margin: -4px -6px 0 0; color: #857A8C; border-radius: 50% }
 /* Same quiet gray as the "Nora · 42 minutes ago" line next to it. */
@@ -299,8 +299,10 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 .msg-avatar { width: 34px; flex: none; display: flex }
 /* Bubbles: theirs white, yours in the theme color with white text. The last bubble of a run gets a curled
    tail at the bottom, like WhatsApp (drawn with a mask so it's the bubble's own color). */
+.bubble-wrap { position: relative; max-width: 78%; min-width: 0; display: flex; flex-direction: column; align-items: flex-start }
+.msg.mine .bubble-wrap { align-items: flex-end }
 .bubble {
-  position: relative; max-width: 78%; padding: 7px 11px 6px 12px; background: #FFFFFF; color: #2E2638; font: 600 15px/21px Nunito, sans-serif;
+  position: relative; max-width: 100%; touch-action: manipulation; padding: 7px 11px 6px 12px; background: #FFFFFF; color: #2E2638; font: 600 15px/21px Nunito, sans-serif;
   border-radius: 18px; filter: drop-shadow(0 1px 0 rgba(30, 26, 48, .10)) drop-shadow(1px 2px 2px rgba(30, 26, 48, .05)); white-space: pre-wrap; overflow-wrap: anywhere;
 }
 .msg.mine .bubble { background: var(--hero); color: #FFFFFF }
@@ -317,6 +319,32 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 .msg.mine .bubble-time { color: rgba(255, 255, 255, .78) }
 .ticks { display: block; color: rgba(255, 255, 255, .7) }
 .ticks.read { color: #FFFFFF }
+/* Hearts, like Instagram. The small heart sits next to a comment or bubble (on the left of your own);
+   who hearted it shows under the text, or on a little tag hanging from the bottom of a bubble. */
+.heart-btn { flex: none; display: flex; padding: 6px; margin: -4px -2px 0; color: #A79DAD; border-radius: 50% }
+.heart-btn.on { color: var(--heart) }
+.heart-btn svg { display: block }
+.heart-btn.on svg { animation: heart-pop .35s cubic-bezier(.34, 1.56, .64, 1) }
+@keyframes heart-pop { 0% { transform: scale(.6) } 60% { transform: scale(1.25) } 100% { transform: scale(1) } }
+.msg .heart-btn { align-self: center; margin: 0 -6px }
+.msg.mine .heart-btn { order: -1 }
+.msg.hearted .heart-btn { margin-bottom: 14px }
+.hearted-by { display: inline-flex; align-items: center; gap: 5px; align-self: flex-start }
+.hearted-by svg { display: block; flex: none }
+.hearted-avatars { display: flex }
+.hearted-avatars .hearted-av { flex: none; display: block; border-radius: 50%; box-shadow: 0 0 0 1.5px #FFFFFF }
+.hearted-avatars .hearted-av + .hearted-av { margin-left: -5px }
+.hearted-more { font-size: 12px; font-weight: 800; color: #63586B }
+.under-comment { margin-top: 5px }
+.under-note { position: relative; z-index: 1; margin: 8px 0 0 36px }
+.under-bubble {
+  position: relative; z-index: 1; margin: -6px 10px 0; padding: 2px 6px 2px 5px; border-radius: 12px; background: #FFFFFF;
+  box-shadow: 0 0 0 1px rgba(30, 26, 48, .06), 0 1px 2px rgba(30, 26, 48, .12);
+}
+.msg.mine .under-bubble { align-self: flex-end }
+.heart-burst { position: absolute; left: 50%; top: 50%; margin: -23px 0 0 -23px; pointer-events: none; z-index: 2; animation: heart-burst .8s cubic-bezier(.2, .8, .3, 1) forwards; filter: drop-shadow(0 2px 3px rgba(30, 26, 48, .25)) }
+@keyframes heart-burst { 0% { transform: scale(.2); opacity: 0 } 20% { transform: scale(1.15); opacity: 1 } 35% { transform: scale(.95) } 70% { transform: scale(1); opacity: 1 } 100% { transform: scale(1.1) translateY(-6px); opacity: 0 } }
+@media (prefers-reduced-motion: reduce) { .heart-btn.on svg, .heart-burst { animation-duration: .01s } }
 .day-stamp { display: flex; justify-content: center; margin: 18px 0 4px }
 .say-hi { text-align: center; color: #63586B; font-size: 15px; font-weight: 600; margin: 48px 0 }
 .composer {

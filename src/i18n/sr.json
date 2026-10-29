@@ -473,5 +473,10 @@
       "button": "Obriši domaćinstvo",
       "typeName": "Upiši {{name}} da potvrdiš"
     }
+  },
+  "hearts": {
+    "heart": "Daj srce",
+    "unheart": "Povuci srce",
+    "by": "Srce od: {{names}}"
   }
 }

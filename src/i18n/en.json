@@ -465,5 +465,10 @@
       "button": "Delete household",
       "typeName": "Type {{name}} to confirm"
     }
+  },
+  "hearts": {
+    "heart": "Heart",
+    "unheart": "Take back your heart",
+    "by": "Hearted by {{names}}"
   }
 }

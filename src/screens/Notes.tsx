@@ -12,6 +12,7 @@ import { MyHouseholds } from './MyHouseholds'
 import { ago } from '../lib/time'
 import { useDesktop } from '../lib/desktop'
 import { CommentCount, Comments, useCommentCounts } from '../components/Comments'
+import { HeartButton, HeartedBy, useHeartsOn } from '../components/Hearts'
 
 // No sage: the notes card on Home is sage, and a sage note on it would disappear.
 const NOTE_COLORS = ['n-butter', 'n-mist', 'n-blush', 'n-peach', 'n-lilac']
@@ -227,6 +228,8 @@ function NoteEditor({ panel, noteId, onClose }: { panel?: boolean; noteId?: stri
   }, [id, hid, me, navigate])
 
   const note = notes.rows.find((n) => n.id === id)
+  const heartsOn = useHeartsOn()
+  const noteHearts = note ? heartsOn({ note_id: note.id }) : []
   const [title, setTitle] = useState(note?.title ?? '')
   const [body, setBody] = useState(note?.body ?? '')
   const [moving, setMoving] = useState(false)
@@ -345,12 +348,15 @@ function NoteEditor({ panel, noteId, onClose }: { panel?: boolean; noteId?: stri
           {note && author && (
             <div className="row cap" style={{ gap: 8, marginTop: 12, position: 'relative', zIndex: 1 }}>
               <Avatar avatar={author.avatar} size={28} />
-              <span>
+              <span style={{ flex: 1 }}>
                 {t('notes.wrote', { name: author.display_name })}
                 {editor && ` · ${t('notes.changed', { name: editor.display_name, when: ago(note.updated_at, i18n.language) })}`}
               </span>
+              {/* The note's own heart. No double-tap here: on a note, a double-tap picks a word to edit. */}
+              <HeartButton target={{ note_id: note.id }} hearts={noteHearts} size={20} />
             </div>
           )}
+          {note && <HeartedBy hearts={noteHearts} className="under-note" />}
         </div>
         {note && (
           <div style={{ marginTop: 22, paddingBottom: 12 }}>

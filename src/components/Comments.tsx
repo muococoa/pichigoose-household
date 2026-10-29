@@ -2,9 +2,10 @@ import { useMemo, useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
 import { db } from '../data/store'
-import { useComments, useHousehold, type Comment } from '../data/hooks'
+import { useComments, useHousehold, type Comment, type Heart } from '../data/hooks'
 import { ago } from '../lib/time'
 import { Avatar } from './Avatar'
+import { HeartBurst, HeartButton, HeartedBy, useDoubleTap, useHeartActions, useHeartsOn } from './Hearts'
 import { CloseIcon } from './Icons'
 import { showUndo } from './Scrapbook'
 import { PersonLink } from '../screens/Person'
@@ -58,11 +59,12 @@ export function CommentCount({ n }: { n: number }) {
 /** The conversation under an item, to-do or note: flat, like a chat. Everyone in the household
  *  can write; you can delete your own. Works offline and sends when there's signal. */
 export function Comments({ target }: { target: CommentTarget }) {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const me = useMe()
-  const { household, people } = useHousehold()
+  const { household } = useHousehold()
   const comments = useComments(household?.id ?? null)
   const [text, setText] = useState('')
+  const heartsOn = useHeartsOn()
 
   const thread = useMemo(
     () => comments.rows.filter((c) => about(c, target)).sort((a, b) => a.created_at.localeCompare(b.created_at)),
@@ -90,32 +92,9 @@ export function Comments({ target }: { target: CommentTarget }) {
   return (
     <section className="comments" aria-label={t('comments.title')}>
       <span className="label">{t('comments.title')}</span>
-      {thread.map((c) => {
-        const who = people.find((p) => p.id === c.author_id)
-        return (
-          <div key={c.id} className="comment">
-            <PersonLink id={who?.id}>
-              <Avatar avatar={who?.avatar} size={28} />
-            </PersonLink>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div className="cap" style={{ fontSize: 13 }}>
-                <b style={{ color: '#1E1A30', fontWeight: 800 }}>{who?.display_name ?? t('common.someone')}</b> · {ago(c.created_at, i18n.language)}
-              </div>
-              <div className="comment-body">{c.body}</div>
-            </div>
-            {c.author_id === me && (
-              <button type="button" className="comment-delete" aria-label={t('common.delete')} onClick={() => {
-                  // Gone right away, with a floating Undo for 5 seconds that puts it back exactly as it was.
-                  const { id, ...rest } = c
-                  db.remove('comments', id)
-                  showUndo(t('comments.deleted'), t('common.undo'), () => db.insert('comments', { ...rest, id }))
-                }}>
-                <CloseIcon size={16} />
-              </button>
-            )}
-          </div>
-        )
-      })}
+      {thread.map((c) => (
+        <CommentRow key={c.id} c={c} hearts={heartsOn({ comment_id: c.id })} />
+      ))}
       <form onSubmit={send} className="row" style={{ gap: 10, marginTop: thread.length ? 4 : 0 }}>
         <input
           className="input"
@@ -132,5 +111,42 @@ export function Comments({ target }: { target: CommentTarget }) {
         </button>
       </form>
     </section>
+  )
+}
+
+/** One comment. Double-tap it, or tap the small heart, to heart it; who hearted it shows under the text. */
+function CommentRow({ c, hearts }: { c: Comment; hearts: Heart[] }) {
+  const { t, i18n } = useTranslation()
+  const me = useMe()
+  const { people } = useHousehold()
+  const { add } = useHeartActions()
+  const target = { comment_id: c.id }
+  const tap = useDoubleTap(() => add(target, hearts))
+  const who = people.find((p) => p.id === c.author_id)
+  return (
+    <div className="comment" onClick={tap.onClick}>
+      <PersonLink id={who?.id}>
+        <Avatar avatar={who?.avatar} size={28} />
+      </PersonLink>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div className="cap" style={{ fontSize: 13 }}>
+          <b style={{ color: '#1E1A30', fontWeight: 800 }}>{who?.display_name ?? t('common.someone')}</b> · {ago(c.created_at, i18n.language)}
+        </div>
+        <div className="comment-body">{c.body}</div>
+        <HeartedBy hearts={hearts} className="under-comment" />
+      </div>
+      <HeartButton target={target} hearts={hearts} />
+      {c.author_id === me && (
+        <button type="button" className="comment-delete" aria-label={t('common.delete')} onClick={() => {
+            // Gone right away, with a floating Undo for 5 seconds that puts it back exactly as it was.
+            const { id, ...rest } = c
+            db.remove('comments', id)
+            showUndo(t('comments.deleted'), t('common.undo'), () => db.insert('comments', { ...rest, id }))
+          }}>
+          <CloseIcon size={16} />
+        </button>
+      )}
+      <HeartBurst burst={tap.burst} />
+    </div>
   )
 }

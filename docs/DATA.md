@@ -163,6 +163,19 @@ A short conversation under a shopping item, to-do or note [Nora]. Flat, like a c
 
 Everyone in the household can read and write comments; people can delete only their own. Live updates on.
 
+### hearts
+Hearts on comments, chat messages and notes, like Instagram [Nora]. Only hearts, no other emoji (yet).
+
+| column | type | notes |
+|---|---|---|
+| id | uuid, primary key | |
+| household_id | uuid, references households | always taken from the thing hearted, by a database trigger |
+| user_id | uuid, references profiles | must be the person hearting |
+| comment_id / message_id / note_id | uuid, one of them | exactly one is set; deleting the thing deletes its hearts |
+| created_at | timestamptz | |
+
+One heart per person per thing. Everyone in the household sees the hearts, except on private messages, where only the two people in that chat do. People can take back only their own. Live updates on.
+
 ### pantry_items
 What's on the shelves (K1 to K6) [Nora]: the pantry, and the bathroom cabinet.
 
