@@ -323,12 +323,13 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 .chat-screen .typing-bar { position: absolute; left: 14px; right: 14px; bottom: var(--composer-at); z-index: 3 }
 .chat-screen .bubbles { padding-top: 74px; padding-bottom: calc(var(--composer-h, 50px) + var(--composer-at) + 14px) }
 /* Messages don't peek out around the floating header (up by the washi tape) or below the typing bar (Nora, 29 Oct):
-   they fade into the paper as they slide under them. A fade, not a blur, so the paper's lines stay clean. */
+   they start fading a few pixels before they reach either one and are gone by its middle, so nothing pokes out
+   beside them. A fade, not a blur, so the paper's lines stay clean. (The header is 8 to 62 px from the top.) */
 .chat-screen .bubbles {
-  --fade-top: linear-gradient(to bottom, transparent 0, transparent 62px, #000 86px);
-  -webkit-mask-image: var(--fade-top), linear-gradient(to top, transparent 0, transparent calc(var(--composer-at) + var(--composer-h, 50px) - 4px), #000 calc(var(--composer-at) + var(--composer-h, 50px) + 16px));
+  --fade-top: linear-gradient(to bottom, transparent 0, transparent 35px, #000 66px);
+  -webkit-mask-image: var(--fade-top), linear-gradient(to top, transparent 0, transparent calc(var(--composer-at) + var(--composer-h, 50px) / 2), #000 calc(var(--composer-at) + var(--composer-h, 50px) + 4px));
   -webkit-mask-composite: source-in;
-  mask-image: var(--fade-top), linear-gradient(to top, transparent 0, transparent calc(var(--composer-at) + var(--composer-h, 50px) - 4px), #000 calc(var(--composer-at) + var(--composer-h, 50px) + 16px));
+  mask-image: var(--fade-top), linear-gradient(to top, transparent 0, transparent calc(var(--composer-at) + var(--composer-h, 50px) / 2), #000 calc(var(--composer-at) + var(--composer-h, 50px) + 4px));
   mask-composite: intersect;
 }
 .chat-screen .kb-spacer { display: none }
