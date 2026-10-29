@@ -57,13 +57,13 @@ function remembered() {
 export function watchKeyboard() {
   const vv = window.visualViewport
   const root = document.documentElement
-  // iPhone also floats its own bar (arrows and a check) above the keyboard. CSS uses this to let
-  // pop-ups and bars reach down behind it, so there's no gap.
-  if (isIOS) root.dataset.ios = ''
   // While we're ahead of the keyboard, the page still says "no keyboard" for a moment; don't listen to that.
   let aheadUntil = 0
 
+  // Where the keyboard is going (the CSS value glides there over a moment).
+  let target = 0
   function set(px: number) {
+    target = px
     root.style.setProperty('--kb', `${px}px`)
     if (px > 0) root.dataset.kb = 'open'
     else delete root.dataset.kb
@@ -126,8 +126,7 @@ export function watchKeyboard() {
     window.setTimeout(() => {
       const scroller = el.closest('.scroll') as HTMLElement | null
       if (!scroller) return
-      const kb = parseFloat(getComputedStyle(root).getPropertyValue('--kb')) || 0
-      const visibleBottom = window.innerHeight - kb - 16
+      const visibleBottom = window.innerHeight - target - 16
       const r = el.getBoundingClientRect()
       if (r.bottom > visibleBottom) scroller.scrollBy({ top: r.bottom - visibleBottom, behavior: 'smooth' })
     }, 60)

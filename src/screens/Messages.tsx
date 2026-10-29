@@ -132,18 +132,20 @@ function Conversation({ chatKey, header, back }: { chatKey: string; header?: boo
     first.current = false
   }, [count])
 
-  // When the keyboard opens and the chat gets shorter, keep the newest messages in view instead of
-  // the header moving away, like WhatsApp.
+  // When the keyboard opens, the typing area grows down there (its paper reaches behind the keyboard).
+  // Scroll along by the same amount, so the newest messages stay in view instead of hiding, like WhatsApp.
   useEffect(() => {
     const scroller = endRef.current?.closest('.chat-screen .scroll') as HTMLElement | null
-    if (!scroller) return
-    let last = scroller.clientHeight
+    const composer = fieldRef.current?.closest('.composer') as HTMLElement | null
+    if (!scroller || !composer) return
+    let last = composer.offsetHeight
     const watch = new ResizeObserver(() => {
-      const now = scroller.clientHeight
-      if (now < last) scroller.scrollTop += last - now
+      const now = composer.offsetHeight
+      if (now > last) scroller.scrollTop += now - last
       last = now
     })
-    watch.observe(scroller)
+    // The border box: the typing area grows by its padding.
+    watch.observe(composer, { box: 'border-box' })
     return () => watch.disconnect()
   }, [chat?.key])
 
