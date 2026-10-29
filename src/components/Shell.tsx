@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState
 import { createPortal } from 'react-dom'
 import { NavLink, useLocation, useNavigate, useNavigationType } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { BasketFilled, BasketIcon, HomeFilled, HomeIcon, MessagesFilled, MessagesIcon, NoteFilled, NoteIcon, TodoFilled, TodoIcon } from './Icons'
+import { BasketFilled, BasketIcon, HomeFilled, HomeIcon, InkCircle, MessagesFilled, MessagesIcon, NoteFilled, NoteIcon, TodoFilled, TodoIcon } from './Icons'
 import { DoodleSpot, Stamp, STAMP_COLORS, type DoodlePose } from './Scrapbook'
 import { flush, refetchAll, useOutboxCount } from '../data/store'
 import { useDesktop } from '../lib/desktop'
@@ -141,36 +141,29 @@ export function TabBar() {
     { to: '/messages', label: t('tabs.messages'), icon: <MessagesIcon size={ICON} width={STROKE} />, on: <MessagesFilled size={ICON} /> },
   ]
   const index = tabs.findIndex((tab) => tab.to === pathname)
-  // Every screen draws its own menu, so the new one starts where the last one was and slides over.
-  const [shown, setShown] = useState(lastTab >= 0 && index >= 0 ? lastTab : index)
   const barRef = useRef<HTMLElement>(null)
-  const pillRef = useRef<HTMLSpanElement>(null)
+  // Every screen draws its own menu. When you've come from another tab, the bar gives a soft, springy
+  // bounce once the new page has landed (bouncing while the page still slides in felt like a tug sideways).
   useLayoutEffect(() => {
     const from = lastTab
     lastTab = index
-    if (index < 0 || from === index) return
-    const frame = requestAnimationFrame(() => setShown(index))
-    if (from >= 0 && !reducedMotion()) {
-      // The whole bar gives a soft, springy bounce, and the highlight stretches as it slides.
+    if (index < 0 || from < 0 || from === index || reducedMotion()) return
+    const timer = window.setTimeout(() => {
       barRef.current?.animate(
-        [{ transform: 'scale(1)' }, { transform: 'scale(1.04, 1.06)', offset: 0.3 }, { transform: 'scale(.985, .98)', offset: 0.62 }, { transform: 'scale(1.004)', offset: 0.84 }, { transform: 'scale(1)' }],
-        { duration: 560, easing: 'ease-out' },
+        [{ transform: 'scale(1)' }, { transform: 'scale(1.03, 1.05)', offset: 0.3 }, { transform: 'scale(.99, .985)', offset: 0.62 }, { transform: 'scale(1)' }],
+        { duration: 480, easing: 'ease-out' },
       )
-      pillRef.current?.animate([{ transform: 'scaleX(1)' }, { transform: 'scale(1.28, .9)', offset: 0.35 }, { transform: 'scaleX(1)' }], { duration: 480, easing: 'ease-out' })
-    }
-    return () => cancelAnimationFrame(frame)
+    }, 220)
+    return () => window.clearTimeout(timer)
   }, [index])
   return (
     <nav className="tabbar" ref={barRef}>
-      {shown >= 0 && (
-        <span className="tab-pill" style={{ '--i': shown } as React.CSSProperties} aria-hidden>
-          <span ref={pillRef} />
-        </span>
-      )}
       {tabs.map((tab, i) => (
         <NavLink key={tab.to} to={tab.to} end className={`tab${i === index ? ' on' : ''}`}>
           <span className="tab-icon">
             {i === index ? tab.on : tab.icon}
+            {/* The chosen tab: a hand-drawn ink circle around its icon, drawn on quickly. */}
+            {i === index && <InkCircle />}
             {tab.to === '/messages' && unread > 0 && <span className="tab-badge">{unread > 99 ? '99+' : unread}</span>}
           </span>
           <span>{tab.label}</span>

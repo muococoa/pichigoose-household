@@ -1,23 +1,23 @@
-import { useEffect, useLayoutEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
 import { db } from '../data/store'
 import { useHousehold, type Heart, type Message, type Profile } from '../data/hooks'
-import { StickerButton, StickerImage } from '../components/Stickers'
+import { StickerImage } from '../components/Stickers'
+import { TypingBar } from '../components/TypingBar'
 import { HeartBurst, HeartButton, HeartedBy, useDoubleTap, useHeartActions, useHeartsOn } from '../components/Hearts'
 import { useChats, useMarkRead, type Chat } from '../data/chats'
 import { Screen } from '../components/Shell'
 import { Avatar } from '../components/Avatar'
 import { Stamp, STAMP_COLORS } from '../components/Scrapbook'
-import { BackIcon, CloseIcon, HomeIcon, ReplyIcon, SendIcon } from '../components/Icons'
+import { BackIcon, CloseIcon, HomeIcon, ReplyIcon } from '../components/Icons'
 import { useKept } from '../lib/kept'
 import { focusField } from '../lib/keyboard'
 import { useDesktop } from '../lib/desktop'
 import { PersonLink } from './Person'
 import { useBackInApp } from '../lib/back'
 
-const touchScreen = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches
 
 function sameDay(a: Date, b: Date) {
   return a.toDateString() === b.toDateString()
@@ -281,15 +281,6 @@ function Conversation({ chatKey, header, back }: { chatKey: string; header?: boo
     }
   }, [chat?.key])
 
-  // The field grows with the text, up to five lines.
-  useLayoutEffect(() => {
-    const el = fieldRef.current
-    if (!el) return
-    el.style.height = 'auto'
-    el.style.height = `${Math.min(el.scrollHeight, 128)}px`
-  }, [text])
-
-
   if (!chat || !household) return null
   const group = chat.key === 'household'
   const title = chatName(chat, name(household))
@@ -297,14 +288,11 @@ function Conversation({ chatKey, header, back }: { chatKey: string; header?: boo
   const replying = replyTo ? chat.messages.find((m) => m.id === replyTo) : undefined
   const replyingWho = replying ? people.find((p) => p.id === replying.author_id) : undefined
 
-  function send(e?: FormEvent) {
-    e?.preventDefault()
-    const body = text.trim()
-    if (!body || !household) return
+  function send(body: string) {
+    if (!household) return
     db.insert('messages', { household_id: household.id, author_id: me, to_user: group ? null : chatKey, body, sticker: null, reply_to: replying ? replyTo : null, created_at: new Date().toISOString() })
     setText('')
     setReplyTo(null)
-    fieldRef.current?.focus()
   }
 
   function sendSticker(sticker: string) {
@@ -316,14 +304,6 @@ function Conversation({ chatKey, header, back }: { chatKey: string; header?: boo
   function reply(m: Message) {
     setReplyTo(m.id)
     focusField(fieldRef.current)
-  }
-
-  function key(e: KeyboardEvent<HTMLTextAreaElement>) {
-    // On a computer, Enter sends and Shift+Enter starts a new line. On a phone, Return is a new line, like WhatsApp.
-    if (!touchScreen && e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      send()
-    }
   }
 
   return (
@@ -357,33 +337,29 @@ function Conversation({ chatKey, header, back }: { chatKey: string; header?: boo
         )}
         <div ref={endRef} />
       </div>
-      <form className={`composer${replying ? ' replying' : ''}`} onSubmit={send}>
-        {replying && (
-          <div className="composer-quote">
-            <span style={{ flex: 1, minWidth: 0 }}>
-              <b>{replying.author_id === me ? t('replies.replyingToSelf') : t('replies.replyingTo', { name: replyingWho?.display_name ?? t('common.someone') })}</b>
-              {replying.sticker ? <StickerImage name={replying.sticker} size={32} /> : <span className="composer-quote-text">{replying.body}</span>}
-            </span>
-            <button type="button" aria-label={t('common.cancel')} onPointerDown={(e) => e.preventDefault()} onClick={() => setReplyTo(null)}>
-              <CloseIcon size={18} />
-            </button>
-          </div>
-        )}
-        <textarea
-          ref={fieldRef}
-          className="input"
-          rows={1}
-          placeholder={t('messages.placeholder')}
-          aria-label={t('messages.placeholder')}
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          onKeyDown={key}
-        />
-        <StickerButton onSend={sendSticker} />
-        <button type="submit" className="send-btn" aria-label={t('messages.send')} disabled={!text.trim()} onPointerDown={(e) => e.preventDefault()}>
-          <SendIcon />
-        </button>
-      </form>
+      <TypingBar
+        className="composer"
+        multiline
+        value={text}
+        onChange={setText}
+        onSend={send}
+        onSticker={sendSticker}
+        placeholder={t('messages.placeholder')}
+        fieldRef={fieldRef}
+        above={
+          replying && (
+            <div className="composer-quote">
+              <span style={{ flex: 1, minWidth: 0 }}>
+                <b>{replying.author_id === me ? t('replies.replyingToSelf') : t('replies.replyingTo', { name: replyingWho?.display_name ?? t('common.someone') })}</b>
+                {replying.sticker ? <StickerImage name={replying.sticker} size={32} /> : <span className="composer-quote-text">{replying.body}</span>}
+              </span>
+              <button type="button" aria-label={t('common.cancel')} onPointerDown={(e) => e.preventDefault()} onClick={() => setReplyTo(null)}>
+                <CloseIcon size={18} />
+              </button>
+            </div>
+          )
+        }
+      />
       {/* On an iPhone the keyboard covers the page; this keeps the newest message above it. */}
       <div className="kb-spacer" />
     </div>

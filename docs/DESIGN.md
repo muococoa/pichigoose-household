@@ -86,7 +86,8 @@ Eight patterns in `tokens.json` under `washi.patterns`: stripes in pink, yellow,
 These stay **clean on purpose,** so anything you tap or type into reads right away. The scrapbook feel lives in the paper, notes, tape and ink.
 
 - **Icons:** simple line icons, 26 px, 2 px stroke, round caps.
-- **Tab bar:** floating, like WhatsApp's [Nora]: a frosted paper pill, 62 px tall, 14 px in from the sides and a little above the bottom edge, with the lists scrolling blurred behind it. Icons are 34 px outlines with 2 px lines over 10 px labels; the selected tab's icon is filled with ink in hero dark and sits on a soft hero-tinted highlight that slides over with a spring while the whole bar bounces. The round + button (50 px) floats above it on the right, lined up with its edge, and bounces when tapped. On Shopping the add field slides out from behind it, with no strip behind, and the button shrinks to the field's 40 px.
+- **Tab bar:** floating [Nora]: a strip of our paper with rounded ends, 62 px tall, 14 px in from the sides and a little above the bottom edge, with a soft shadow; the lists scroll behind it. Icons are 34 px outlines with 2 px lines over 10 px labels; the chosen tab's icon is filled with ink (details cut out) and gets the hand-drawn ink circle. The bar bounces softly when you arrive from another tab. The round + button (50 px) floats above it on the right.
+- **Typing bar:** one for every place you type a short text [Nora]: chat, comments and Shopping's add field. The same paper strip with the field, stickers where they fit and the round send button, floating 8 px above the keyboard while you type. Sending closes the keyboard.
 - **Inputs:** slim and fully round, like the message field [Nora]: 40 px tall, white, a 1.5 px lilac edge (`#E2D8EC`) that turns the theme color while typing, and placeholder text in `ink.faint`.
 
 ## 11. Motion

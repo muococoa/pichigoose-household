@@ -1,13 +1,13 @@
-import { useMemo, useRef, type FormEvent } from 'react'
+import { useMemo } from 'react'
 import { useKept } from '../lib/kept'
-import { focusField } from '../lib/keyboard'
 import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
 import { db } from '../data/store'
 import { useComments, useHousehold, type Comment, type Heart } from '../data/hooks'
 import { ago } from '../lib/time'
 import { Avatar } from './Avatar'
-import { StickerButton, StickerImage } from './Stickers'
+import { StickerImage } from './Stickers'
+import { TypingBar } from './TypingBar'
 import { HeartBurst, HeartButton, HeartedBy, useDoubleTap, useHeartActions, useHeartsOn } from './Hearts'
 import { CloseIcon } from './Icons'
 import { showUndo } from './Scrapbook'
@@ -64,41 +64,20 @@ export function CommentCount({ n }: { n: number }) {
 export function Comments({ target }: { target: CommentTarget }) {
   const { t } = useTranslation()
   const me = useMe()
-  const { household, people } = useHousehold()
+  const { household } = useHousehold()
   const comments = useComments(household?.id ?? null)
-  const keep = `comments:${Object.values(target)[0]}`
-  const [text, setText] = useKept(`${keep}:text`, '')
-  // The comment you're answering, by its id.
-  const [replyTo, setReplyTo] = useKept<string | null>(`${keep}:reply`, null)
+  // What you're typing stays if you step away and come back.
+  const [text, setText] = useKept(`comments:${Object.values(target)[0]}:text`, '')
   const heartsOn = useHeartsOn()
-  const fieldRef = useRef<HTMLInputElement>(null)
 
-  // Like Instagram: replies sit under the comment they answer, one level deep (a reply to a reply joins the
-  // same group). If that comment is gone, the reply stands on its own.
-  const thread = useMemo(() => {
-    const all = comments.rows.filter((c) => about(c, target)).sort((a, b) => a.created_at.localeCompare(b.created_at))
-    const byId = new Map(all.map((c) => [c.id, c]))
-    const rootOf = (c: Comment): Comment => {
-      let r = c
-      for (let i = 0; i < 20 && r.reply_to && byId.has(r.reply_to); i++) r = byId.get(r.reply_to)!
-      return r
-    }
-    const out: { c: Comment; reply: boolean }[] = []
-    for (const c of all) {
-      if (rootOf(c) !== c) continue
-      out.push({ c, reply: false })
-      for (const r of all) if (r !== c && rootOf(r) === c) out.push({ c: r, reply: true })
-    }
-    return out
+  const thread = useMemo(
+    () => comments.rows.filter((c) => about(c, target)).sort((a, b) => a.created_at.localeCompare(b.created_at)),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [comments.rows, JSON.stringify(target)])
-  const replying = replyTo ? thread.find((x) => x.c.id === replyTo)?.c : undefined
-  const replyingWho = people.find((p) => p.id === replying?.author_id)
+    [comments.rows, JSON.stringify(target)],
+  )
 
-  function send(e?: FormEvent, sticker?: string) {
-    e?.preventDefault()
-    const body = sticker ? '' : text.trim()
-    if ((!body && !sticker) || !household) return
+  function send(body: string, sticker?: string) {
+    if (!household) return
     db.insert('comments', {
       household_id: household.id,
       item_id: null,
@@ -108,64 +87,28 @@ export function Comments({ target }: { target: CommentTarget }) {
       author_id: me,
       body,
       sticker: sticker ?? null,
-      reply_to: replying ? replying.id : null,
+      reply_to: null,
       created_at: new Date().toISOString(),
     })
     if (!sticker) setText('')
-    setReplyTo(null)
   }
 
   return (
     <section className="comments" aria-label={t('comments.title')}>
       <span className="label">{t('comments.title')}</span>
-      {thread.map(({ c, reply }) => (
-        <CommentRow
-          key={c.id}
-          c={c}
-          reply={reply}
-          hearts={heartsOn({ comment_id: c.id })}
-          onReply={() => {
-            setReplyTo(c.id)
-            // Focused the app's way, so the iPhone doesn't push the page; the field then scrolls into view.
-            focusField(fieldRef.current)
-          }}
-        />
+      {thread.map((c) => (
+        <CommentRow key={c.id} c={c} hearts={heartsOn({ comment_id: c.id })} />
       ))}
-      {replying && (
-        <div className="composer-quote" style={{ marginTop: 4 }}>
-          <span style={{ flex: 1, minWidth: 0 }}>
-            <b>{replying.author_id === me ? t('replies.replyingToSelf') : t('replies.replyingTo', { name: replyingWho?.display_name ?? t('common.someone') })}</b>
-            {replying.sticker ? <StickerImage name={replying.sticker} size={32} /> : <span className="composer-quote-text">{replying.body}</span>}
-          </span>
-          <button type="button" aria-label={t('common.cancel')} onPointerDown={(e) => e.preventDefault()} onClick={() => setReplyTo(null)}>
-            <CloseIcon size={18} />
-          </button>
-        </div>
-      )}
-      <form onSubmit={send} className="row" style={{ gap: 10, marginTop: thread.length && !replying ? 4 : 0, position: 'relative' }}>
-        <input
-          ref={fieldRef}
-          className="input"
-          style={{ flex: 1 }}
-          placeholder={t('comments.placeholder')}
-          aria-label={t('comments.placeholder')}
-          value={text}
-          enterKeyHint="send"
-          onChange={(e) => setText(e.target.value)}
-        />
-        <StickerButton onSend={(name) => send(undefined, name)} />
-        {/* People get the violet sticker. */}
-        <button type="submit" className="stk violet sm" style={{ height: 44, transform: 'rotate(-2deg)' }} disabled={!text.trim()}>
-          {t('comments.send')}
-        </button>
-      </form>
+      {/* The typing bar sits here, and floats up above the keyboard while you type. */}
+      <div className="typing-slot" style={{ marginTop: thread.length ? 4 : 0 }}>
+        <TypingBar value={text} onChange={setText} onSend={(body) => send(body)} onSticker={(name) => send('', name)} placeholder={t('comments.placeholder')} />
+      </div>
     </section>
   )
 }
 
-/** One comment. Double-tap it, or tap the small heart, to heart it; who hearted it shows under the text.
- *  Reply, next to the time, answers it (like Instagram); replies sit indented under it. */
-function CommentRow({ c, hearts, reply, onReply }: { c: Comment; hearts: Heart[]; reply: boolean; onReply: () => void }) {
+/** One comment. Double-tap it, or tap the small heart, to heart it; who hearted it shows under the text. */
+function CommentRow({ c, hearts }: { c: Comment; hearts: Heart[] }) {
   const { t, i18n } = useTranslation()
   const me = useMe()
   const { people } = useHousehold()
@@ -174,16 +117,13 @@ function CommentRow({ c, hearts, reply, onReply }: { c: Comment; hearts: Heart[]
   const tap = useDoubleTap(() => add(target, hearts))
   const who = people.find((p) => p.id === c.author_id)
   return (
-    <div className={`comment${reply ? ' comment-reply' : ''}`} onClick={tap.onClick}>
+    <div className="comment" onClick={tap.onClick}>
       <PersonLink id={who?.id}>
         <Avatar avatar={who?.avatar} size={28} />
       </PersonLink>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div className="cap" style={{ fontSize: 13 }}>
-          <b style={{ color: '#1E1A30', fontWeight: 800 }}>{who?.display_name ?? t('common.someone')}</b> · {ago(c.created_at, i18n.language)} ·{' '}
-          <button type="button" className="comment-reply-btn" onClick={onReply}>
-            {t('replies.reply')}
-          </button>
+          <b style={{ color: '#1E1A30', fontWeight: 800 }}>{who?.display_name ?? t('common.someone')}</b> · {ago(c.created_at, i18n.language)}
         </div>
         {c.sticker ? <StickerImage name={c.sticker} size={96} /> : <div className="comment-body">{c.body}</div>}
         <HeartedBy hearts={hearts} className="under-comment" />

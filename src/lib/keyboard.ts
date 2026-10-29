@@ -129,7 +129,7 @@ export function watchKeyboard() {
     // pop-up) scrolled so it isn't hidden behind the keyboard, or behind a pop-up's pinned buttons; that
     // scroll glides. Checked again once the keyboard's real height is known. A reply's "Replying to" sits
     // right above its field, so it comes into view with it.
-    if (el.closest('.add-bar, .composer')) return
+    if (el.closest('.add-bar, .composer, .typing-bar')) return
     const reveal = () => {
       if (document.activeElement !== el) return
       const sheet = el.closest('.sheet') as HTMLElement | null

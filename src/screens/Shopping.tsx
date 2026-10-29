@@ -15,6 +15,7 @@ import { SortableContext, arrayMove, horizontalListSortingStrategy, useSortable 
 import { CSS } from '@dnd-kit/utilities'
 import { useDesktop } from '../lib/desktop'
 import { useKept } from '../lib/kept'
+import { TypingBar } from '../components/TypingBar'
 import { useSlideDirection, useSwipeBetween, useTapeBounce } from '../components/Slide'
 import { PersonLink } from './Person'
 import { CommentCount, Comments, useCommentCounts } from '../components/Comments'
@@ -120,8 +121,13 @@ export function ShoppingScreen() {
 
   function add(e: FormEvent) {
     e.preventDefault()
-    const name = text.trim()
-    if (!name || !list) return
+    if (!text.trim()) return
+    addItem(text.trim())
+    focusField(inputRef.current)
+  }
+
+  function addItem(name: string) {
+    if (!list) return
     db.insert('list_items', {
       list_id: list.id,
       name,
@@ -133,7 +139,6 @@ export function ShoppingScreen() {
       position: 0,
     })
     setText('')
-    focusField(inputRef.current)
   }
 
   // Lists keep the order people give them (shared by the household). Groceries always stays first.
@@ -233,39 +238,41 @@ export function ShoppingScreen() {
           Tapped, it settles into the bar while the field grows out of it. Phone only. */}
       {!desktop && (
       <Floating>
-      <form onSubmit={add} className={`add-bar${adding ? ' open' : ''}`}>
-        <input
-          ref={inputRef}
-          className="input"
-          tabIndex={adding ? 0 : -1}
-          aria-hidden={!adding}
-          placeholder={t('shopping.addItem')}
-          aria-label={t('shopping.addItem')}
+      {/* The typing bar, like the chat's: closed, just the floating +; tapped, the bar slides out from behind it,
+          right above the keyboard. Sending adds the item and closes the keyboard (tap + again for the next one). */}
+      <div className={`add-bar${adding ? ' open' : ''}`}>
+        <TypingBar
           value={text}
-          enterKeyHint="done"
-          onChange={(e) => setText(e.target.value)}
+          onChange={setText}
+          onSend={(name) => {
+            addItem(name)
+            setAdding(false)
+          }}
+          placeholder={t('shopping.addItem')}
+          fieldRef={inputRef}
+          closed={!adding}
           onBlur={() => {
-            // Close the field again when it's left empty.
-            if (!text.trim()) setAdding(false)
+            // Close the bar again when it's left empty.
+            if (!inputRef.current?.value.trim()) setAdding(false)
           }}
         />
         <button
-          type="submit"
-          className="stk prim round"
+          type="button"
+          className="stk prim round add-fab"
           aria-label={t('shopping.addButton')}
+          tabIndex={adding ? -1 : undefined}
           onPointerDown={(e) => e.preventDefault()}
-          onClick={(e) => {
+          onClick={() => {
             if (adding) return
-            e.preventDefault()
-            // Focus right away, inside the tap, so the phone opens the keyboard; the field slides out from
-            // behind the button a moment later, once it's back in place, so the two moves don't collide.
+            // Focus right away, inside the tap, so the phone opens the keyboard; the bar slides out a moment later,
+            // once the field is back in place, so the two moves don't collide.
             focusField(inputRef.current)
             requestAnimationFrame(() => requestAnimationFrame(() => setAdding(true)))
           }}
         >
           <PlusIcon />
         </button>
-      </form>
+      </div>
       </Floating>
       )}
       <div style={{ padding: 'calc(var(--top) + 8px) 22px 0 40px', display: 'flex', flexDirection: 'column', gap: desktop ? 18 : 14 }}>
