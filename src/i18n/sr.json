@@ -466,7 +466,9 @@
       "livesIn": "Stoji u",
       "goesIn": "Ide u",
       "moved": "{{item}} premešteno u {{spot}}."
-    }
+    },
+    "allContainers": "Sve",
+    "recommended": "Predlog"
   },
   "household": {
     "clean": {

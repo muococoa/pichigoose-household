@@ -458,7 +458,9 @@
       "livesIn": "Lives in",
       "goesIn": "Goes in",
       "moved": "{{item}} moved to {{spot}}."
-    }
+    },
+    "allContainers": "All",
+    "recommended": "Recommended"
   },
   "household": {
     "clean": {

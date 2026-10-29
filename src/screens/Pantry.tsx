@@ -8,7 +8,7 @@ import { setPantryLevel } from '../data/actions'
 import { Floating, Screen } from '../components/Shell'
 import { EmptyState, Hand, PeekingPichi, Sheet, showToast, showUndo, type TapeKind } from '../components/Scrapbook'
 import { BackIcon, BroomIcon, PlusIcon } from '../components/Icons'
-import { ContainerDrawing, containersFor, guessContainer, insideSpan } from '../components/Containers'
+import { CONTAINERS, ContainerDrawing, containersFor, guessContainer, insideSpan } from '../components/Containers'
 import { GroupDrawing, ShelfRows, groupKey, groupThings, useShelfWidth, type Group } from '../components/Shelves'
 import { useDesktop } from '../lib/desktop'
 import { forget, useKept } from '../lib/kept'
@@ -568,7 +568,7 @@ function GroupSheet({ groupId, onClose }: { groupId: string | null; onClose: () 
 
           <div>
             <span className="label">{t('pantry.looksLike')}</span>
-            <ContainerPicker kind={hereRoom?.kind ?? (p.place === 'bathroom' ? 'bathroom' : 'kitchen')} value={p.container} level={p.level} lowAt={p.low_at} onPick={(container) => save({ container })} />
+            <ContainerPicker kind={hereRoom?.kind ?? (p.place === 'bathroom' ? 'bathroom' : 'kitchen')} name={p.name} value={p.container} level={p.level} lowAt={p.low_at} onPick={(container) => save({ container })} />
           </div>
 
           {/* Where it lives: every storage spot in the home. Tap one to move it there. */}
@@ -645,20 +645,54 @@ function GroupSheet({ groupId, onClose }: { groupId: string | null; onClose: () 
   )
 }
 
-function ContainerPicker({ kind, value, level, lowAt, onPick }: { kind: RoomKind; value: Container; level: number; lowAt: number; onPick: (c: Container) => void }) {
-  // Only what makes sense in this kind of room, plus whatever this thing already is.
-  const set = containersFor(kind)
-  const choices = set.includes(value) ? set : [value, ...set]
+/**
+ * What it looks like (Nora, 29 Oct): one row of recommended drawings (a guess from the name, then this room's usual ones),
+ * and "All" at the end, which opens a big drawer with the recommended ones on top, a thin line, and every drawing under
+ * it. More drawings can keep coming without the pop-up growing.
+ */
+function ContainerPicker({ kind, name, value, level, lowAt, onPick }: { kind: RoomKind; name: string; value: Container; level: number; lowAt: number; onPick: (c: Container) => void }) {
   const { t } = useTranslation()
+  const [all, setAll] = useState(false)
+  const guess = guessContainer(name)
+  const recommended = [...new Set([value, ...(guess ? [guess] : []), ...containersFor(kind)])].slice(0, 8)
+  const tile = (c: Container, onClick = () => onPick(c)) => (
+    <button key={c} type="button" aria-pressed={c === value} onClick={onClick}>
+      <ContainerDrawing kind={c} level={level} lowAt={lowAt} height={44} />
+      {t(`pantry.containers.${c}`)}
+    </button>
+  )
   return (
-    <div className="thing-pick">
-      {choices.map((c) => (
-        <button key={c} type="button" aria-pressed={c === value} onClick={() => onPick(c)}>
-          <ContainerDrawing kind={c} level={level} lowAt={lowAt} height={44} />
-          {t(`pantry.containers.${c}`)}
+    <>
+      <div className="thing-pick-row">
+        {/* One row only: whatever doesn't fit the width stays tucked away. */}
+        <div className="thing-pick one-row">{recommended.map((c) => tile(c))}</div>
+        <button type="button" className="thing-pick-all" onClick={() => setAll(true)}>
+          <span aria-hidden>···</span>
+          {t('pantry.allContainers')}
         </button>
-      ))}
-    </div>
+      </div>
+      <Sheet open={all} onClose={() => setAll(false)} title={t('pantry.looksLike')}>
+        <span className="label">{t('pantry.recommended')}</span>
+        <div className="thing-pick">
+          {recommended.slice(0, 5).map((c) =>
+            tile(c, () => {
+              onPick(c)
+              setAll(false)
+            }),
+          )}
+        </div>
+        <div className="pick-divider" aria-hidden />
+        <span className="label">{t('pantry.allContainers')}</span>
+        <div className="thing-pick">
+          {CONTAINERS.map((c) =>
+            tile(c, () => {
+              onPick(c)
+              setAll(false)
+            }),
+          )}
+        </div>
+      </Sheet>
+    </>
   )
 }
 
@@ -742,7 +776,7 @@ function AddThingSheet({
         ) : (
           <div>
             <span className="label">{t('pantry.looksLike')}</span>
-            <ContainerPicker kind={kind} value={container} level={level} lowAt={20} onPick={setPicked} />
+            <ContainerPicker kind={kind} name={name} value={container} level={level} lowAt={20} onPick={setPicked} />
           </div>
         )}
         <div>

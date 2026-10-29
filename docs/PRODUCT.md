@@ -163,5 +163,5 @@ Each phase ends with Nora testing it on her phone.
 - Money in version 2: personal budgeting, and how a household shares money (share everything, or track who pays).
 
 ## Ideas parked for later [Nora, 29 Oct]
-- **The "Looks like" picker** will grow as more containers are drawn. Instead of an endless grid, show the chosen one with "Looks like: Jar ›" and open a big drawer to pick from, or a one-row carousel. Decide when there are more containers.
+- ~~**The "Looks like" picker**~~ built 29 Oct: one row of recommended drawings plus "All", which opens a drawer (Recommended, a thin line, then every drawing).
 
