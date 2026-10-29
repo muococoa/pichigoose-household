@@ -43,9 +43,9 @@ export function Sidebar() {
           <Hand size={34} lineHeight={36}>
             {household ? name(household) : ''}
           </Hand>
-          {/* Like on the phone: the ink chevron sits low by the bottom of the letters, a little away from them. */}
-          <span style={{ display: 'flex', alignSelf: 'flex-end', marginBottom: 3, marginLeft: 6 }}>
-            <InkChevron />
+          {/* The ink chevron points right: your homes open in a panel at the side. */}
+          <span style={{ display: 'flex', alignSelf: 'center', marginTop: 4, marginLeft: 4 }}>
+            <InkChevron dir="right" />
           </span>
         </span>
         <span className="cap">

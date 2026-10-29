@@ -157,11 +157,12 @@ export function GripIcon() {
 
 /** The household switcher arrow, drawn in the same dry ink as the headline next to it:
  *  rough edges from the #dry-ink filter, patchy ink from the same mask. */
-export function InkChevron() {
+/** `right`: on desktop the household name opens a panel at the side, so its chevron points that way (Nora, 29 Oct). */
+export function InkChevron({ dir = 'down' }: { dir?: 'down' | 'right' }) {
   const mask = `url(${inkPatch})`
   return (
     <span style={{ display: 'flex', WebkitMaskImage: mask, maskImage: mask, WebkitMaskSize: '420px 420px', maskSize: '420px 420px', WebkitMaskPosition: '-210px -130px', maskPosition: '-210px -130px', padding: 3, margin: -3 }}>
-      <svg viewBox="0 0 26 26" width="28" height="28" fill="none" aria-hidden style={{ filter: 'url(#dry-ink)', overflow: 'visible' }}>
+      <svg viewBox="0 0 26 26" width="28" height="28" fill="none" aria-hidden style={{ filter: 'url(#dry-ink)', overflow: 'visible', transform: dir === 'right' ? 'rotate(-90deg)' : undefined }}>
         <path
           d="M6.2 9.2c2 1.7 4 3.7 6.4 6.6.3.4.8.4 1.1 0 2-2.7 4-4.8 6.2-6.9"
           stroke="#1E1A30"
