@@ -243,22 +243,41 @@ function Conversation({ chatKey, header, back }: { chatKey: string; header?: boo
     first.current = false
   }, [count])
 
-  // When the keyboard opens, the typing area grows down there (its paper reaches behind the keyboard).
-  // Scroll along by the same amount, so the newest messages stay in view instead of hiding, like WhatsApp.
+  // On a phone the field floats over the messages: they get room at the bottom for it (its height, as
+  // --composer-h), and while you're at the newest message, it stays in view as the keyboard or the field moves.
   useEffect(() => {
-    // On a phone only the messages scroll; the field sits under them.
-    const scroller = endRef.current?.closest('.chat-screen') ? endRef.current.parentElement : null
+    const bubbles = endRef.current?.closest('.chat-screen') ? endRef.current.parentElement : null
     const composer = fieldRef.current?.closest('.composer') as HTMLElement | null
-    if (!scroller || !composer) return
-    let last = composer.offsetHeight
+    if (!bubbles || !composer) return
+    const atEnd = () => bubbles.scrollHeight - bubbles.scrollTop - bubbles.clientHeight < 140
+    let follow = 0
+    // Follow for a moment while things glide (the keyboard takes about a third of a second).
+    const stick = () => {
+      if (!atEnd()) return
+      const until = performance.now() + 600
+      cancelAnimationFrame(follow)
+      const step = () => {
+        bubbles.scrollTop = bubbles.scrollHeight
+        if (performance.now() < until) follow = requestAnimationFrame(step)
+      }
+      step()
+    }
     const watch = new ResizeObserver(() => {
-      const now = composer.offsetHeight
-      if (now > last) scroller.scrollTop += now - last
-      last = now
+      bubbles.style.setProperty('--composer-h', `${composer.offsetHeight}px`)
+      stick()
     })
-    // The border box: the typing area grows by its padding.
     watch.observe(composer, { box: 'border-box' })
-    return () => watch.disconnect()
+    const vv = window.visualViewport
+    vv?.addEventListener('resize', stick)
+    composer.addEventListener('focusin', stick)
+    composer.addEventListener('focusout', stick)
+    return () => {
+      watch.disconnect()
+      vv?.removeEventListener('resize', stick)
+      composer.removeEventListener('focusin', stick)
+      composer.removeEventListener('focusout', stick)
+      cancelAnimationFrame(follow)
+    }
   }, [chat?.key])
 
   // The field grows with the text, up to five lines.

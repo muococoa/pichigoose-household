@@ -302,12 +302,20 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 .chat-screen .bubbles { flex: 1; min-height: 0; position: relative; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain }
 /* A short chat bounces too (one pixel taller than its box, like every page). */
 .chat-screen .bubbles::after { content: ""; position: absolute; top: 0; left: 0; width: 1px; height: calc(100% + 1px); pointer-events: none }
-.chat-screen .composer { position: relative; flex: none }
-/* The field sits on top of the chat like the header does: the same soft shadow, upward. */
-.chat-screen .composer { box-shadow: 0 -6px 12px -8px rgba(30, 26, 48, .25) }
+/* The field, stickers and send float together in one frosted pill, like the menu (Nora, 29 Oct): nothing behind
+   it, sitting where the menu would be, and right above the keyboard while it's open. The messages scroll behind
+   it, with room at the bottom so the newest one stays above it. */
+.chat-screen { --composer-at: max(var(--tabbar-gap), calc(var(--kb) + 8px)) }
+.chat-screen .composer {
+  position: absolute; left: 14px; right: 14px; bottom: var(--composer-at); z-index: 3; padding: 5px; gap: 6px; border-radius: 26px;
+  background: rgba(255, 253, 248, .74); -webkit-backdrop-filter: blur(14px) saturate(1.5); backdrop-filter: blur(14px) saturate(1.5);
+  box-shadow: 0 0 0 1px rgba(30, 26, 48, .07), inset 0 1px 0 rgba(255, 255, 255, .8), 0 8px 22px -8px rgba(30, 26, 48, .3);
+}
+.chat-screen .composer.replying { border-radius: 22px }
+.chat-screen .composer .input { box-shadow: inset 0 0 0 1.5px #E2D8EC }
+.chat-screen .composer .sticker-box { align-self: flex-end }
+.chat-screen .bubbles { padding-bottom: calc(var(--composer-h, 50px) + var(--composer-at) + 14px) }
 .chat-screen .kb-spacer { display: none }
-/* The field's paper reaches down behind the keyboard; the field itself sits right above it. */
-.chat-screen .composer { padding-bottom: max(var(--bottom), calc(10px + var(--kb))) }
 .chat-header {
   position: sticky; top: 0; z-index: 3; display: flex; gap: 10px; align-items: center; padding: calc(var(--top) + 6px) 16px 10px 24px;
   background: #FFFDF8 url("../../assets/paper-white.png") 0 0 / 512px 512px; box-shadow: 0 6px 12px -8px rgba(30, 26, 48, .25);

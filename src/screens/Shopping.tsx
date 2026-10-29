@@ -257,9 +257,10 @@ export function ShoppingScreen() {
           onClick={(e) => {
             if (adding) return
             e.preventDefault()
-            setAdding(true)
-            // Focus right away, inside the tap, so the phone opens the keyboard.
+            // Focus right away, inside the tap, so the phone opens the keyboard; the field slides out from
+            // behind the button a moment later, once it's back in place, so the two moves don't collide.
             focusField(inputRef.current)
+            requestAnimationFrame(() => requestAnimationFrame(() => setAdding(true)))
           }}
         >
           <PlusIcon />

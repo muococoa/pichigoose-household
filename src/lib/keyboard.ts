@@ -31,11 +31,16 @@ export function focusField(el: HTMLElement | null) {
     el.focus({ preventScroll: true })
     return
   }
+  // Without any animation: a field that slides in (Shopping's add field) mustn't fly in from up there.
   const before = el.style.transform
+  const beforeTransition = el.style.transition
+  el.style.transition = 'none'
   el.style.transform = 'translateY(-2000px)'
   el.focus({ preventScroll: true })
   requestAnimationFrame(() => {
     el.style.transform = before
+    void el.offsetWidth
+    el.style.transition = beforeTransition
   })
 }
 
