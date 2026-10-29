@@ -87,7 +87,7 @@ These stay **clean on purpose,** so anything you tap or type into reads right aw
 
 - **Icons:** simple line icons, 26 px, 2 px stroke, round caps.
 - **Tab bar:** a paper strip, 84 px tall, with a soft shadow on top. The active tab is hero dark, with a small pink washi strip behind its icon.
-- **Inputs:** white with a 2 px lilac edge, slightly uneven corners (`radius.input`), and placeholder text in `ink.faint`.
+- **Inputs:** slim and fully round, like the message field [Nora]: 40 px tall, white, a 1.5 px lilac edge (`#E2D8EC`) that turns the theme color while typing, and placeholder text in `ink.faint`.
 
 ## 11. Motion
 

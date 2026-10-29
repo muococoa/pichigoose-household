@@ -100,7 +100,7 @@ export function Comments({ target }: { target: CommentTarget }) {
       <form onSubmit={send} className="row" style={{ gap: 10, marginTop: thread.length ? 4 : 0, position: 'relative' }}>
         <input
           className="input"
-          style={{ flex: 1, height: 46 }}
+          style={{ flex: 1 }}
           placeholder={t('comments.placeholder')}
           aria-label={t('comments.placeholder')}
           value={text}

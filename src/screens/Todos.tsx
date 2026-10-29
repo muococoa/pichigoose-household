@@ -10,6 +10,7 @@ import { Avatar, NobodyAvatar } from '../components/Avatar'
 import { Check, Hand, Struck, Tick, useArrivals, EmptyState, Sheet, Stamp, STAMP_COLORS, tilt } from '../components/Scrapbook'
 import { ChevronDown, PlusIcon } from '../components/Icons'
 import { MyHouseholds } from './MyHouseholds'
+import { useDesktop } from '../lib/desktop'
 import { PersonLink } from './Person'
 import { CommentCount, Comments, useCommentCounts } from '../components/Comments'
 import { addDays, capitalize, daysFromToday, dueLabel, fromDateString, toDateString, weekdayName } from '../lib/time'
@@ -53,6 +54,8 @@ export function TodosScreen() {
   const hid = household?.id ?? null
   const todos = useTodos(hid)
   const [filter, setFilter] = useState<string>('all')
+  const desktop = useDesktop()
+  const [quick, setQuick] = useState('')
   // Switching the filter: the list fades out quickly, then the new one fades in and its labels
   // are stamped down. The chip changes right away; the list follows.
   const [shown, setShown] = useState<string>('all')
@@ -104,6 +107,23 @@ export function TodosScreen() {
   const person = (id: string | null) => people.find((p) => p.id === id)
   const commentsOn = useCommentCounts()
 
+  function quickAdd(e: FormEvent) {
+    e.preventDefault()
+    if (!quick.trim() || !hid) return
+    db.insert('todos', {
+      title: quick.trim(),
+      assignee_id: me,
+      due_date: toDateString(new Date()),
+      repeat: null,
+      household_id: hid,
+      created_by: me,
+      created_at: new Date().toISOString(),
+      done_at: null,
+      done_by: null,
+    })
+    setQuick('')
+  }
+
   function detail(x: Todo) {
     const parts: string[] = []
     if (x.due_date) {
@@ -141,6 +161,24 @@ export function TodosScreen() {
               </Chip>
             ))}
           </div>
+        )}
+
+        {/* Desktop: the add field on top of the list, like Shopping. Enter adds it (yours, for today, like
+            a new to-do on the phone) and keeps the field ready for the next one; tap it to change the rest. */}
+        {desktop && (
+          <form onSubmit={quickAdd} style={{ display: 'flex', gap: 14, alignItems: 'center', margin: '22px 0 0', maxWidth: 640 }}>
+            <input
+              className="input"
+              placeholder={t('todos.whatPlaceholder')}
+              aria-label={t('todos.new')}
+              value={quick}
+              onChange={(e) => setQuick(e.target.value)}
+              style={{ flex: 1, fontSize: 17 }}
+            />
+            <button type="submit" className="stk prim" style={{ transform: 'rotate(-1.5deg)' }}>
+              {t('todos.add')}
+            </button>
+          </form>
         )}
 
         <div key={shown} className={phase === 'out' ? 'swap-out' : phase === 'in' ? 'swap-in' : undefined}>
