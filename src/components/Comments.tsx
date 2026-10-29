@@ -5,6 +5,7 @@ import { db } from '../data/store'
 import { useComments, useHousehold, type Comment, type Heart } from '../data/hooks'
 import { ago } from '../lib/time'
 import { Avatar } from './Avatar'
+import { StickerButton, StickerImage } from './Stickers'
 import { HeartBurst, HeartButton, HeartedBy, useDoubleTap, useHeartActions, useHeartsOn } from './Hearts'
 import { CloseIcon } from './Icons'
 import { showUndo } from './Scrapbook'
@@ -72,10 +73,10 @@ export function Comments({ target }: { target: CommentTarget }) {
     [comments.rows, JSON.stringify(target)],
   )
 
-  function send(e: FormEvent) {
-    e.preventDefault()
-    const body = text.trim()
-    if (!body || !household) return
+  function send(e?: FormEvent, sticker?: string) {
+    e?.preventDefault()
+    const body = sticker ? '' : text.trim()
+    if ((!body && !sticker) || !household) return
     db.insert('comments', {
       household_id: household.id,
       item_id: null,
@@ -84,9 +85,10 @@ export function Comments({ target }: { target: CommentTarget }) {
       ...target,
       author_id: me,
       body,
+      sticker: sticker ?? null,
       created_at: new Date().toISOString(),
     })
-    setText('')
+    if (!sticker) setText('')
   }
 
   return (
@@ -95,7 +97,7 @@ export function Comments({ target }: { target: CommentTarget }) {
       {thread.map((c) => (
         <CommentRow key={c.id} c={c} hearts={heartsOn({ comment_id: c.id })} />
       ))}
-      <form onSubmit={send} className="row" style={{ gap: 10, marginTop: thread.length ? 4 : 0 }}>
+      <form onSubmit={send} className="row" style={{ gap: 10, marginTop: thread.length ? 4 : 0, position: 'relative' }}>
         <input
           className="input"
           style={{ flex: 1, height: 46 }}
@@ -105,6 +107,7 @@ export function Comments({ target }: { target: CommentTarget }) {
           enterKeyHint="send"
           onChange={(e) => setText(e.target.value)}
         />
+        <StickerButton onSend={(name) => send(undefined, name)} />
         {/* People get the violet sticker. */}
         <button type="submit" className="stk violet sm" style={{ height: 44, transform: 'rotate(-2deg)' }} disabled={!text.trim()}>
           {t('comments.send')}
@@ -132,7 +135,7 @@ function CommentRow({ c, hearts }: { c: Comment; hearts: Heart[] }) {
         <div className="cap" style={{ fontSize: 13 }}>
           <b style={{ color: '#1E1A30', fontWeight: 800 }}>{who?.display_name ?? t('common.someone')}</b> · {ago(c.created_at, i18n.language)}
         </div>
-        <div className="comment-body">{c.body}</div>
+        {c.sticker ? <StickerImage name={c.sticker} size={96} /> : <div className="comment-body">{c.body}</div>}
         <HeartedBy hearts={hearts} className="under-comment" />
       </div>
       <HeartButton target={target} hearts={hearts} />

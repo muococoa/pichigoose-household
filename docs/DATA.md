@@ -158,7 +158,8 @@ A short conversation under a shopping item, to-do or note [Nora]. Flat, like a c
 | household_id | uuid, references households | always taken from the thing commented on, by a database trigger |
 | item_id / todo_id / note_id | uuid, one of them | exactly one is set; deleting the thing deletes its comments |
 | author_id | uuid, references profiles | must be the person writing it |
-| body | text | 1 to 2000 characters |
+| body | text | up to 2000 characters; empty only when there is a sticker |
+| sticker | text, nullable | one of Nora's stickers, like `onigiri/love` [Nora]. The drawings live in the app |
 | created_at | timestamptz | |
 
 Everyone in the household can read and write comments; people can delete only their own. Live updates on.
@@ -173,6 +174,8 @@ Hearts on comments, chat messages and notes, like Instagram [Nora]. Only hearts,
 | user_id | uuid, references profiles | must be the person hearting |
 | comment_id / message_id / note_id | uuid, one of them | exactly one is set; deleting the thing deletes its hearts |
 | created_at | timestamptz | |
+
+**Stickers** [Nora]: comments and messages have a `sticker` field (like `ramen/kiss`). Your pack follows your avatar: onigiri and ramen have their own; everyone else gets Pichi's goose stickers until their sheet exists. The sheets are in `assets/stickers/sheets`, cut by `scripts/cut-stickers.py`.
 
 One heart per person per thing. Everyone in the household sees the hearts, except on private messages, where only the two people in that chat do. People can take back only their own. Live updates on.
 

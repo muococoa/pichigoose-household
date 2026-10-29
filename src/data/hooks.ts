@@ -101,6 +101,8 @@ export type Comment = Row & {
   note_id: string | null
   author_id: string | null
   body: string
+  /** One of Nora's stickers, like "onigiri/love", instead of text. */
+  sticker?: string | null
   created_at: string
 }
 
@@ -109,6 +111,8 @@ export type Message = Row & {
   author_id: string | null
   to_user: string | null
   body: string
+  /** One of Nora's stickers, like "onigiri/love", instead of text. */
+  sticker?: string | null
   created_at: string
 }
 

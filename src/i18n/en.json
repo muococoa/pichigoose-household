@@ -470,5 +470,23 @@
     "heart": "Heart",
     "unheart": "Take back your heart",
     "by": "Hearted by {{names}}"
+  },
+  "stickers": {
+    "title": "Stickers",
+    "alt": "Sticker: {{name}}",
+    "names": {
+      "love": "Love",
+      "kiss": "Kiss",
+      "wink": "Wink",
+      "hi": "Hi",
+      "yay": "Yay",
+      "aww": "Aww",
+      "ok": "Thumbs up",
+      "cry": "Crying",
+      "wow": "Wow",
+      "angry": "Grumpy",
+      "sleepy": "Sleepy",
+      "party": "Party"
+    }
   }
 }

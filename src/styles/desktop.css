@@ -121,6 +121,8 @@
   .chat-split .bubbles { overflow-y: auto }
   .chat-split .chat-header { position: static; padding: 14px 18px; background: none; box-shadow: none }
   .chat-split .chat-back { display: none }
-  .chat-split .composer { position: static; padding: 10px 14px; background: none; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none }
+  .chat-split .composer { position: relative; padding: 10px 14px; background: none; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none }
   .chat-split .kb-spacer { display: none }
+  /* On a wide screen the sticker tray stays a small card by the button. */
+  .sticker-tray, .composer .sticker-tray { left: auto; right: 0; width: 360px }
 }

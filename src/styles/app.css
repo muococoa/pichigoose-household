@@ -345,6 +345,33 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 .heart-burst { position: absolute; left: 50%; top: 50%; margin: -23px 0 0 -23px; pointer-events: none; z-index: 2; animation: heart-burst .8s cubic-bezier(.2, .8, .3, 1) forwards; filter: drop-shadow(0 2px 3px rgba(30, 26, 48, .25)) }
 @keyframes heart-burst { 0% { transform: scale(.2); opacity: 0 } 20% { transform: scale(1.15); opacity: 1 } 35% { transform: scale(.95) } 70% { transform: scale(1); opacity: 1 } 100% { transform: scale(1.1) translateY(-6px); opacity: 0 } }
 @media (prefers-reduced-motion: reduce) { .heart-btn.on svg, .heart-burst { animation-duration: .01s } }
+/* Stickers: the small button next to Send opens a tray of your pack above the field; a tap sends one.
+   A sticker in the chat has no bubble, like WhatsApp: it sits right on the paper, with the time under it. */
+.sticker-box { display: flex; flex: none; align-self: center }
+.composer .sticker-box { align-self: flex-end }
+.sticker-btn { display: grid; place-items: center; width: 40px; height: 40px; margin: 0 -4px; color: #857A8C; border-radius: 50%; transition: color .15s, transform .2s var(--ease-out) }
+.sticker-btn.on { color: var(--hero) }
+.sticker-btn:active { transform: scale(.92) }
+.sticker-tray {
+  position: absolute; left: 0; right: 0; bottom: calc(100% + 8px); z-index: 5; display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; padding: 10px;
+  background: #FFFDF8 url("../../assets/paper-white.png") 0 0 / 512px 512px; border-radius: 14px 18px 16px 14px;
+  box-shadow: 0 0 0 1px rgba(30, 26, 48, .06), 0 8px 24px -6px rgba(30, 26, 48, .25); animation: tray-in .22s var(--ease-out);
+}
+.composer .sticker-tray { left: 10px; right: 10px }
+@keyframes tray-in { from { opacity: 0; transform: translateY(8px) scale(.98) } }
+.sticker-pick { display: grid; place-items: center; padding: 4px; border-radius: 12px; transition: background .15s, transform .15s }
+.sticker-pick:active { background: rgba(132, 102, 184, .12); transform: scale(.94) }
+@media (hover: hover) { .sticker-pick:hover { background: rgba(132, 102, 184, .08) } }
+.sticker-pick img { display: block; width: 100%; max-width: 72px; height: auto }
+.sticker-img { display: block; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none }
+.comment .sticker-img { margin-top: 2px }
+.bubble.sticker { background: none; filter: none; padding: 0; display: flex; flex-direction: column; align-items: flex-start }
+.msg.mine .bubble.sticker { background: none; align-items: flex-end }
+.msg.last .bubble.sticker::after { display: none }
+.bubble.sticker .bubble-name { margin: 0 0 2px 4px }
+.bubble.sticker .bubble-time, .msg.mine .bubble.sticker .bubble-time { float: none; margin: 0 6px; color: #857A8C }
+.bubble.sticker .ticks { color: #A79DAD }
+.bubble.sticker .ticks.read { color: var(--hero) }
 .day-stamp { display: flex; justify-content: center; margin: 18px 0 4px }
 .say-hi { text-align: center; color: #63586B; font-size: 15px; font-weight: 600; margin: 48px 0 }
 .composer {

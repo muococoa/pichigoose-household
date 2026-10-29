@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
 import { db } from '../data/store'
 import { useHousehold, type Heart, type Message, type Profile } from '../data/hooks'
+import { StickerButton, StickerImage } from '../components/Stickers'
 import { HeartBurst, HeartButton, HeartedBy, useDoubleTap, useHeartActions, useHeartsOn } from '../components/Hearts'
 import { useChats, useMarkRead, type Chat } from '../data/chats'
 import { Screen } from '../components/Shell'
@@ -109,9 +110,9 @@ function Bubble({ m, mine, first, lastOfRun, group, who, time, read, hearts }: {
       {/* Like WhatsApp: in the group chat, the avatar sits at the bottom of each run, by the bubble's tail. */}
       {group && !mine && <span className="msg-avatar">{lastOfRun && who ? <PersonLink id={who.id}><Avatar avatar={who.avatar} size={34} /></PersonLink> : null}</span>}
       <div className="bubble-wrap">
-        <div className="bubble" onClick={tap.onClick}>
+        <div className={`bubble${m.sticker ? ' sticker' : ''}`} onClick={tap.onClick}>
           {group && !mine && first && <div className="bubble-name">{who?.display_name}</div>}
-          <span className="bubble-text">{m.body}</span>
+          {m.sticker ? <StickerImage name={m.sticker} size={128} /> : <span className="bubble-text">{m.body}</span>}
           <span className="bubble-time">
             {time}
             {/* One tick when sent, two once everyone else has read it. */}
@@ -186,9 +187,14 @@ function Conversation({ chatKey, header, back }: { chatKey: string; header?: boo
     e?.preventDefault()
     const body = text.trim()
     if (!body || !household) return
-    db.insert('messages', { household_id: household.id, author_id: me, to_user: group ? null : chatKey, body, created_at: new Date().toISOString() })
+    db.insert('messages', { household_id: household.id, author_id: me, to_user: group ? null : chatKey, body, sticker: null, created_at: new Date().toISOString() })
     setText('')
     fieldRef.current?.focus()
+  }
+
+  function sendSticker(sticker: string) {
+    if (!household) return
+    db.insert('messages', { household_id: household.id, author_id: me, to_user: group ? null : chatKey, body: '', sticker, created_at: new Date().toISOString() })
   }
 
   function key(e: KeyboardEvent<HTMLTextAreaElement>) {
@@ -240,6 +246,7 @@ function Conversation({ chatKey, header, back }: { chatKey: string; header?: boo
           onChange={(e) => setText(e.target.value)}
           onKeyDown={key}
         />
+        <StickerButton onSend={sendSticker} />
         <button type="submit" className="send-btn" aria-label={t('messages.send')} disabled={!text.trim()} onPointerDown={(e) => e.preventDefault()}>
           <SendIcon />
         </button>
