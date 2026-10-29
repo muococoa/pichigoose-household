@@ -51,7 +51,7 @@ export function CleanHouseholdButton({ size = 38 }: { size?: number }) {
             <br />
             {t('pantry.clean.undo')}
           </p>
-          <PeekingPichi style={{ right: -30, top: -14 }} />
+          <PeekingPichi mood="worried" style={{ right: -30, top: -14 }} />
         </div>
         {error && (
           <p className="err" role="alert" style={{ margin: '0 0 14px' }}>
@@ -105,7 +105,7 @@ export function DeleteHouseholdSheet({ household, onClose, onDeleted }: { househ
           <br />
           {t('pantry.clean.undo')}
         </p>
-        <PeekingPichi style={{ right: -30, top: -14 }} />
+        <PeekingPichi mood="very-worried" style={{ right: -30, top: -14 }} />
       </div>
       <label className="label" htmlFor="delete-name">
         {t('household.delete.typeName', { name: shownName })}

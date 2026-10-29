@@ -9,6 +9,10 @@ import poseStandRight from '../../assets/pichi/stand-right.webp'
 import poseHonk from '../../assets/pichi/honk.webp'
 import poseRun from '../../assets/pichi/run.webp'
 import poseWalk from '../../assets/pichi/walk.webp'
+import peekNormal from '../../assets/pichi/peek-normal.webp'
+import peekHappy from '../../assets/pichi/peek-happy.webp'
+import peekWorried from '../../assets/pichi/peek-worried.webp'
+import peekVeryWorried from '../../assets/pichi/peek-very-worried.webp'
 import doodleStandLeft from '../../assets/pichi/doodle-stand-left.webp'
 import doodleStandRight from '../../assets/pichi/doodle-stand-right.webp'
 import doodleHonk from '../../assets/pichi/doodle-honk.webp'
@@ -343,10 +347,13 @@ export function DoodleSpot({ pose }: { pose: DoodlePose }) {
   )
 }
 
-/** Pichi peeking in from the side of a pop-up: just her head, in the same light pencil as the doodles,
- *  her neck fading out like an unfinished sketch. Nora's drawing, never redrawn. */
-export function PeekingPichi({ style }: { style?: CSSProperties }) {
-  return <span className="peek" aria-hidden style={{ ['--doodle' as string]: `url(${DOODLES['stand-left']})`, ...style }} />
+/** Pichi peeking in from the side of a pop-up: her head and neck, in the same light pencil as the
+ *  doodles, fading out below like an unfinished sketch. Nora's drawings, never redrawn.
+ *  normal: a plain heads-up. worried / very-worried: for things that can't be undone. */
+const PEEKS = { normal: peekNormal, happy: peekHappy, worried: peekWorried, 'very-worried': peekVeryWorried }
+export type PeekMood = keyof typeof PEEKS
+export function PeekingPichi({ mood = 'normal', style }: { mood?: PeekMood; style?: CSSProperties }) {
+  return <span className="peek" aria-hidden style={{ ['--doodle' as string]: `url(${PEEKS[mood]})`, ...style }} />
 }
 
 /** A paper clip holding a small note to the one behind it. Drawn as a loop of metal wire. */
