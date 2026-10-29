@@ -4,7 +4,8 @@ import { SortableContext, arrayMove, rectSortingStrategy, sortableKeyboardCoordi
 import { CSS } from '@dnd-kit/utilities'
 import { Hand } from './Scrapbook'
 
-type Item<K extends string> = { key: K; node: ReactNode }
+/** wide: takes two columns, like a wide iPhone widget. */
+type Item<K extends string> = { key: K; node: ReactNode; wide?: boolean }
 
 /**
  * A board of notes that can be moved around right where they are (desktop Home), using dnd-kit.
@@ -46,13 +47,14 @@ export function DragBoard<K extends string>({ items, onReorder, dropLabel }: { i
   }
 
   const byKey = new Map(items.map((i) => [i.key, i.node]))
+  const wideOf = new Map(items.map((i) => [i.key, Boolean(i.wide)]))
   return (
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={start} onDragEnd={end} onDragCancel={() => { setActive(null); lastDrop.current = Date.now() }}>
       <SortableContext items={order} strategy={rectSortingStrategy}>
         {/* As many columns as fit, at least 280 px each: three on a big screen, fewer in a narrow window. */}
         <div className="board-grid">
           {order.map((key) => (
-            <Slot key={key} id={key} dropLabel={dropLabel} justDropped={() => Date.now() - lastDrop.current < 400}>
+            <Slot key={key} id={key} wide={wideOf.get(key)} dropLabel={dropLabel} justDropped={() => Date.now() - lastDrop.current < 400}>
               {byKey.get(key)}
             </Slot>
           ))}
@@ -66,14 +68,14 @@ export function DragBoard<K extends string>({ items, onReorder, dropLabel }: { i
   )
 }
 
-function Slot({ id, dropLabel, justDropped, children }: { id: string; dropLabel: string; justDropped: () => boolean; children: ReactNode }) {
+function Slot({ id, wide, dropLabel, justDropped, children }: { id: string; wide?: boolean; dropLabel: string; justDropped: () => boolean; children: ReactNode }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
   return (
     <div
       ref={setNodeRef}
       {...attributes}
       {...listeners}
-      className="drag-slot"
+      className={`drag-slot${wide ? ' wide' : ''}`}
       onClickCapture={(e) => {
         if (justDropped()) {
           e.stopPropagation()

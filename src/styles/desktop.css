@@ -114,7 +114,9 @@
 @media (min-width: 1024px) {
   /* Home board and Arrange: three columns that fill the page, like the hi-fi; two or one when the window
      is too narrow for notes of at least 250 px. */
-  .board-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(max(250px, calc((100% - 60px) / 3)), 1fr)); gap: 30px; align-items: start }
+  /* Like iPhone widgets (Nora, 29 Oct): a big note (the notes) takes two columns, and the others fill in the gaps. */
+  .board-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(max(250px, calc((100% - 60px) / 3)), 1fr)); grid-auto-flow: row dense; gap: 30px; align-items: start }
+  .drag-slot.wide { grid-column: span 2 }
 }
 
 @media (min-width: 1024px) {

@@ -451,7 +451,7 @@ export function HomeScreen() {
           </div>
           <PendingInvites style={{ maxWidth: 620 }} />
           <div style={{ marginTop: 10 }}>
-            <DragBoard items={board.map((s) => ({ key: s.section, node: section(s.section) }))} onReorder={saveBoard} dropLabel={t('arrange.dropHere')} />
+            <DragBoard items={board.map((s) => ({ key: s.section, node: section(s.section), wide: s.section === 'notes' && pinnedNotes.length > 1 }))} onReorder={saveBoard} dropLabel={t('arrange.dropHere')} />
           </div>
         </div>
         <AskName save open={needsName && !askedName} onClose={() => setAskedName(true)} onJoin={() => {}} />
