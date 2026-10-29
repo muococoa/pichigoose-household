@@ -289,6 +289,8 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 /* A short chat bounces too (one pixel taller than its box, like every page). */
 .chat-screen .bubbles::after { content: ""; position: absolute; top: 0; left: 0; width: 1px; height: calc(100% + 1px); pointer-events: none }
 .chat-screen .composer { position: relative; flex: none }
+/* The field sits on top of the chat like the header does: the same soft shadow, upward. */
+.chat-screen .composer { box-shadow: 0 -6px 12px -8px rgba(30, 26, 48, .25) }
 .chat-screen .kb-spacer { display: none }
 /* The field's paper reaches down behind the keyboard; the field itself sits right above it. */
 .chat-screen .composer { padding-bottom: max(var(--bottom), calc(10px + var(--kb))) }
