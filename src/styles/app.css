@@ -283,6 +283,11 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
    the messages make room, like WhatsApp. */
 .chat-screen { position: fixed; top: var(--vvtop, 0px); bottom: 0; left: 0; right: 0; margin: 0 auto; max-width: 430px; height: auto; min-height: 0 }
 .chat-screen .composer { bottom: 0 }
+/* Pulling past the newest message mustn't drag the field up off the keyboard (Nora, 29 Oct): no rubber
+   band on the chat, and in case a phone bounces anyway, the field's paper reaches far down under it. */
+.chat-screen > .scroll { overscroll-behavior-y: none }
+/* (A shadow, not a block, so it doesn't make the chat scroll further.) */
+.chat-screen .composer { box-shadow: 0 -1px 0 rgba(30, 26, 48, .08), 0 50vh 0 50vh #FFFDF8 }
 .chat-screen .kb-spacer { display: none }
 /* The field's paper reaches down behind the keyboard; the field itself sits right above it. */
 .chat-screen .composer { padding-bottom: max(var(--bottom), calc(10px + var(--kb))) }
