@@ -17,10 +17,58 @@ import { autoFocusField } from '../lib/keyboard'
 const PLACES: Place[] = ['pantry', 'bathroom']
 const STEPS = [
   { key: 'full', level: 100 },
+  { key: 'pct', level: 75 },
   { key: 'half', level: 50 },
+  { key: 'pct', level: 25 },
   { key: 'low', level: 10 },
   { key: 'empty', level: 0 },
 ] as const
+
+/** How full something is: quick steps, plus a little field to type your own number. */
+function LevelPicker({ value, onPick, live }: { value: number; onPick: (n: number) => void; live?: boolean }) {
+  const { t } = useTranslation()
+  const isStep = STEPS.some((s) => s.level === value)
+  const [own, setOwn] = useState(isStep ? '' : String(value))
+  useEffect(() => setOwn(isStep ? '' : String(value)), [value, isStep])
+  function commit(text = own) {
+    const n = Math.max(0, Math.min(100, parseInt(text, 10)))
+    if (!Number.isNaN(n) && n !== value) onPick(n)
+  }
+  return (
+    <div className="chips">
+      {STEPS.map((s) => (
+        <Chip key={s.level} on={value === s.level} onClick={() => onPick(s.level)}>
+          {s.key === 'pct' ? t('pantry.percent', { n: s.level }) : t(`pantry.steps.${s.key}`)}
+        </Chip>
+      ))}
+      <label className={`own-pct${!isStep ? ' on' : ''}`}>
+        <input
+          className="input"
+          inputMode="numeric"
+          enterKeyHint="done"
+          maxLength={3}
+          placeholder={t('pantry.own')}
+          aria-label={t('pantry.ownLabel')}
+          value={own}
+          onChange={(e) => {
+            const text = e.target.value.replace(/\D/g, '')
+            setOwn(text)
+            if (live) commit(text)
+          }}
+          onBlur={() => commit()}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault()
+              commit()
+              e.currentTarget.blur()
+            }
+          }}
+        />
+        %
+      </label>
+    </div>
+  )
+}
 const LOW_MARKS = [10, 20, 30, 50]
 
 /** How many things fit on one shelf, from how wide the page is. */
@@ -278,13 +326,7 @@ function ThingSheet({ id, onClose }: { id: string | null; onClose: () => void })
               <span className="cap">{level <= p.low_at ? t('pantry.almostOut') : t('pantry.dragHint')}</span>
             </div>
           </div>
-          <div className="chips" style={{ justifyContent: 'center' }}>
-            {STEPS.map((s) => (
-              <Chip key={s.key} on={p.level === s.level} onClick={() => setLevel(p, s.level)}>
-                {t(`pantry.steps.${s.key}`)}
-              </Chip>
-            ))}
-          </div>
+          <LevelPicker value={p.level} onPick={(n) => setLevel(p, n)} />
 
           <div>
             <label className="label" htmlFor="thing-name">
@@ -399,13 +441,7 @@ function AddThingSheet({ open, place, onClose, onAdd }: { open: boolean; place: 
         </div>
         <div>
           <span className="label">{t('pantry.howFull')}</span>
-          <div className="chips">
-            {STEPS.map((s) => (
-              <Chip key={s.key} on={level === s.level} onClick={() => setLevel(s.level)}>
-                {t(`pantry.steps.${s.key}`)}
-              </Chip>
-            ))}
-          </div>
+          <LevelPicker value={level} onPick={setLevel} live />
         </div>
         <div className="sheet-actions">
           <button type="submit" className="stk prim" style={{ width: '100%', transform: 'rotate(-1deg)' }} disabled={!name.trim()}>

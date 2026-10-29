@@ -363,6 +363,8 @@
       "tube": "Tube",
       "pump": "Pump",
       "spray": "Spray"
-    }
+    },
+    "own": "Other",
+    "ownLabel": "Your own percentage"
   }
 }

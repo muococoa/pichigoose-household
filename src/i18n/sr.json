@@ -370,6 +370,8 @@
       "tube": "Tuba",
       "pump": "Pumpica",
       "spray": "Sprej"
-    }
+    },
+    "own": "Drugo",
+    "ownLabel": "Tvoj procenat"
   }
 }
