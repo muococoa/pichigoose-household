@@ -75,6 +75,10 @@ let state = readSaved()
 const defs = new Map<string, CollectionDef>()
 const listeners = new Set<() => void>()
 const tableVersion: Record<string, number> = {}
+// Bumped each time the server confirms one of our changes. A load that was already on its way back then may hold
+// the old row, and our change is no longer in the outbox to win over it, so the load runs again (the character
+// you saved from the first step snapping back after leaving the page, Nora, 29 Oct).
+const tableSettled: Record<string, number> = {}
 
 let saveTimer: number | undefined
 function save() {
@@ -219,6 +223,7 @@ export async function flush() {
       const result = await send(op)
       if (result === 'retry') break
       state = { ...state, outbox: state.outbox.slice(1) }
+      tableSettled[op.table] = (tableSettled[op.table] ?? 0) + 1
       if (result === 'failed') {
         refetchTable(op.table)
       }
@@ -244,11 +249,13 @@ export async function refetch(def: CollectionDef, attempt = 0): Promise<void> {
   if (typeof navigator !== 'undefined' && !navigator.onLine) return
   inFlight.add(def.key)
   const versionBefore = tableVersion[def.table] ?? 0
+  const settledBefore = tableSettled[def.table] ?? 0
   try {
     const { data, error } = await def.load()
     if (error || !data) return
     // A local change happened while loading: load again so it isn't lost.
-    if ((tableVersion[def.table] ?? 0) !== versionBefore && attempt < 2) {
+    const changed = (tableVersion[def.table] ?? 0) !== versionBefore || (tableSettled[def.table] ?? 0) !== settledBefore
+    if (changed && attempt < 2) {
       inFlight.delete(def.key)
       return refetch(def, attempt + 1)
     }
