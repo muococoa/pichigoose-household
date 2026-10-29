@@ -3,16 +3,25 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
 import { db } from '../data/store'
-import { setCurrentHousehold, useHousehold, type Household } from '../data/hooks'
+import { setCurrentHousehold, useHousehold, useRooms, type Household } from '../data/hooks'
 import { Avatar } from '../components/Avatar'
-import { Hand, Menu, Sheet } from '../components/Scrapbook'
-import { DotsIcon, SmallCheck } from '../components/Icons'
+import { Hand, Menu, Sheet, Tape, type TapeKind } from '../components/Scrapbook'
+import { DotsIcon, PencilIcon, PersonAddIcon, SmallCheck } from '../components/Icons'
 import { DeleteHouseholdSheet } from './HouseholdClean'
 import { copyText, joinLink } from '../lib/share'
 import { InviteSheet } from './Invite'
 import { autoFocusField } from '../lib/keyboard'
 
-/** The sheet that opens from the household name on Home. */
+const TILES: { note: string; tape: TapeKind }[] = [
+  { note: 'n-sage', tape: 'tcheck' },
+  { note: 'n-peach', tape: 'tp' },
+  { note: 'n-sand', tape: 'ty' },
+  { note: 'n-mint', tape: 'tb' },
+  { note: 'n-mist', tape: 'tdots' },
+  { note: 'n-blush', tape: 'tm' },
+]
+
+/** The "Our home" hub: the sheet that opens from the household name (on the phone, and as a side panel on desktop). */
 export function MyHouseholds({ open, onClose, page }: { open: boolean; onClose: () => void; page?: boolean }) {
   const { t } = useTranslation()
   const me = useMe()
@@ -25,6 +34,19 @@ export function MyHouseholds({ open, onClose, page }: { open: boolean; onClose: 
   const [inviting, setInviting] = useState<Household | null>(null)
   const [secretFor, setSecretFor] = useState<Household | null>(null)
   const [secretText, setSecretText] = useState('')
+
+  // The hub's top part: this home's people, and tiles for what isn't in the menu (Notes, Projects, the rooms).
+  const here = current ? peopleIn(current.id) : []
+  const rooms = useRooms(current?.id ?? null)
+  const tiles = [
+    { to: '/notes', label: t('home.notes') },
+    { to: '/projects', label: t('home.projects') },
+    ...[...rooms.rows].sort((a, b) => a.position - b.position).map((r) => ({ to: `/pantry?room=${r.id}`, label: r.name.toLocaleLowerCase() })),
+  ]
+  function go(to: string) {
+    onClose()
+    navigate(to)
+  }
 
   function pick(h: Household) {
     setCurrentHousehold(h.id)
@@ -222,7 +244,46 @@ export function MyHouseholds({ open, onClose, page }: { open: boolean; onClose: 
 
   return (
     <>
-      <Sheet open={open && !renaming && !leaving && !inviting && !secretFor && !deleting} onClose={onClose} title={t('households.title')}>
+      {/* The "Our home" hub (Nora, 29 Oct): everything about this home first (its people, the notes and rooms
+          that aren't in the menu, Arrange), then your other homes. Settings and About live elsewhere. */}
+      <Sheet open={open && !renaming && !leaving && !inviting && !secretFor && !deleting} onClose={onClose} title={current ? name(current) : t('households.title')}>
+        {current && (
+          <>
+            <div className="cap" style={{ marginTop: -8 }}>
+              {current.address} · {t('common.people', { count: here.length })}
+            </div>
+            <div className="row" style={{ gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
+              {here.map((p) => (
+                <button key={p.id} type="button" onClick={() => go(`/people/${p.id}`)} aria-label={p.display_name} style={{ display: 'flex', borderRadius: '50%' }}>
+                  <Avatar avatar={p.avatar} label={p.display_name} size={40} />
+                </button>
+              ))}
+              <button type="button" className="stk violet sm" style={{ transform: 'rotate(-1.5deg)', marginLeft: 4 }} onClick={() => setInviting(current)}>
+                <PersonAddIcon />
+                {t('home.addSomeone')}
+              </button>
+            </div>
+
+            <div className="label" style={{ marginTop: 22 }}>{t('hub.inThisHome')}</div>
+            <div className="hub-tiles">
+              {tiles.map((x, i) => (
+                <button key={x.to} type="button" className={`note ${TILES[i % TILES.length].note}`} onClick={() => go(x.to)} style={{ transform: `rotate(${[-1.5, 1, -0.5, 1.5, -1, 0.8][i % 6]}deg)` }}>
+                  <Tape kind={TILES[i % TILES.length].tape} style={{ top: -8, left: '30%', width: 44, height: 16, transform: 'rotate(-3deg)' }} />
+                  <Hand size={24} lineHeight={26}>
+                    {x.label}
+                  </Hand>
+                </button>
+              ))}
+            </div>
+
+            <button type="button" className="stk sec" style={{ marginTop: 22, width: '100%', transform: 'rotate(-.6deg)' }} onClick={() => go('/arrange')}>
+              <PencilIcon />
+              {t('arrange.title')}
+            </button>
+
+            <div className="label" style={{ marginTop: 24 }}>{t('households.title')}</div>
+          </>
+        )}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           {households.map((h) => {
             const people = peopleIn(h.id)

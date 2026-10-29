@@ -318,8 +318,7 @@
       "yellow": "Limun",
       "brown": "Tost",
       "black": "Onigiri"
-    },
-    "yourProfile": "Tvoj profil"
+    }
   },
   "invite": {
     "title": "Pozovi nekoga",
@@ -588,5 +587,8 @@
     "note": "Napomena",
     "notePlaceholder": "Veličina M, zelena",
     "deleted": "Želja je obrisana"
+  },
+  "hub": {
+    "inThisHome": "U ovom domu"
   }
 }

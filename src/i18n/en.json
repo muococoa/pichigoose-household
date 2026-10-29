@@ -313,8 +313,7 @@
       "yellow": "Lemon",
       "brown": "Toast",
       "black": "Onigiri"
-    },
-    "yourProfile": "Your profile"
+    }
   },
   "invite": {
     "title": "Invite someone",
@@ -580,5 +579,8 @@
     "note": "Note",
     "notePlaceholder": "Size M, the green one",
     "deleted": "Wish deleted"
+  },
+  "hub": {
+    "inThisHome": "In this home"
   }
 }

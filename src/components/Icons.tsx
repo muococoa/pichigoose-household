@@ -51,6 +51,13 @@ export const PencilIcon = (p: P) => (
     <path d="M14.5 8l3.5 3.5" />
   </Svg>
 )
+/** Settings: a little gear, on your own profile. */
+export const GearIcon = (p: P) => (
+  <Svg size={22} {...p}>
+    <path d="M19.79 11.28 L21.90 11.64 L21.90 14.36 L19.79 14.72 L19.01 16.58 L20.25 18.33 L18.33 20.25 L16.58 19.01 L14.72 19.79 L14.36 21.90 L11.64 21.90 L11.28 19.79 L9.42 19.01 L7.67 20.25 L5.75 18.33 L6.99 16.58 L6.21 14.72 L4.10 14.36 L4.10 11.64 L6.21 11.28 L6.99 9.42 L5.75 7.67 L7.67 5.75 L9.42 6.99 L11.28 6.21 L11.64 4.10 L14.36 4.10 L14.72 6.21 L16.58 6.99 L18.33 5.75 L20.25 7.67 L19.01 9.42Z" />
+    <circle cx="13" cy="13" r="3" />
+  </Svg>
+)
 export const ChevronDown = (p: P) => (
   <Svg size={22} {...p}>
     <path d="M8 10.5l5 5 5-5" />

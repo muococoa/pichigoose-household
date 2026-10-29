@@ -6,7 +6,7 @@ import { useComments, useHousehold, useItemsIn, useLists, useNotes, useProfiles,
 import { Screen } from '../components/Shell'
 import { Avatar } from '../components/Avatar'
 import { Hand } from '../components/Scrapbook'
-import { BackIcon, MessagesIcon } from '../components/Icons'
+import { BackIcon, GearIcon, MessagesIcon } from '../components/Icons'
 import { useBackInApp } from '../lib/back'
 import { WishList } from './Wishes'
 
@@ -56,6 +56,12 @@ export function PersonScreen() {
           <button type="button" aria-label={t('common.back')} onClick={back} style={{ display: 'flex', color: '#1E1A30' }}>
             <BackIcon />
           </button>
+          {/* Your own profile is the way in from your picture; Settings is the gear (Nora, 29 Oct). */}
+          {id === me && (
+            <Link to="/settings" className="stk sec sm" aria-label={t('settings.title')} title={t('settings.title')} style={{ marginLeft: 'auto', width: 40, padding: 0, transform: 'rotate(3deg)' }}>
+              <GearIcon />
+            </Link>
+          )}
         </div>
         {person && (
           <>

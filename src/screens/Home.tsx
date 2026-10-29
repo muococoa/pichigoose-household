@@ -22,7 +22,7 @@ import { recentlyDone, toggleItem, toggleTodo } from '../data/actions'
 import { Floating, Screen } from '../components/Shell'
 import { Avatar, NobodyAvatar } from '../components/Avatar'
 import { Check, Hand, PaperClip, PichiAvatar, Struck, Tick, PichiStamp, Tape, tilt, type TapeKind } from '../components/Scrapbook'
-import { InkChevron, PencilIcon, PlusIcon } from '../components/Icons'
+import { InkChevron, PlusIcon } from '../components/Icons'
 import { MyHouseholds } from './MyHouseholds'
 import { PendingInvites } from './Invite'
 import { AddSheet } from './AddSheet'
@@ -474,10 +474,6 @@ export function HomeScreen() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 26, paddingTop: 'var(--top)', paddingRight: 22, paddingLeft: 40 }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 24 }}>
             {layout.some((s) => s.section === 'news') && section('news')}
-            <span style={{ flex: 1 }} />
-            <Link to="/arrange" className="stk sec sm" aria-label={t('home.arrange')} title={t('home.arrange')} style={{ width: 42, padding: 0, transform: 'rotate(3deg)', marginTop: 18 }}>
-              <PencilIcon />
-            </Link>
           </div>
           <PendingInvites style={{ maxWidth: 620 }} />
           <div style={{ marginTop: 10 }}>
@@ -509,10 +505,9 @@ export function HomeScreen() {
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 'none' }}>
-            <Link to="/arrange" className="stk sec sm" style={{ width: 38, padding: 0 }} aria-label={t('home.arrange')}>
-              <PencilIcon />
-            </Link>
-            <Link to="/settings" aria-label={t('home.profile')} style={{ display: 'block' }}>
+            {/* Arrange your home moved into the "Our home" hub (Nora, 29 Oct). */}
+            {/* Your picture opens your profile; Settings is the gear there (Nora, 29 Oct). */}
+            <Link to={`/people/${me}`} aria-label={t('home.profile')} style={{ display: 'block' }}>
               <Avatar avatar={profile?.avatar} size={40} className="" />
             </Link>
           </div>
