@@ -30,7 +30,7 @@ import { useDesktop } from '../lib/desktop'
 import { DragBoard } from '../components/DragBoard'
 import { CommentCount, useCommentCounts } from '../components/Comments'
 import { db } from '../data/store'
-import { ContainerDrawing, Shelf } from '../components/Containers'
+import { ShelfRows, groupLow, groupThings, useShelfWidth } from '../components/Shelves'
 
 // Desktop: the small notes inside the notes section, each a little tilted and held with a paper clip on the left edge
 // (the bottom right corner is for the comment bubble).
@@ -113,8 +113,13 @@ export function HomeScreen() {
     [items.rows, lists.rows],
   )
   // The pantry note shows what's running out first, from the pantry and the bathroom cabinet.
-  const shelf = useMemo(() => [...pantry.rows].sort((a, b) => a.level - a.low_at - (b.level - b.low_at) || a.name.localeCompare(b.name)), [pantry.rows])
-  const lowCount = pantry.rows.filter((p) => p.level <= p.low_at).length
+  // Grouped like on the shelves (three bottles of wine are one), what's running out first.
+  const shelf = useMemo(() => {
+    const room = (g: ReturnType<typeof groupThings>[number]) => (groupLow(g.rows) ? -1 : g.rows.length > 1 ? 2 : (g.rows[0].level - g.rows[0].low_at) / 100)
+    return groupThings(pantry.rows).sort((a, b) => room(a) - room(b) || a.name.localeCompare(b.name))
+  }, [pantry.rows])
+  const lowCount = shelf.filter((g) => groupLow(g.rows)).length
+  const shelfBox = useShelfWidth()
   const pinnedNotes = useMemo(
     () => [...notes.rows].sort((a, b) => Number(b.pinned) - Number(a.pinned) || b.updated_at.localeCompare(a.updated_at)),
     [notes.rows],
@@ -288,7 +293,6 @@ export function HomeScreen() {
       )
     }
     if (s === 'pantry') {
-      const per = desktop ? 5 : 4
       return (
         <div key="pantry" className={`note ${look.note} note-link`} onClick={open('/pantry')} style={{ transform: `rotate(${look.rotate}deg)` }}>
           <Tape kind={look.tape} style={look.tapeStyle} />
@@ -298,19 +302,16 @@ export function HomeScreen() {
             right={lowCount ? `${t('home.pantryLow', { count: lowCount })} · ${t('common.seeAll')}` : t('common.seeAll')}
           />
           {shelf.length ? (
-            <div style={{ padding: '10px 6px 0' }}>
-              <Shelf columns={per} height={56}>
-                {shelf.slice(0, per).map((p) => (
-                  <Link key={p.id} to={p.place === 'bathroom' ? '/pantry?place=bathroom' : '/pantry'} className="shelf-thing" aria-label={`${p.name}, ${t('pantry.percent', { n: p.level })}`}>
-                    <span className="thing">
-                      <ContainerDrawing kind={p.container} level={p.level} lowAt={p.low_at} height={56} />
-                    </span>
-                    <span className={`shelf-label${p.level <= p.low_at ? ' low' : ''}`} style={{ fontSize: 17, lineHeight: '19px', marginTop: 14 }}>
-                      {p.name}
-                    </span>
-                  </Link>
-                ))}
-              </Shelf>
+            // One shelf of what's running out first.
+            <div ref={shelfBox.ref} style={{ padding: '10px 6px 0' }}>
+              <ShelfRows
+                groups={shelf}
+                width={shelfBox.width}
+                height={56}
+                maxRows={1}
+                compact
+                onOpen={(g) => navigate(g.rows[0].place === 'bathroom' ? '/pantry?place=bathroom' : '/pantry')}
+              />
             </div>
           ) : (
             <Empty>{t('home.noPantry')}</Empty>

@@ -25,7 +25,7 @@ Planning your household with the people you live with, so everyone stays organiz
 | Money in version 1 | Only "who owes who". Personal, tied to the profile, never to a household. Each person can turn money off |
 | Navigation in version 1 | Home, Shopping, To-dos, Notes, Money |
 | Home | Each member arranges their own home, like to-dos first for Nora and shopping first for Danko |
-| Pantry | Lives on Home as its own note, not in the bottom menu. Two places: the pantry and the bathroom cabinet. Pichi puts things on the list when they run low [Nora] |
+| Pantry | Lives on Home as its own note ("shelves"), not in the bottom menu. Two places: the pantry and the bathroom cabinet. Pichi puts things on the list when they run low [Nora] |
 | Price, later | $2.22 a month or $13.32 a year. One person pays for the household, everyone they invite joins free. Not in the first builds |
 
 ---
@@ -71,6 +71,9 @@ Stories marked **[Nora]** come from Nora. Stories marked **[Claude]** are Claude
 - **K4** As a member, I want Pichi to put something on the shopping list by herself when it runs low, with a note saying how much is left, like "only 20% left". [Nora]
 - **K5** As a member, I want buying it on the list to fill it back up in the pantry. [Claude]
 - **K6** As a member, I want to choose at what level Pichi adds it, and which list it goes on. [Claude]
+- **K7** As a member, I want several of the same thing, like four bottles of wine or my 60 g oat bags, grouped as one, each with its own level, so Pichi only adds it when we're on the last one and it's almost out. [Nora]
+- **K8** As a member, I want finishing one to be a single tap, and empty ones to disappear from the shelf, because we toss them. [Nora]
+- **K9** As a member, I want to type my own percentage, not only full, 75%, half, 25% or almost out. [Nora]
 
 ### Money (who owes who)
 - **M1** As a user, I want to track how much I owe someone, like my dad, so I know what's left to pay back. [Nora]
@@ -112,7 +115,7 @@ A temporary household for something people from different homes do together, lik
 | Shopping list | **hifi/03-shopping.png** (wireframe WF4) | S1 to S4 |
 | To-dos | wireframes/WF5-Todos.png | T1 to T4 |
 | Add a to-do | wireframes/WF6-AddTodo.png | T2 to T4 |
-| Pantry | no design yet: placeholder ink drawings until Nora draws the containers | K1 to K6 |
+| Pantry | no design yet: placeholder ink drawings until Nora draws the containers | K1 to K9 |
 | Notes | wireframes/WF7-Notes.png | N1, N2 |
 | A note | wireframes/WF8-Note.png | A5, N2 |
 | Money | wireframes/WF9-Money.png | M1 to M3, M7 |

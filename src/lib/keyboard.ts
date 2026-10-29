@@ -57,6 +57,9 @@ function remembered() {
 export function watchKeyboard() {
   const vv = window.visualViewport
   const root = document.documentElement
+  // iPhone also floats its own bar (arrows and a check) above the keyboard. CSS uses this to let
+  // pop-ups and bars reach down behind it, so there's no gap.
+  if (isIOS) root.dataset.ios = ''
   // While we're ahead of the keyboard, the page still says "no keyboard" for a moment; don't listen to that.
   let aheadUntil = 0
 

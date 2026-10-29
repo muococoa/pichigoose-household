@@ -132,7 +132,7 @@
     "addNote": "A note",
     "addSomeone": "Add someone to the household",
     "newsCommented": "{{name}} commented on {{item}}.",
-    "pantry": "pantry",
+    "pantry": "shelves",
     "pantryLow_one": "{{count}} running low",
     "pantryLow_other": "{{count}} running low",
     "noPantry": "Nothing on the shelves yet.",
@@ -362,9 +362,18 @@
       "carton": "Carton",
       "tube": "Tube",
       "pump": "Pump",
-      "spray": "Spray"
+      "spray": "Spray",
+      "dropper": "Dropper",
+      "jug": "Jug",
+      "creamjar": "Cream jar",
+      "lotion": "Lotion"
     },
     "own": "Other",
-    "ownLabel": "Your own percentage"
+    "ownLabel": "Your own percentage",
+    "count": "×{{count}}",
+    "tossed": "Tossed the empty {{name}}.",
+    "finishedOne": "Finished one",
+    "oneMore": "+ One more",
+    "joinsGroup": "Adds one more to your {{name}} ({{count}} on the shelf)."
   }
 }

@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type FormEvent, type PointerEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type FormEvent, type PointerEvent } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
@@ -8,7 +8,8 @@ import { setPantryLevel } from '../data/actions'
 import { Floating, Screen } from '../components/Shell'
 import { EmptyState, Hand, Sheet, showUndo } from '../components/Scrapbook'
 import { BackIcon, PlusIcon } from '../components/Icons'
-import { CONTAINERS_FOR, ContainerDrawing, Shelf, guessContainer, insideSpan } from '../components/Containers'
+import { CONTAINERS_FOR, ContainerDrawing, guessContainer, insideSpan } from '../components/Containers'
+import { GroupDrawing, ShelfRows, groupKey, groupThings, useShelfWidth, type Group } from '../components/Shelves'
 import { useDesktop } from '../lib/desktop'
 import { Chip } from './Todos'
 import { useBack } from '../lib/back'
@@ -71,30 +72,22 @@ function LevelPicker({ value, onPick, live }: { value: number; onPick: (n: numbe
 }
 const LOW_MARKS = [10, 20, 30, 50]
 
-/** How many things fit on one shelf, from how wide the page is. */
-function usePerShelf() {
-  const ref = useRef<HTMLDivElement>(null)
-  const [per, setPer] = useState(3)
-  useLayoutEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const watch = new ResizeObserver(() => setPer(Math.max(3, Math.floor(el.clientWidth / 96))))
-    watch.observe(el)
-    return () => watch.disconnect()
-  }, [])
-  return { ref, per }
-}
-
-/** Hooks up everything Pichi needs to put a low thing on the list, and says so with Undo. */
+/** Hooks up everything Pichi needs to put a low thing on the list, and says what happened with Undo:
+ *  Pichi adding it to the list, or an empty bottle tossed from its group. */
 export function usePantryLevel() {
   const { t } = useTranslation()
   const me = useMe()
   const { household } = useHousehold()
   const lists = useLists(household?.id ?? null)
   const items = useItemsIn(lists.rows.map((l) => l.id))
-  return (p: PantryItem, level: number) => {
-    const added = setPantryLevel(p, level, me, lists.rows, items.rows)
-    if (added) showUndo(t('pantry.pichiAdded', { item: p.name, list: added.list.name }), t('common.undo'), () => db.remove('list_items', added.row.id))
+  return (p: PantryItem, level: number, group?: PantryItem[]) => {
+    const { added, tossed } = setPantryLevel(p, level, me, lists.rows, items.rows, group)
+    const putBack = () => {
+      if (added) db.remove('list_items', added.row.id)
+      if (tossed) db.insert('pantry_items', { ...tossed, level: p.level })
+    }
+    if (added) showUndo(t('pantry.pichiAdded', { item: added.row.name as string, list: added.list.name }), t('common.undo'), putBack)
+    else if (tossed) showUndo(t('pantry.tossed', { name: (group?.find((r) => r.id !== tossed.id) ?? tossed).name.trim() }), t('common.undo'), putBack)
   }
 }
 
@@ -110,7 +103,7 @@ export function PantryScreen() {
   const hid = household?.id ?? null
   const pantry = usePantry(hid)
   const setLevel = usePantryLevel()
-  const { ref, per } = usePerShelf()
+  const { ref, width } = useShelfWidth()
   const [open, setOpen] = useState<string | null>(null)
   const [adding, setAdding] = useState(false)
 
@@ -118,11 +111,7 @@ export function PantryScreen() {
     () => pantry.rows.filter((p) => p.place === place).sort((a, b) => a.position - b.position || a.created_at.localeCompare(b.created_at)),
     [pantry.rows, place],
   )
-  const shelves = useMemo(() => {
-    const rows: PantryItem[][] = []
-    for (let i = 0; i < things.length; i += per) rows.push(things.slice(i, i + per))
-    return rows
-  }, [things, per])
+  const groups = useMemo(() => groupThings(things), [things])
   const height = desktop ? 96 : 80
 
   return (
@@ -168,24 +157,7 @@ export function PantryScreen() {
       </div>
 
       <div ref={ref} style={{ padding: desktop ? '34px 22px 32px 40px' : '30px 26px 0 44px', maxWidth: desktop ? 900 : undefined }}>
-        {shelves.map((row, i) => (
-          <Shelf key={i} columns={per} height={height}>
-            {row.map((p) => {
-              const low = p.level <= p.low_at
-              return (
-                <button key={p.id} type="button" className="shelf-thing" onClick={() => setOpen(p.id)} aria-label={`${p.name}, ${t('pantry.percent', { n: p.level })}`}>
-                  <span className="thing">
-                    <ContainerDrawing kind={p.container} level={p.level} lowAt={p.low_at} height={height} />
-                  </span>
-                  <span className={`shelf-label${low ? ' low' : ''}`} style={{ transform: `rotate(${(p.id.charCodeAt(0) % 5) - 2}deg)` }}>
-                    {p.name}
-                  </span>
-                  <span className={`shelf-pct${low ? ' low' : ''}`}>{low ? t('pantry.almostOut') : t('pantry.percent', { n: p.level })}</span>
-                </button>
-              )
-            })}
-          </Shelf>
-        ))}
+        <ShelfRows groups={groups} width={width} height={height} onOpen={(g) => setOpen(g.key)} />
         {pantry.loaded && !things.length && (
           <EmptyState pose="walk" color="#E9E1D6" zoom={0.95}>
             {t(place === 'pantry' ? 'pantry.empty' : 'pantry.emptyBathroom')}
@@ -212,58 +184,84 @@ export function PantryScreen() {
         </Floating>
       )}
 
-      <ThingSheet id={open} onClose={() => setOpen(null)} />
+      <GroupSheet groupId={open} onClose={() => setOpen(null)} />
       <AddThingSheet
         open={adding}
         place={place}
+        groups={groups}
         onClose={() => setAdding(false)}
         onAdd={(name, container, level) => {
           if (!hid) return
+          // Already on the shelf (any capitals)? It joins that group, looking the same.
+          const same = groups.find((g) => g.key === groupKey({ place, name }))
+          const like = same?.rows[0]
           const row = db.insert('pantry_items', {
             household_id: hid,
             place,
-            name,
-            container,
+            name: like ? like.name : name,
+            container: like ? like.container : container,
             level,
-            low_at: 20,
-            list_id: null,
-            position: things.length ? Math.max(...things.map((x) => x.position)) + 1 : 0,
+            low_at: like ? like.low_at : 20,
+            list_id: like ? like.list_id : null,
+            position: like ? like.position : things.length ? Math.max(...things.map((x) => x.position)) + 1 : 0,
             created_by: me,
             created_at: new Date().toISOString(),
             updated_by: me,
             updated_at: new Date().toISOString(),
           }) as PantryItem
-          // Put on the shelf already almost out? Pichi adds it to the list straight away.
-          if (level <= row.low_at) setLevel({ ...row, level: 100 }, level)
+          // Put on the shelf already almost out, with nothing else like it? Pichi adds it to the list straight away.
+          if (!same && level <= row.low_at) setLevel({ ...row, level: 100 }, level)
         }}
       />
     </Screen>
   )
 }
 
-/** One thing from the shelf, big: drag it (or tap a step) to say how full it is. Changes save right away. */
-function ThingSheet({ id, onClose }: { id: string | null; onClose: () => void }) {
+/**
+ * One thing from the shelf, big: drag it (or tap a step) to say how full it is. For a group (three
+ * bottles of wine) all of them stand at the top; tap one to change it, and it gets circled.
+ * Changes save right away. Name, drawing, low mark and list are shared by the whole group.
+ */
+function GroupSheet({ groupId, onClose }: { groupId: string | null; onClose: () => void }) {
   const { t } = useTranslation()
   const me = useMe()
   const { household } = useHousehold()
   const hid = household?.id ?? null
   const pantry = usePantry(hid)
   const lists = useLists(hid)
-  const setLevel = usePantryLevel()
-  const p = pantry.rows.find((x) => x.id === id) ?? null
+  const setLevelOf = usePantryLevel()
+  const group: Group | null = useMemo(() => (groupId ? groupThings(pantry.rows).find((g) => g.key === groupId) ?? null : null), [groupId, pantry.rows])
+  // Which one you're changing: the one you tapped, or else the open one (the least full).
+  const [picked, setPicked] = useState<string | null>(null)
+  const rows = group?.rows ?? []
+  const p = rows.find((r) => r.id === picked) ?? [...rows].sort((a, b) => a.level - b.level)[0] ?? null
+  const setLevel = (thing: PantryItem, n: number) => setLevelOf(thing, n, rows)
+  // Keep showing the group name while the sheet closes, even after it changes.
+  const lastName = useRef('')
+  if (group) lastName.current = group.name
   const [name, setName] = useState('')
   // While dragging, the drawing follows the finger; letting go saves.
   const [dragLevel, setDragLevel] = useState<number | null>(null)
   const dragRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (p) setName(p.name)
+    if (group) setName(group.name)
+    setPicked(null)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [p?.id])
+  }, [groupId])
 
+  // Shared by the whole group.
   function save(patch: Partial<PantryItem>) {
+    for (const r of rows) db.update('pantry_items', r.id, { ...patch, updated_by: me, updated_at: new Date().toISOString() })
+  }
+
+  function oneMore() {
     if (!p) return
-    db.update('pantry_items', p.id, { ...patch, updated_by: me, updated_at: new Date().toISOString() })
+    const { id: _id, ...like } = p
+    void _id
+    const now = new Date().toISOString()
+    const row = db.insert('pantry_items', { ...like, level: 100, created_by: me, created_at: now, updated_by: me, updated_at: now })
+    setPicked(row.id)
   }
 
   function levelAt(e: PointerEvent<HTMLDivElement>) {
@@ -279,16 +277,25 @@ function ThingSheet({ id, onClose }: { id: string | null; onClose: () => void })
   }
 
   function commitName() {
-    if (p && name.trim() && name.trim() !== p.name) save({ name: name.trim() })
+    if (group && name.trim() && name.trim() !== group.name) save({ name: name.trim() })
   }
 
   const sortedLists = [...lists.rows].sort((a, b) => a.position - b.position)
   const level = dragLevel ?? p?.level ?? 0
 
   return (
-    <Sheet open={Boolean(p)} onClose={() => { commitName(); onClose() }} title={p?.name ?? ''}>
-      {p && (
+    <Sheet open={Boolean(p)} onClose={() => { commitName(); onClose() }} title={lastName.current}>
+      {p && group && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+          {rows.length > 1 && (
+            <div className="group-pick" role="group" aria-label={t('pantry.count', { count: rows.length })}>
+              {rows.map((r, i) => (
+                <button key={r.id} type="button" aria-pressed={r.id === p.id} aria-label={`${i + 1}: ${t('pantry.percent', { n: r.level })}`} onClick={() => setPicked(r.id)}>
+                  <GroupDrawing g={{ key: r.id, name: group.name, rows: [r] }} height={72} selected={p.id} />
+                </button>
+              ))}
+            </div>
+          )}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 22 }}>
             <div
               ref={dragRef}
@@ -327,6 +334,15 @@ function ThingSheet({ id, onClose }: { id: string | null; onClose: () => void })
             </div>
           </div>
           <LevelPicker value={p.level} onPick={(n) => setLevel(p, n)} />
+          {/* Finishing one is one tap; bought more, add them here. */}
+          <div className="row" style={{ gap: 12 }}>
+            <button type="button" className="stk sec sm" style={{ flex: 1, transform: 'rotate(-1deg)' }} onClick={() => setLevel(p, 0)}>
+              {t('pantry.finishedOne')}
+            </button>
+            <button type="button" className="stk sec sm" style={{ flex: 1, transform: 'rotate(1deg)' }} onClick={oneMore}>
+              {t('pantry.oneMore')}
+            </button>
+          </div>
 
           <div>
             <label className="label" htmlFor="thing-name">
@@ -370,9 +386,10 @@ function ThingSheet({ id, onClose }: { id: string | null; onClose: () => void })
               className="stk sec"
               style={{ flex: 1, color: '#A8335A' }}
               onClick={() => {
-                const { id: thingId, ...rest } = p
-                db.remove('pantry_items', thingId)
-                showUndo(t('pantry.removed', { name: p.name }), t('common.undo'), () => db.insert('pantry_items', { ...rest, id: thingId }))
+                // The whole group comes off the shelf; Undo puts every one of them back.
+                const gone = [...rows]
+                for (const r of gone) db.remove('pantry_items', r.id)
+                showUndo(t('pantry.removed', { name: group.name }), t('common.undo'), () => gone.forEach((r) => db.insert('pantry_items', { ...r })))
                 onClose()
               }}
             >
@@ -405,7 +422,7 @@ function ContainerPicker({ place, value, level, lowAt, onPick }: { place: Place;
 }
 
 /** Putting something new on the shelf: what it is, what it looks like (guessed from the name), how full. */
-function AddThingSheet({ open, place, onClose, onAdd }: { open: boolean; place: Place; onClose: () => void; onAdd: (name: string, container: Container, level: number) => void }) {
+function AddThingSheet({ open, place, groups, onClose, onAdd }: { open: boolean; place: Place; groups: Group[]; onClose: () => void; onAdd: (name: string, container: Container, level: number) => void }) {
   const { t } = useTranslation()
   const [name, setName] = useState('')
   const [picked, setPicked] = useState<Container | null>(null)
@@ -419,8 +436,10 @@ function AddThingSheet({ open, place, onClose, onAdd }: { open: boolean; place: 
   }, [open])
 
   // Until someone picks one, the drawing follows the name: "oil" is a bottle, "rice" a bag.
-  const guess = guessContainer(name)
-  const container = picked ?? (guess && CONTAINERS_FOR[place].includes(guess) ? guess : place === 'bathroom' ? 'pump' : 'jar')
+  const guess = guessContainer(name, CONTAINERS_FOR[place])
+  const container = picked ?? guess ?? (place === 'bathroom' ? 'pump' : 'jar')
+  // Typed something that's already on the shelf? It joins that group.
+  const same = name.trim() ? groups.find((g) => g.key === groupKey({ place, name })) : undefined
 
   function add(e: FormEvent) {
     e.preventDefault()
@@ -438,10 +457,17 @@ function AddThingSheet({ open, place, onClose, onAdd }: { open: boolean; place: 
           </label>
           <input id="new-thing" className="input" ref={autoFocusField} placeholder={t(place === 'pantry' ? 'pantry.namePlaceholder' : 'pantry.namePlaceholderBathroom')} value={name} onChange={(e) => setName(e.target.value)} />
         </div>
-        <div>
-          <span className="label">{t('pantry.looksLike')}</span>
-          <ContainerPicker place={place} value={container} level={level} lowAt={20} onPick={setPicked} />
-        </div>
+        {same ? (
+          <p className="body" role="status" style={{ margin: 0, display: 'flex', alignItems: 'center', gap: 14 }}>
+            <GroupDrawing g={same} height={48} />
+            <span>{t('pantry.joinsGroup', { name: same.name, count: same.rows.length })}</span>
+          </p>
+        ) : (
+          <div>
+            <span className="label">{t('pantry.looksLike')}</span>
+            <ContainerPicker place={place} value={container} level={level} lowAt={20} onPick={setPicked} />
+          </div>
+        )}
         <div>
           <span className="label">{t('pantry.howFull')}</span>
           <LevelPicker value={level} onPick={setLevel} live />

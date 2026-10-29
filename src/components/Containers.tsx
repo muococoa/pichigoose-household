@@ -83,14 +83,46 @@ const SHAPES: Record<Container, Shape> = {
     top: 33,
     bottom: 79,
   },
+  // A serum bottle with a rubber dropper.
+  dropper: {
+    ink: 'M29 22Q32 17 35 22V34H29ZM25 34H39V44H25ZM26 44Q19 47 19 54V76Q19 80 23 80H41Q45 80 45 76V54Q45 47 38 44',
+    detail: 'M32 44V68',
+    inside: 'M26 45Q20 48 20 54V76Q20 79 23 79H41Q44 79 44 76V54Q44 48 38 45Z',
+    top: 45,
+    bottom: 79,
+  },
+  // A chunky detergent or fabric softener bottle, with a handle and a cap.
+  jug: {
+    ink: 'M37 6H47V15H37ZM37 15H47V20Q52 24 52 32V76Q52 80 48 80H16Q12 80 12 76V34Q12 22 22 18L37 15',
+    detail: 'M19 30Q19 25 25 24H31V38H23Q19 38 19 34Z',
+    inside: 'M13 34Q13 23 22 19L38 16H46V21Q51 25 51 32V76Q51 79 48 79H16Q13 79 13 76Z',
+    top: 19,
+    bottom: 79,
+  },
+  // A small, fat jar of moisturizer with a lid, rounded at the bottom.
+  creamjar: {
+    ink: 'M13 46H51Q54 46 54 49V57H10V49Q10 46 13 46ZM11 57H53V71Q53 80 43 80H21Q11 80 11 71Z',
+    detail: 'M12 51.5H52',
+    inside: 'M12 58H52V71Q52 79 43 79H21Q12 79 12 71Z',
+    top: 58,
+    bottom: 79,
+  },
+  // A lotion or sunscreen bottle standing on its flip cap.
+  lotion: {
+    ink: 'M18 10Q32 5 46 10Q48 40 42 66H22Q16 40 18 10ZM22 66H42V77Q42 80 39 80H25Q22 80 22 77Z',
+    detail: 'M22 71H42',
+    inside: 'M19 11Q32 6.5 45 11Q47 40 41.4 65H22.6Q17 40 19 11Z',
+    top: 9,
+    bottom: 65,
+  },
 }
 
 export const CONTAINERS = Object.keys(SHAPES) as Container[]
 
-/** What makes sense where (Nora): no pumps, sprays or tubes in the kitchen; no jars, cans or cartons in the bathroom. */
+/** What makes sense where (Nora): no pumps, sprays or tubes in the kitchen; no jars, cans, cartons, bottles or bags in the bathroom. */
 export const CONTAINERS_FOR: Record<Place, Container[]> = {
   pantry: ['jar', 'bottle', 'box', 'bag', 'can', 'carton'],
-  bathroom: ['bottle', 'box', 'bag', 'tube', 'pump', 'spray'],
+  bathroom: ['pump', 'lotion', 'creamjar', 'tube', 'dropper', 'spray', 'jug', 'box'],
 }
 
 /** The gel pen color for how full something is: green when there's plenty, orange when it's going,
@@ -109,19 +141,23 @@ export function insideSpan(kind: Container) {
 
 /** A guess at what something looks like from its name, so most things need no picking. */
 const GUESSES: [RegExp, Container][] = [
+  [/serum|dropper|pipet|kapi\b|drops|face oil|ulje za lice/i, 'dropper'],
+  [/detergent|deterdžent|deterdzent|softener|omekšiv|omeksiv|bleach|varikin|dish soap|za sudove/i, 'jug'],
+  [/sunscreen|spf|za sunčanje|za suncanje|lotion|losion|body milk|mleko za telo/i, 'lotion'],
+  [/moistur|hidrat|face cream|krema za lice|night cream|noćna krema|nocna krema|body butter|puter za telo/i, 'creamjar'],
   [/toothpaste|pasta za zube|tube|tuba|cream|krema|ointment/i, 'tube'],
   [/oil|ulje|vinegar|sirće|sirce|sauce|sos|syrup|sirup|wine|vino|juice|sok/i, 'bottle'],
-  [/rice|pirinač|pirinac|flour|brašno|brasno|sugar|šećer|secer|pasta|testenin|lentil|sočivo|beans dry|chips|čips/i, 'bag'],
-  [/oat|ovsen|cereal|žitaric|zitaric|muesli|musli|cracker|kreker|tea|čaj|caj|tissue|maramic/i, 'box'],
+  [/rice|pirinač|pirinac|flour|brašno|brasno|sugar|šećer|secer|pasta|testenin|lentil|sočivo|chips|čips/i, 'bag'],
+  [/oat|ovsen|cereal|žitaric|zitaric|muesli|musli|cracker|kreker|tea|čaj|caj|tissue|maramic|cotton|vat/i, 'box'],
   [/bean|pasulj|tomato|paradajz|tuna|corn|kukuruz|chickpea|leblebij|can|konzerv/i, 'can'],
   [/milk|mleko|mlijeko|pavlaka|yogurt|jogurt/i, 'carton'],
-  [/shampoo|šampon|sampon|soap|sapun|lotion|losion|conditioner|regenerator|gel|serum/i, 'pump'],
-  [/clean|čist|cist|spray|sprej|windex|bleach|varikin|detergent|deterdžent|deterdzent/i, 'spray'],
+  [/shampoo|šampon|sampon|soap|sapun|conditioner|regenerator|gel/i, 'pump'],
+  [/clean|čist|cist|spray|sprej|windex/i, 'spray'],
   [/honey|med|jam|džem|dzem|coffee|kafa|salt|so\b|spice|začin|zacin|nutella|peanut/i, 'jar'],
 ]
 
-export function guessContainer(name: string): Container | null {
-  for (const [re, kind] of GUESSES) if (re.test(name)) return kind
+export function guessContainer(name: string, allowed: Container[] = CONTAINERS): Container | null {
+  for (const [re, kind] of GUESSES) if (allowed.includes(kind) && re.test(name)) return kind
   return null
 }
 
@@ -161,7 +197,7 @@ export function ContainerDrawing({ kind, level, lowAt, height = 76, title }: { k
 
 /** A drawn shelf: a row of things standing on a board, each with a little paper label under it.
  *  `height` is how tall the things stand, so the board sits right under them. */
-export function Shelf({ columns, height, children }: { columns: number; height: number; children: ReactNode }) {
+export function Shelf({ height, children }: { height: number; children: ReactNode }) {
   return (
     <div className="shelf" style={{ ['--thing' as string]: `${height}px` }}>
       {/* The board, drawn with a pen: a wobbly top edge, a thinner bottom edge and two brackets. */}
@@ -170,9 +206,7 @@ export function Shelf({ columns, height, children }: { columns: number; height: 
         <path d="M4 9.5Q80 10.4 150 9.6T296 9.8" fill="none" stroke="#2E2638" strokeWidth="1.5" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
         <path d="M2 3.5V9.5M298 3.8V9.8" fill="none" stroke="#2E2638" strokeWidth="1.5" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
       </svg>
-      <div className="shelf-row" style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}>
-        {children}
-      </div>
+      <div className="shelf-row">{children}</div>
     </div>
   )
 }

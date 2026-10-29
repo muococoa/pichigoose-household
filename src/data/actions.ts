@@ -9,33 +9,49 @@ export function toggleItem(item: Item, me: string) {
   if (!item.checked_at && item.pantry_item_id) db.update('pantry_items', item.pantry_item_id, { level: 100, updated_by: me, updated_at: now })
 }
 
+/** Only one left, and it's almost out (or gone). */
+const runningLow = (rows: PantryItem[]) => rows.length === 1 && rows[0].level <= rows[0].low_at
+
 /**
- * Sets how full something in the pantry is. When it drops to its "low" mark, Pichi puts it on the
- * shopping list by herself (unless it's already there). Returns what she added, so the screen can
- * say so and offer Undo.
+ * Sets how full one thing in the pantry is. `group` is it plus the others of the same name (the
+ * other bottles of wine). An empty one is tossed when there are others left; the last one stays
+ * on the shelf at 0. When the group gets down to its last one and that's almost out, Pichi puts it
+ * on the shopping list by herself (unless it's already there). Returns what she added and what was
+ * tossed, so the screen can say so and offer Undo.
  */
-export function setPantryLevel(p: PantryItem, level: number, me: string, lists: List[], items: Item[]) {
+export function setPantryLevel(p: PantryItem, level: number, me: string, lists: List[], items: Item[], group: PantryItem[] = [p]) {
   const now = new Date().toISOString()
-  db.update('pantry_items', p.id, { level, updated_by: me, updated_at: now })
-  const crossed = level <= p.low_at && (p.level > p.low_at || (level === 0 && p.level > 0))
-  if (!crossed) return null
-  if (items.some((x) => x.pantry_item_id === p.id && !x.checked_at)) return null
+  const others = group.filter((r) => r.id !== p.id)
+  let tossed: PantryItem | null = null
+  let after: PantryItem[]
+  if (level === 0 && others.length) {
+    db.remove('pantry_items', p.id)
+    tossed = p
+    after = others
+  } else {
+    db.update('pantry_items', p.id, { level, updated_by: me, updated_at: now })
+    after = [...others, { ...p, level }]
+  }
+  const justRanOut = after.length === 1 && after[0].level === 0 && !(group.length === 1 && group[0].level === 0)
+  const crossed = runningLow(after) && (!runningLow(group) || justRanOut)
+  if (!crossed || items.some((x) => x.pantry_item_id && group.some((r) => r.id === x.pantry_item_id) && !x.checked_at)) return { added: null, tossed }
+  const last = after[0]
   const sorted = [...lists].sort((a, b) => a.position - b.position || a.created_at.localeCompare(b.created_at))
-  const list = sorted.find((l) => l.id === p.list_id) ?? sorted[0]
-  if (!list) return null
+  const list = sorted.find((l) => l.id === last.list_id) ?? sorted[0]
+  if (!list) return { added: null, tossed }
   const row = db.insert('list_items', {
     list_id: list.id,
-    name: p.name,
+    name: last.name.trim(),
     note: null,
     added_by: me,
     created_at: now,
     checked_at: null,
     checked_by: null,
     position: 0,
-    pantry_item_id: p.id,
+    pantry_item_id: last.id,
     added_by_pichi: true,
   })
-  return { row, list }
+  return { added: { row, list }, tossed }
 }
 
 /** Ticking a repeating to-do marks it done and creates the next one with the new due date. */

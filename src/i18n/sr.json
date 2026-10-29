@@ -136,7 +136,7 @@
     "addNote": "Belešku",
     "addSomeone": "Dodaj nekoga u domaćinstvo",
     "newsCommented": "{{name}}: novi komentar na {{item}}.",
-    "pantry": "ostava",
+    "pantry": "police",
     "pantryLow_one": "{{count}} pri kraju",
     "pantryLow_few": "{{count}} pri kraju",
     "pantryLow_other": "{{count}} pri kraju",
@@ -369,9 +369,18 @@
       "carton": "Tetrapak",
       "tube": "Tuba",
       "pump": "Pumpica",
-      "spray": "Sprej"
+      "spray": "Sprej",
+      "dropper": "Pipeta",
+      "jug": "Bidon",
+      "creamjar": "Teglica",
+      "lotion": "Losion"
     },
     "own": "Drugo",
-    "ownLabel": "Tvoj procenat"
+    "ownLabel": "Tvoj procenat",
+    "count": "×{{count}}",
+    "tossed": "Prazno {{name}} je bačeno.",
+    "finishedOne": "Potrošeno jedno",
+    "oneMore": "+ Još jedno",
+    "joinsGroup": "Dodaje još jedno uz {{name}} ({{count}} na polici)."
   }
 }

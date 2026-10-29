@@ -172,7 +172,7 @@ What's on the shelves (K1 to K6) [Nora]: the pantry, and the bathroom cabinet.
 | household_id | uuid, references households | |
 | place | text | `'pantry'` or `'bathroom'` (the bathroom cabinet) |
 | name | text | "Oats", 1 to 80 characters |
-| container | text | which drawing it gets: `jar`, `bottle`, `box`, `bag`, `can`, `carton`, `tube`, `pump`, `spray`. The app guesses it from the name [Claude] |
+| container | text | which drawing it gets. Kitchen: `jar`, `bottle`, `box`, `bag`, `can`, `carton`. Bathroom: `pump`, `lotion`, `creamjar`, `tube`, `dropper`, `spray`, `jug`, `box` [Nora]. The app guesses it from the name [Claude] |
 | level | smallint | how full, 0 to 100 |
 | low_at | smallint | at or below this, Pichi puts it on the shopping list. Default 20 [Claude] |
 | list_id | uuid, nullable | the list Pichi puts it on. Empty: the household's first list [Claude] |
@@ -183,6 +183,7 @@ What's on the shelves (K1 to K6) [Nora]: the pantry, and the bathroom cabinet.
 - Everyone in the household can read and change everything. Live updates on.
 - When someone lowers the level to `low_at` or below, the app adds a list item with `added_by_pichi = true`, unless one for it is already on the list. Undo removes it [Claude].
 - Deleting a pantry thing keeps its list items; they just lose the link.
+- **Groups** [Nora]: rows with the same name in the same place (ignoring capitals and spaces at the ends) are one group, like four bottles of wine. Each row is one bottle with its own level. A bottle that reaches 0 is deleted while others are left; the last one stays at 0. Pichi adds the group to the list only when one is left and it's at or below `low_at`. Buying it fills that last one back up; more bottles are added with "+ One more". No extra columns.
 
 ### messages
 Chat, like WhatsApp [Nora]: each household has one group chat for everyone, and each pair of people in it has a private chat.
