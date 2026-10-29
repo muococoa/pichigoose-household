@@ -256,7 +256,9 @@
       "turtle": "Kornjača",
       "carrot": "Šargarepa",
       "plant": "Biljka",
-      "mug": "Šolja"
+      "mug": "Šolja",
+      "sushi": "Suši",
+      "ramen": "Ramen"
     },
     "colors": {
       "blush": "Roze",

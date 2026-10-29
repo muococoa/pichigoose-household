@@ -15,6 +15,8 @@ import turtle from '../../assets/avatars/turtle.webp'
 import carrot from '../../assets/avatars/carrot.webp'
 import plant from '../../assets/avatars/plant.webp'
 import mug from '../../assets/avatars/mug.webp'
+import sushi from '../../assets/avatars/sushi.webp'
+import ramen from '../../assets/avatars/ramen.webp'
 import bowImg from '../../assets/avatars/extras/bow.webp'
 import bowTieImg from '../../assets/avatars/extras/bow-tie.webp'
 import glassesImg from '../../assets/avatars/extras/glasses.webp'
@@ -26,7 +28,7 @@ import witchHatImg from '../../assets/avatars/extras/witch-hat.webp'
 // Avatars: Nora's painted characters, each on a pastel circle, with her painted extras placed on
 // each one by hand (a hat on the head, glasses on the eyes). Never redrawn, only placed.
 
-export const CHARACTERS = ['onigiri', 'lemon', 'marshmallow', 'toast', 'cloud', 'frog', 'cat', 'dog', 'pickle', 'goldfish', 'turtle', 'carrot', 'plant', 'mug'] as const
+export const CHARACTERS = ['onigiri', 'lemon', 'marshmallow', 'toast', 'cloud', 'frog', 'cat', 'dog', 'pickle', 'goldfish', 'turtle', 'carrot', 'plant', 'mug', 'sushi', 'ramen'] as const
 export const COLORS = ['blush', 'mint', 'mist', 'sage', 'peach', 'butter', 'lilac', 'sand'] as const
 export const ACCESSORIES = ['none', 'bow', 'bowtie', 'glasses', 'mustache', 'flower', 'partyhat', 'witchhat'] as const
 
@@ -41,7 +43,7 @@ export const COLOR_HEX: Record<string, string> = {
   lilac: '#D6C8E6',
 }
 
-const ART: Record<string, string> = { onigiri, lemon, marshmallow, toast, cloud, frog, cat, dog, pickle, goldfish, turtle, carrot, plant, mug }
+const ART: Record<string, string> = { onigiri, lemon, marshmallow, toast, cloud, frog, cat, dog, pickle, goldfish, turtle, carrot, plant, mug, sushi, ramen }
 const EXTRA: Record<string, string> = {
   bow: bowImg,
   bowtie: bowTieImg,

@@ -251,7 +251,9 @@
       "turtle": "Turtle",
       "carrot": "Carrot",
       "plant": "Plant",
-      "mug": "Mug"
+      "mug": "Mug",
+      "sushi": "Sushi",
+      "ramen": "Ramen"
     },
     "colors": {
       "blush": "Blush",

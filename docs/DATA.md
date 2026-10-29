@@ -40,7 +40,7 @@ One row per signed-up person. Created right after sign up (A1).
 |---|---|---|
 | id | uuid, primary key | same as `auth.users.id` |
 | display_name | text | the name others see, like "Nora" |
-| avatar | jsonb | `{ "character": "onigiri", "color": "blush", "accessory": null }` (A8). Characters and extras are Nora's paintings, ids from a fixed set in the app: onigiri, lemon, marshmallow, toast, cloud, frog, cat, dog, pickle, goldfish, turtle, carrot, plant, mug; extras bow, bowtie, glasses, mustache, flower, partyhat, witchhat |
+| avatar | jsonb | `{ "character": "onigiri", "color": "blush", "accessory": null }` (A8). Characters and extras are Nora's paintings, ids from a fixed set in the app: onigiri, lemon, marshmallow, toast, cloud, frog, cat, dog, pickle, goldfish, turtle, carrot, plant, mug, sushi, ramen; extras bow, bowtie, glasses, mustache, flower, partyhat, witchhat |
 | language | text | `'en'` or `'sr'`, default `'en'` (A4) [Nora] |
 | theme | text | default `'pichigoose'` (A10). More themes later |
 | track_money | boolean | default `true`. When `false`, the money tab and the money card on home are hidden for this person [Nora] |

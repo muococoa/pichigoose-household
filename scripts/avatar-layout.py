@@ -19,7 +19,7 @@ import numpy as np
 from PIL import Image
 from scipy import ndimage as nd
 
-CHARACTERS = ['onigiri', 'lemon', 'marshmallow', 'toast', 'cloud', 'frog', 'cat', 'dog', 'pickle', 'goldfish', 'turtle', 'carrot', 'plant', 'mug']
+CHARACTERS = ['onigiri', 'lemon', 'marshmallow', 'toast', 'cloud', 'frog', 'cat', 'dog', 'pickle', 'goldfish', 'turtle', 'carrot', 'plant', 'mug', 'sushi', 'ramen']
 EXTRAS = {'bow': 'bow', 'bowtie': 'bow-tie', 'glasses': 'glasses', 'mustache': 'mustache', 'flower': 'flower', 'partyhat': 'party-hat', 'witchhat': 'witch-hat'}
 # Busts are cut off by the circle at the bottom, like a portrait.
 BUSTS = {'cat', 'dog'}
