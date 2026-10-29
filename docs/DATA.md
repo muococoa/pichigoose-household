@@ -271,6 +271,7 @@ Turn on Row Level Security for every table. The rules:
 
 - **Households, lists, list_items, todos, notes:** any member of the household can read, add, change and delete everything (A5) [Nora]. A helper function `is_member(household_id)` keeps the rules short.
 - **household_members:** members can see who else is in their households. People can only change or delete their own row (their label, their home order, leaving).
+- **Fresh start and delete** [Nora]: `clean_household(hid)` (any member) empties the household's list items, to-dos, notes and pantry; comments go with them; lists, chat, members, name, address and password stay. `delete_household(hid)` (any member) deletes the household and, through the cascades, everything in it. Members can't delete the household row directly.
 - **Joining:** someone who isn't a member yet can't read a household. Joining goes through a database function `join_household(address, label)` that checks the address and adds the member.
 - **profiles:** people can edit only their own. They can see the name and avatar of anyone they share a household with.
 - **money_people and money_entries:** only the owner, plus the linked person (read only).

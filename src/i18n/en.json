@@ -392,5 +392,18 @@
       },
       "undo": "This can't be undone."
     }
+  },
+  "household": {
+    "clean": {
+      "title": "Ready for the deep clean\nof {{name}}?",
+      "text": "Shopping lists, to-dos, notes, shelves and comments will be cleared. The chat and everyone in the household stay.",
+      "done": "Fresh start!"
+    },
+    "delete": {
+      "menu": "Delete household",
+      "title": "Delete {{name}}?",
+      "text": "The household and everything in it, chat included, will be gone for everyone.",
+      "button": "Delete household"
+    }
   }
 }

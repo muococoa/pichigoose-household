@@ -8,6 +8,7 @@ import { Screen } from '../components/Shell'
 import { Box, Hand, Tape, type TapeKind } from '../components/Scrapbook'
 import { GripIcon } from '../components/Icons'
 import { useDesktop } from '../lib/desktop'
+import { CleanHouseholdButton } from './HouseholdClean'
 
 const LOOK: Record<Section, { note: string; tape: TapeKind; rotate: number; label: string }> = {
   news: { note: 'n-lilac', tape: 'ttri', rotate: -0.8, label: 'home.news' },
@@ -134,9 +135,15 @@ export function ArrangeHomeScreen() {
     >
       <div style={{ padding: 'calc(var(--top) + 10px) 22px 0 40px', display: 'flex', flexDirection: 'column', gap: 18 }}>
         <div>
-          <Hand as="h1" style={{ margin: 0 }}>
-            {t('arrange.title')}
-          </Hand>
+          {/* The broom: a fresh start for the household, top right. */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+            <Hand as="h1" style={{ margin: 0, flex: 1 }}>
+              {t('arrange.title')}
+            </Hand>
+            <span style={{ marginTop: 6 }}>
+              <CleanHouseholdButton />
+            </span>
+          </div>
           <div style={{ fontSize: 15, lineHeight: '22px', fontWeight: 600, marginTop: 6, maxWidth: 300 }}>
             {others.length === 1 ? t('arrange.intro', { name: others[0].display_name }) : t('arrange.introAlone')}
           </div>
@@ -297,6 +304,9 @@ function ArrangeBoard({ order, setOrder, toggle, intro, onReset, onDone }: Board
           </Hand>
           <div style={{ fontSize: 17, lineHeight: '24px', fontWeight: 600, marginTop: 8 }}>{intro}</div>
         </div>
+        <span style={{ marginTop: 10 }}>
+          <CleanHouseholdButton size={42} />
+        </span>
         <button type="button" className="stk sec" style={{ transform: 'rotate(-1deg)', marginTop: 8 }} onClick={onReset}>
           {t('arrange.reset')}
         </button>

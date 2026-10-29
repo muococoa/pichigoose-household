@@ -434,7 +434,7 @@ export function Sheet({ open, onClose, title, children, small }: SheetProps) {
 }
 
 /** A small "···" menu. It opens below its button, or above when there's no room, and never leaves the screen. */
-export function Menu({ label, items, children }: { label: string; items: { label: string; onClick: () => void; danger?: boolean }[]; children: ReactNode }) {
+export function Menu({ label, items, children }: { label: string; items: { label: string; onClick: () => void; danger?: boolean; zone?: boolean; icon?: ReactNode }[]; children: ReactNode }) {
   const [open, setOpen] = useState(false)
   const [place, setPlace] = useState<CSSProperties>({ visibility: 'hidden' })
   const ref = useRef<HTMLDivElement>(null)
@@ -477,12 +477,13 @@ export function Menu({ label, items, children }: { label: string; items: { label
                 key={it.label}
                 type="button"
                 role="menuitem"
-                className={it.danger ? 'danger' : undefined}
+                className={[it.danger && 'danger', it.zone && 'zone'].filter(Boolean).join(' ') || undefined}
                 onClick={() => {
                   setOpen(false)
                   it.onClick()
                 }}
               >
+                {it.icon}
                 {it.label}
               </button>
             ))}

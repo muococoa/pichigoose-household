@@ -47,6 +47,8 @@ Stories marked **[Nora]** come from Nora. Stories marked **[Claude]** are Claude
 - **A10** As a user, I want to pick my own theme, so the app doesn't have to be pink if I'm not into pink. [Nora] *(later)*
 - **A11** As a member, I want to arrange my own home screen, so what I do most is on top. Like to-dos first for me, shopping first for Danko. [Nora]
 - **A12** As a user, I want to turn money off in my profile, so I can use the app only for the household. [Nora]
+- **A13** As a member, I want a broom on Arrange your home for a fresh start: it clears shopping lists, to-dos, notes, shelves and comments, but keeps the chat and the people. It asks first. [Nora]
+- **A14** As a member, I want to delete the whole household from its menu, in a red danger zone with a trash can, after a warning. [Nora]
 
 ### Shopping lists
 - **S1** As a member, I want a shared shopping list, so anyone can add what's needed. Like my sister telling my dad what to buy. [Nora]

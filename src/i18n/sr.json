@@ -399,5 +399,18 @@
       },
       "undo": "Ovo ne može da se poništi."
     }
+  },
+  "household": {
+    "clean": {
+      "title": "Spremni za generalno čišćenje\ndomaćinstva {{name}}?",
+      "text": "Spiskovi za kupovinu, zadaci, beleške, police i komentari biće obrisani. Ćaskanje i svi ukućani ostaju.",
+      "done": "Novi početak!"
+    },
+    "delete": {
+      "menu": "Obriši domaćinstvo",
+      "title": "Obrisati {{name}}?",
+      "text": "Domaćinstvo i sve u njemu, uključujući ćaskanje, nestaće za sve.",
+      "button": "Obriši domaćinstvo"
+    }
   }
 }

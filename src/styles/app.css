@@ -227,9 +227,13 @@ textarea.input { height: auto; padding: 12px 16px; resize: none }
 
 /* A small menu (the ··· menus). */
 .menu { position: absolute; right: 0; top: 100%; z-index: 70; background: #FFFFFF; border-radius: 10px 14px 12px 10px; box-shadow: 0 0 0 1px rgba(30, 26, 48, .08), 2px 6px 14px rgba(30, 26, 48, .18); padding: 6px; min-width: 200px }
-.menu button { display: block; width: 100%; padding: 10px 12px; border-radius: 8px; font-size: 15px; font-weight: 700; color: #1E1A30 }
+.menu button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; border-radius: 8px; font-size: 15px; font-weight: 700; color: #1E1A30 }
 .menu button:active { background: #F6F0E8 }
 .menu button.danger { color: var(--error-dark) }
+/* The danger zone: set apart from the rest by a thin line. */
+.menu button.zone { position: relative; margin-top: 9px }
+.menu button.zone::before { content: ""; position: absolute; left: 8px; right: 8px; top: -5px; border-top: 1.5px solid #EEE8F5 }
+.stk.prim.danger { background: var(--error-dark) }
 
 /* Toast for small messages like "Copied". */
 .toast { position: fixed; left: 50%; bottom: calc(var(--tabbar) + 16px); transform: translateX(-50%) rotate(-1deg); z-index: 60; background: #1E1A30; color: #FFFDF8; font-weight: 800; font-size: 14px; padding: 10px 16px; border-radius: 8px 14px 10px 12px; box-shadow: 2px 3px 0 rgba(30, 26, 48, .2) }

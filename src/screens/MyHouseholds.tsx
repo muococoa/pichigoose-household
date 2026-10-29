@@ -6,7 +6,8 @@ import { db } from '../data/store'
 import { setCurrentHousehold, useHousehold, type Household } from '../data/hooks'
 import { Avatar } from '../components/Avatar'
 import { Hand, Menu, Sheet } from '../components/Scrapbook'
-import { DotsIcon, SmallCheck } from '../components/Icons'
+import { DotsIcon, SmallCheck, TrashIcon } from '../components/Icons'
+import { DeleteHouseholdSheet } from './HouseholdClean'
 import { copyText, joinLink } from '../lib/share'
 import { InviteSheet } from './Invite'
 import { autoFocusField } from '../lib/keyboard'
@@ -18,6 +19,7 @@ export function MyHouseholds({ open, onClose, page }: { open: boolean; onClose: 
   const navigate = useNavigate()
   const { households, household: current, name, peopleIn } = useHousehold()
   const [renaming, setRenaming] = useState<Household | null>(null)
+  const [deleting, setDeleting] = useState<Household | null>(null)
   const [label, setLabel] = useState('')
   const [leaving, setLeaving] = useState<Household | null>(null)
   const [inviting, setInviting] = useState<Household | null>(null)
@@ -54,6 +56,20 @@ export function MyHouseholds({ open, onClose, page }: { open: boolean; onClose: 
     <>
 
       <InviteSheet household={inviting} onClose={() => setInviting(null)} />
+
+      <DeleteHouseholdSheet
+        household={deleting}
+        onClose={() => setDeleting(null)}
+        onDeleted={(id) => {
+          const rest = households.filter((h) => h.id !== id)
+          setDeleting(null)
+          if (rest.length) setCurrentHousehold(rest[0].id)
+          else {
+            onClose()
+            navigate('/welcome', { replace: true })
+          }
+        }}
+      />
 
       {/* The household's secret password: everyone in it can see and change it. */}
       <Sheet small open={Boolean(secretFor)} onClose={() => setSecretFor(null)} title={t('households.secret')}>
@@ -181,6 +197,7 @@ export function MyHouseholds({ open, onClose, page }: { open: boolean; onClose: 
                     },
                     { label: t('households.copyAddress'), onClick: () => copyText(joinLink(h), t('common.copied')) },
                             { label: t('households.leave'), onClick: () => setLeaving(h), danger: true },
+                    { label: t('household.delete.menu'), onClick: () => setDeleting(h), danger: true, zone: true, icon: <TrashIcon /> },
                           ]}
                         >
                           <DotsIcon />
@@ -203,7 +220,7 @@ export function MyHouseholds({ open, onClose, page }: { open: boolean; onClose: 
 
   return (
     <>
-      <Sheet open={open && !renaming && !leaving && !inviting && !secretFor} onClose={onClose} title={t('households.title')}>
+      <Sheet open={open && !renaming && !leaving && !inviting && !secretFor && !deleting} onClose={onClose} title={t('households.title')}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           {households.map((h) => {
             const people = peopleIn(h.id)
@@ -256,6 +273,7 @@ export function MyHouseholds({ open, onClose, page }: { open: boolean; onClose: 
                     },
                     { label: t('households.copyAddress'), onClick: () => copyText(joinLink(h), t('common.copied')) },
                     { label: t('households.leave'), onClick: () => setLeaving(h), danger: true },
+                    { label: t('household.delete.menu'), onClick: () => setDeleting(h), danger: true, zone: true, icon: <TrashIcon /> },
                   ]}
                 >
                   <DotsIcon />
