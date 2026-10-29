@@ -24,6 +24,8 @@ a { color: inherit; text-decoration: none }
   /* The floating menu: how far it sits above the paper's bottom edge (the same as from its sides, so the corners run
      parallel), and the room it takes from the screen's bottom. */
   --tabbar-gap: 14px;
+  /* The menu's own height. */
+  --tabbar-h: 62px;
   /* The paper's corners wrap around the menu's: its corner (half its height) plus the gap between them. */
   --paper-radius: calc(31px + 14px);
   --tabbar: calc(62px + var(--tabbar-gap) + var(--frame));
@@ -60,7 +62,7 @@ html[data-kb="open"] .tabbar { visibility: hidden }
   :root { --hand-scale: .8 }
   .screen:not(.page) > .scroll > * { zoom: .94 }
 }
-@media (max-width: 374px) { :root { --frame: 4px; --tabbar-gap: 10px; --paper-radius: calc(28px + 10px); --tabbar: calc(56px + var(--tabbar-gap) + var(--frame)) } }
+@media (max-width: 374px) { :root { --frame: 4px; --tabbar-gap: 10px; --tabbar-h: 56px; --paper-radius: calc(28px + 10px); --tabbar: calc(56px + var(--tabbar-gap) + var(--frame)) } }
 
 /* Changing screens: the new sheet of paper slides in (kinetic ease-out, 0.35 s). The tab bar stays still. */
 html[data-nav="forward"] .screen > .scroll { animation: sheet-in-right .35s cubic-bezier(.16, 1, .3, 1) }
@@ -483,6 +485,22 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 .project-row .grip { flex: none; display: grid; place-items: center; width: 22px; height: 40px; touch-action: none; cursor: grab; opacity: .7 }
 .progress-line { display: block; height: 4px; margin-top: 8px; border-radius: 2px; background: rgba(30, 26, 48, .1); overflow: hidden }
 .progress-line span { display: block; height: 100%; border-radius: 2px; background: var(--hero-dark); transition: width .5s var(--ease-out) }
+/* Everywhere the menu floats (and Shopping's add field above it), the page fades into the paper behind it, like the
+   chat (Nora, 29 Oct): from a few pixels above the bar to its middle. Measured from the paper's bottom edge. */
+.with-tabbar > .scroll {
+  --fade-from: calc(var(--tabbar-gap) + var(--tabbar-h) / 2);
+  --fade-to: calc(var(--tabbar-gap) + var(--tabbar-h) + 4px);
+  -webkit-mask-image: linear-gradient(to top, transparent 0, transparent var(--fade-from), #000 var(--fade-to));
+  mask-image: linear-gradient(to top, transparent 0, transparent var(--fade-from), #000 var(--fade-to));
+}
+body.adding .with-tabbar > .scroll { --fade-from: calc(var(--tabbar-gap) + var(--tabbar-h) + 12px + 25px); --fade-to: calc(var(--tabbar-gap) + var(--tabbar-h) + 12px + 54px) }
+/* While typing the menu steps away and the paper ends above the keyboard; the add field then sits at the paper's foot. */
+html[data-kb="open"] .with-tabbar > .scroll { -webkit-mask-image: none; mask-image: none }
+html[data-kb="open"] body.adding .with-tabbar > .scroll {
+  --fade-from: calc(var(--tabbar-gap) + 25px); --fade-to: calc(var(--tabbar-gap) + 54px);
+  -webkit-mask-image: linear-gradient(to top, transparent 0, transparent var(--fade-from), #000 var(--fade-to));
+  mask-image: linear-gradient(to top, transparent 0, transparent var(--fade-from), #000 var(--fade-to));
+}
 .day-stamp { display: flex; justify-content: center; margin: 18px 0 4px }
 .say-hi { text-align: center; color: #63586B; font-size: 15px; font-weight: 600; margin: 48px 0 }
 /* One typing bar for every place you type a short text (Nora, 29 Oct): chat, comments and Shopping's add field. A strip
