@@ -245,12 +245,17 @@
     "characters": {
       "onigiri": "Onigiri",
       "lemon": "Limun",
-      "mug": "Šolja",
       "marshmallow": "Penasti slatkiš",
       "toast": "Tost",
       "cloud": "Oblak",
       "frog": "Žaba",
-      "cat": "Mače"
+      "cat": "Mače",
+      "dog": "Kuca",
+      "pickle": "Kiseli krastavac",
+      "goldfish": "Zlatna ribica",
+      "turtle": "Kornjača",
+      "carrot": "Šargarepa",
+      "plant": "Biljka"
     },
     "colors": {
       "blush": "Roze",
@@ -267,7 +272,10 @@
       "bow": "Mašna",
       "glasses": "Naočare",
       "flower": "Cvet",
-      "hat": "Kapa za žurku"
+      "bowtie": "Leptir mašna",
+      "mustache": "Brkovi",
+      "partyhat": "Kapa za žurku",
+      "witchhat": "Veštičji šešir"
     },
     "saveChanges": "Sačuvaj"
   },

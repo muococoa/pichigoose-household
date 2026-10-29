@@ -1,15 +1,32 @@
 import { useId } from 'react'
-import inkPatch from '../../assets/ink-patch.png'
-// Avatars: a character with a face on a pastel circle.
-// The onigiri, lemon, mug and marshmallow come from the hi-fi screens. The toast, cloud, frog,
-// cat and the accessories are Claude's drafts for Nora to review.
-// Lines stay 2 px at every size (vector-effect: non-scaling-stroke).
-
 import type { Avatar as AvatarData } from '../data/hooks'
+import onigiri from '../../assets/avatars/onigiri.webp'
+import lemon from '../../assets/avatars/lemon.webp'
+import marshmallow from '../../assets/avatars/marshmallow.webp'
+import toast from '../../assets/avatars/toast.webp'
+import cloud from '../../assets/avatars/cloud.webp'
+import frog from '../../assets/avatars/frog.webp'
+import cat from '../../assets/avatars/cat.webp'
+import dog from '../../assets/avatars/dog.webp'
+import pickle from '../../assets/avatars/pickle.webp'
+import goldfish from '../../assets/avatars/goldfish.webp'
+import turtle from '../../assets/avatars/turtle.webp'
+import carrot from '../../assets/avatars/carrot.webp'
+import plant from '../../assets/avatars/plant.webp'
+import bowImg from '../../assets/avatars/extras/bow.webp'
+import bowTieImg from '../../assets/avatars/extras/bow-tie.webp'
+import glassesImg from '../../assets/avatars/extras/glasses.webp'
+import mustacheImg from '../../assets/avatars/extras/mustache.webp'
+import flowerImg from '../../assets/avatars/extras/flower.webp'
+import partyHatImg from '../../assets/avatars/extras/party-hat.webp'
+import witchHatImg from '../../assets/avatars/extras/witch-hat.webp'
 
-export const CHARACTERS = ['onigiri', 'lemon', 'mug', 'marshmallow', 'toast', 'cloud', 'frog', 'cat'] as const
+// Avatars: Nora's painted characters, each on a pastel circle, with her painted extras placed on
+// each one by hand (a hat on the head, glasses on the eyes). Never redrawn, only placed.
+
+export const CHARACTERS = ['onigiri', 'lemon', 'marshmallow', 'toast', 'cloud', 'frog', 'cat', 'dog', 'pickle', 'goldfish', 'turtle', 'carrot', 'plant'] as const
 export const COLORS = ['blush', 'mint', 'mist', 'sage', 'peach', 'butter', 'lilac', 'sand'] as const
-export const ACCESSORIES = ['none', 'bow', 'glasses', 'flower', 'hat'] as const
+export const ACCESSORIES = ['none', 'bow', 'bowtie', 'glasses', 'mustache', 'flower', 'partyhat', 'witchhat'] as const
 
 export const COLOR_HEX: Record<string, string> = {
   blush: '#F2C1C4',
@@ -22,169 +39,128 @@ export const COLOR_HEX: Record<string, string> = {
   lilac: '#D6C8E6',
 }
 
-const INK = '#1E1A30'
-const line = { stroke: INK, strokeWidth: 2, vectorEffect: 'non-scaling-stroke' as const }
-const thin = { stroke: INK, strokeWidth: 1.6, vectorEffect: 'non-scaling-stroke' as const, strokeLinecap: 'round' as const, fill: 'none' }
+/** Width / height of each painting, and of each extra. */
+type Art = { src: string; ratio: number }
+const ART: Record<string, Art> = {
+  onigiri: { src: onigiri, ratio: 384 / 347 },
+  lemon: { src: lemon, ratio: 280 / 384 },
+  marshmallow: { src: marshmallow, ratio: 357 / 384 },
+  toast: { src: toast, ratio: 382 / 384 },
+  cloud: { src: cloud, ratio: 384 / 267 },
+  frog: { src: frog, ratio: 361 / 384 },
+  cat: { src: cat, ratio: 317 / 384 },
+  dog: { src: dog, ratio: 358 / 384 },
+  pickle: { src: pickle, ratio: 201 / 384 },
+  goldfish: { src: goldfish, ratio: 384 / 318 },
+  turtle: { src: turtle, ratio: 349 / 384 },
+  carrot: { src: carrot, ratio: 198 / 384 },
+  plant: { src: plant, ratio: 382 / 384 },
+}
+const EXTRA: Record<string, Art> = {
+  bow: { src: bowImg, ratio: 384 / 278 },
+  bowtie: { src: bowTieImg, ratio: 384 / 208 },
+  glasses: { src: glassesImg, ratio: 384 / 163 },
+  mustache: { src: mustacheImg, ratio: 384 / 113 },
+  flower: { src: flowerImg, ratio: 384 / 350 },
+  partyhat: { src: partyHatImg, ratio: 273 / 384 },
+  witchhat: { src: witchHatImg, ratio: 384 / 302 },
+}
+/** Older saved extras, from before Nora's paintings. */
+const RENAMED: Record<string, string> = { hat: 'partyhat' }
 
-type Face = { eyes: [number, number, number]; smile: string; cheeks?: [number, number, number] }
-
-function FaceMarks({ eyes: [x1, x2, y], smile, cheeks }: Face) {
-  return (
-    <>
-      <circle cx={x1} cy={y} r="1.4" fill={INK} />
-      <circle cx={x2} cy={y} r="1.4" fill={INK} />
-      <path d={smile} {...thin} />
-      {cheeks && (
-        <>
-          <circle cx={cheeks[0]} cy={cheeks[2]} r="1.3" fill="#F2A0B0" />
-          <circle cx={cheeks[1]} cy={cheeks[2]} r="1.3" fill="#F2A0B0" />
-        </>
-      )}
-    </>
-  )
+/**
+ * Where each character sits in the circle (on a 40 x 40 grid) and where its face and head are,
+ * as shares of the painting's width and height.
+ *   box: how big the painting is drawn; cx, cy: its center (busts sit low, cut by the circle).
+ *   eyes: the point between the eyes, and the distance between them (share of the width).
+ *   mouth: how far down the mouth is. top: the top of the head, where a hat sits, and its tilt.
+ *   bow, flower: top right and top left of the head. tie: just under the face.
+ */
+type Place = {
+  box: number
+  cx: number
+  cy: number
+  eyes: [number, number, number]
+  mouth: number
+  top: [number, number, number]
+  head: number
+  bow: [number, number]
+  flower: [number, number]
+  tie: [number, number]
+}
+const PLACES: Record<string, Place> = {
+  onigiri: { box: 29, cx: 20, cy: 21.5, eyes: [0.51, 0.38, 0.22], mouth: 0.46, top: [0.5, 0.06, -6], head: 0.42, bow: [0.7, 0.24], flower: [0.29, 0.26], tie: [0.51, 0.56] },
+  lemon: { box: 30, cx: 20.5, cy: 21, eyes: [0.53, 0.52, 0.26], mouth: 0.57, top: [0.38, 0.17, -22], head: 0.5, bow: [0.22, 0.3], flower: [0.8, 0.45], tie: [0.53, 0.72] },
+  marshmallow: { box: 28, cx: 20, cy: 21, eyes: [0.43, 0.49, 0.25], mouth: 0.53, top: [0.5, 0.06, -5], head: 0.5, bow: [0.84, 0.14], flower: [0.13, 0.14], tie: [0.45, 0.72] },
+  toast: { box: 28, cx: 20, cy: 21, eyes: [0.44, 0.44, 0.25], mouth: 0.5, top: [0.5, 0.05, -5], head: 0.48, bow: [0.84, 0.12], flower: [0.12, 0.14], tie: [0.44, 0.68] },
+  cloud: { box: 31, cx: 20, cy: 21.5, eyes: [0.5, 0.49, 0.25], mouth: 0.56, top: [0.46, 0.06, -6], head: 0.4, bow: [0.75, 0.22], flower: [0.2, 0.32], tie: [0.5, 0.8] },
+  frog: { box: 30, cx: 20, cy: 22, eyes: [0.5, 0.11, 0.45], mouth: 0.23, top: [0.5, 0.06, -4], head: 0.4, bow: [0.82, 0.05], flower: [0.17, 0.05], tie: [0.5, 0.36] },
+  cat: { box: 33, cx: 20.5, cy: 24, eyes: [0.56, 0.4, 0.32], mouth: 0.52, top: [0.58, 0.18, -4], head: 0.48, bow: [0.82, 0.22], flower: [0.26, 0.24], tie: [0.58, 0.64] },
+  dog: { box: 33, cx: 20, cy: 24, eyes: [0.53, 0.33, 0.18], mouth: 0.43, top: [0.54, 0.04, -4], head: 0.48, bow: [0.8, 0.13], flower: [0.25, 0.15], tie: [0.56, 0.58] },
+  pickle: { box: 30, cx: 20, cy: 21, eyes: [0.46, 0.35, 0.3], mouth: 0.38, top: [0.56, 0.03, 8], head: 0.75, bow: [0.82, 0.12], flower: [0.22, 0.14], tie: [0.47, 0.5] },
+  goldfish: { box: 30, cx: 21, cy: 21, eyes: [0.18, 0.5, 0.16], mouth: 0.55, top: [0.3, 0.17, -16], head: 0.32, bow: [0.47, 0.18], flower: [0.12, 0.32], tie: [0.24, 0.78] },
+  turtle: { box: 31, cx: 20, cy: 22, eyes: [0.83, 0.2, 0.12], mouth: 0.23, top: [0.79, 0.04, 6], head: 0.3, bow: [0.93, 0.1], flower: [0.64, 0.08], tie: [0.73, 0.43] },
+  carrot: { box: 31, cx: 20, cy: 21, eyes: [0.41, 0.49, 0.22], mouth: 0.53, top: [0.56, 0.04, 4], head: 0.7, bow: [0.66, 0.28], flower: [0.2, 0.33], tie: [0.42, 0.66] },
+  plant: { box: 31, cx: 20, cy: 21, eyes: [0.53, 0.82, 0.16], mouth: 0.86, top: [0.5, 0.03, -4], head: 0.36, bow: [0.77, 0.6], flower: [0.24, 0.6], tie: [0.53, 0.95] },
 }
 
-const FACES: Record<string, Face> = {
-  onigiri: { eyes: [16.6, 23.4, 19.6], smile: 'M18.2 22.2q1.8 1.5 3.6 0', cheeks: [14.4, 25.6, 22] },
-  lemon: { eyes: [16.4, 23.6, 20], smile: 'M18 23q2 1.7 4 0' },
-  mug: { eyes: [16, 21.4, 19.5], smile: 'M17 22.6q1.7 1.4 3.4 0' },
-  marshmallow: { eyes: [17, 23, 19.5], smile: 'M18.3 22.6q1.7 1.4 3.4 0' },
-  toast: { eyes: [16.6, 23.4, 20.5], smile: 'M18.2 23.4q1.8 1.5 3.6 0', cheeks: [14.6, 25.4, 23] },
-  cloud: { eyes: [17, 23, 21], smile: 'M18.4 23.8q1.6 1.3 3.2 0' },
-  frog: { eyes: [15, 25, 15.2], smile: 'M15.5 24q4.5 3 9 0' },
-  cat: { eyes: [16.6, 23.4, 20.5], smile: 'M18 24q1 1 2 0q1 1 2 0', cheeks: [14.4, 25.6, 23.4] },
+type Rect = { x: number; y: number; w: number; h: number }
+
+const HATS = ['partyhat', 'witchhat']
+
+/** The painting's rectangle in the circle. With a hat on, the character is a little smaller and
+ *  lower, so the whole hat fits in the circle. */
+function frame(character: string, accessory: string | null): Rect {
+  const p = PLACES[character]
+  const r = ART[character].ratio
+  const hat = accessory ? HATS.includes(accessory) : false
+  const box = hat ? p.box * 0.78 : p.box
+  const w = r >= 1 ? box : box * r
+  const h = r >= 1 ? box / r : box
+  const cy = hat ? p.cy + (p.box - box) / 2 + 2.5 : p.cy
+  return { x: p.cx - w / 2, y: cy - h / 2, w, h }
 }
 
-function Body({ character }: { character: string }) {
-  switch (character) {
-    case 'lemon':
-      return (
-        <>
-          <path d="M7.5 21C7.5 14 13 10.5 20 10.5S32.5 14 32.5 21 27 31 20 31 7.5 28 7.5 21Z" fill="#F8E6A8" {...line} />
-          <path d="M20 10.5c1-3 3.5-4 6-3.6-1 2.6-3.4 3.8-6 3.6Z" fill="#6E9152" {...line} strokeLinejoin="round" />
-        </>
-      )
-    case 'mug':
-      return (
-        <>
-          <path d="M11 13h15v11a6 6 0 0 1-6 6h-3a6 6 0 0 1-6-6Z" fill="#F6CFA0" {...line} strokeLinejoin="round" />
-          <path d="M26 16h2a3.5 3.5 0 0 1 0 7h-2" fill="none" {...line} />
-        </>
-      )
-    case 'marshmallow':
-      return <path d="M12 28V17a8 8 0 0 1 16 0v11Z" fill="#FFFDF8" {...line} strokeLinejoin="round" />
-    case 'toast':
-      return (
-        <path
-          d="M11.5 30V18.6C9 17.6 8.4 15.6 8.9 13.6 9.7 10.6 13.6 9 20 9s10.3 1.6 11.1 4.6c.5 2-.1 4-2.6 5V30Z"
-          fill="#F8E6A8"
-          {...line}
-          strokeLinejoin="round"
-        />
-      )
-    case 'cloud':
-      return (
-        <path
-          d="M12 28.5a5.2 5.2 0 0 1-.9-10.3 7 7 0 0 1 13.2-3 5.6 5.6 0 0 1 6.6 6.6 3.4 3.4 0 0 1-1 6.7Z"
-          fill="#FFFFFF"
-          {...line}
-          strokeLinejoin="round"
-        />
-      )
-    case 'frog':
-      return (
-        <>
-          <path d="M8.5 24.5c0-5.4 5-8.7 11.5-8.7s11.5 3.3 11.5 8.7-5 6.6-11.5 6.6-11.5-1.2-11.5-6.6Z" fill="#B9D49A" {...line} />
-          <circle cx="15" cy="15" r="4.2" fill="#FFFDF8" {...line} />
-          <circle cx="25" cy="15" r="4.2" fill="#FFFDF8" {...line} />
-        </>
-      )
-    case 'cat':
-      return (
-        <>
-          <path d="M10.5 30.5c-2-3.5-2.2-9.5-.3-13.6l.9-8 6 4.6h5.8l6-4.6.9 8c1.9 4.1 1.7 10.1-.3 13.6Z" fill="#F6CFA0" {...line} strokeLinejoin="round" />
-        </>
-      )
-    default:
-      return (
-        <>
-          <path d="M20 8.5C25 8.5 31.5 20 31 26.5C30.6 30.5 9.4 30.5 9 26.5C8.5 20 15 8.5 20 8.5Z" fill="#FFFDF8" {...line} strokeLinejoin="round" />
-          <path d="M14 25h12v5.2H14z" fill={INK} />
-        </>
-      )
+/** One extra, placed on the character. */
+function Extra({ kind, character }: { kind: string; character: string }) {
+  const art = EXTRA[kind]
+  if (!art) return null
+  const p = PLACES[character]
+  const f = frame(character, kind)
+  const at = (fx: number, fy: number) => [f.x + fx * f.w, f.y + fy * f.h] as const
+  const img = (cx: number, cy: number, w: number, rot = 0, anchorBottom = false) => {
+    const h = w / art.ratio
+    const y = anchorBottom ? cy - h : cy - h / 2
+    return <image href={art.src} x={cx - w / 2} y={y} width={w} height={h} transform={rot ? `rotate(${rot} ${cx} ${anchorBottom ? cy : cy})` : undefined} />
   }
-}
-
-// Where each extra sits on each character, so it rests on the head instead of floating above it.
-// hat: middle of the top edge. bow and flower: on the outline, top right and top left.
-type Spot = [number, number, number] // x, y, tilt in degrees
-const SPOTS: Record<string, { hat: Spot; bow: Spot; flower: Spot }> = {
-  onigiri: { hat: [20, 9.6, -6], bow: [24.6, 12.6, 30], flower: [15.4, 12.8, 0] },
-  lemon: { hat: [15.6, 11.6, -14], bow: [27.6, 13.4, 28], flower: [12.4, 14, 0] },
-  mug: { hat: [16.8, 13.4, -8], bow: [24.4, 13.2, 18], flower: [12.2, 13.6, 0] },
-  marshmallow: { hat: [20, 9.6, -6], bow: [25.4, 11.8, 30], flower: [14.6, 11.8, 0] },
-  toast: { hat: [20, 9.8, -6], bow: [27, 10.4, 22], flower: [12.6, 11, 0] },
-  cloud: { hat: [17.4, 11.6, -10], bow: [24.8, 16.2, 22], flower: [12.6, 18.6, 0] },
-  frog: { hat: [20, 13.2, -4], bow: [27.6, 12.4, 28], flower: [12.4, 12.4, 0] },
-  cat: { hat: [20, 14, -6], bow: [27, 12.6, 24], flower: [13, 12.6, 0] },
-}
-
-const PETALS = [0, 72, 144, 216, 288].map((a) => [Math.cos(((a - 90) * Math.PI) / 180) * 2.4, Math.sin(((a - 90) * Math.PI) / 180) * 2.4])
-
-function Accessory({ kind, face, character }: { kind: string | null; face: Face; character: string }) {
-  const [x1, x2, y] = face.eyes
-  const spots = SPOTS[character] ?? SPOTS.onigiri
-  const at = ([sx, sy, r]: Spot) => `translate(${sx} ${sy}) rotate(${r})`
+  const [ex, ey, span] = p.eyes
   switch (kind) {
-    case 'bow':
-      // Two rounded loops, a knot and two short tails.
-      return (
-        <g transform={at(spots.bow)}>
-          <path d="M-.4 1.2-2 4.6M.4 1.2 2 4.6" fill="none" {...line} strokeLinecap="round" />
-          <path d="M0 0C-1.4-3.4-6-3.4-5.6.2-5.2 3.2-1.4 2.2 0 0ZM0 0C1.4-3.4 6-3.4 5.6.2 5.2 3.2 1.4 2.2 0 0Z" fill="#D34471" {...line} strokeLinejoin="round" />
-          <circle r="1.5" fill="#A8335A" {...line} />
-        </g>
-      )
     case 'glasses': {
-      // Absurdly big round glasses, centered on the eyes. The two lenses never touch:
-      // a short bridge joins them.
-      const r = 5.4
-      const mid = (x1 + x2) / 2
-      const lx = mid - r - 0.9
-      const rx = mid + r + 0.9
-      return (
-        <g>
-          <circle cx={lx} cy={y} r={r} fill="rgba(255,255,255,.4)" {...line} />
-          <circle cx={rx} cy={y} r={r} fill="rgba(255,255,255,.4)" {...line} />
-          <path d={`M${lx + r} ${y - 0.4}q0.9 -1 1.8 0`} fill="none" {...line} strokeLinecap="round" />
-        </g>
-      )
+      const [x, y] = at(ex, ey)
+      return img(x, y, Math.min(span * 2.25, 0.8) * f.w)
     }
-    case 'flower':
-      // Five round petals with one outline around the whole flower, no center.
-      // Petals are drawn twice: with the outline, then again on top without it, so only the outer edge is inked.
-      return (
-        <g transform={at(spots.flower)}>
-          {PETALS.map(([px, py]) => (
-            <circle key={`o${px}`} cx={px} cy={py} r="1.9" fill="#FFFDF8" {...line} />
-          ))}
-          {PETALS.map(([px, py]) => (
-            <circle key={`f${px}`} cx={px} cy={py} r="1.9" fill="#FFFDF8" />
-          ))}
-          <circle r="1.6" fill="#FFFDF8" />
-        </g>
-      )
-    case 'hat':
-      // A party hat whose base rests on the head, with dots and a pompom.
-      return (
-        <g transform={`${at(spots.hat)} scale(.8)`}>
-          <path d="M0-9.4C1.5-6 3.1-2.9 4.8.4 1.7 1.3-1.7 1.3-4.8.4-3.1-2.9-1.5-6 0-9.4Z" fill="#8466B8" {...line} strokeLinejoin="round" />
-          <circle cx="-.9" cy="-3.6" r=".7" fill="#F8E6A8" />
-          <circle cx="1.6" cy="-1.2" r=".7" fill="#F8E6A8" />
-          <circle cx="-1.8" cy="-.4" r=".7" fill="#F8E6A8" />
-          <circle cy="-9.6" r="1.6" fill="#F2A03D" {...line} />
-        </g>
-      )
+    case 'mustache': {
+      const [x, y] = at(ex, p.mouth - 0.02)
+      return img(x, y, Math.min(span * 1.7, 0.42) * f.w)
+    }
+    case 'partyhat':
+    case 'witchhat': {
+      const [x, y] = at(p.top[0], p.top[1])
+      const w = Math.min(p.head * f.w * (kind === 'witchhat' ? 1.3 : 0.85), kind === 'witchhat' ? 17 : 11)
+      return img(x, y + 1.2, w, p.top[2], true)
+    }
+    case 'bow': {
+      const [x, y] = at(p.bow[0], p.bow[1])
+      return img(x, y, Math.max(8, f.w * 0.36), 18)
+    }
+    case 'flower': {
+      const [x, y] = at(p.flower[0], p.flower[1])
+      return img(x, y, Math.max(7, f.w * 0.3), -10)
+    }
+    case 'bowtie': {
+      const [x, y] = at(p.tie[0], p.tie[1])
+      return img(x, y, Math.max(8, f.w * 0.34))
+    }
     default:
       return null
   }
@@ -199,32 +175,14 @@ type Props = {
 }
 
 export function Avatar({ avatar, size = 34, label, className = 'av', style }: Props) {
-  const character = avatar?.character && FACES[avatar.character] ? avatar.character : 'onigiri'
+  const character = avatar?.character && ART[avatar.character] ? avatar.character : 'onigiri'
   const color = COLOR_HEX[avatar?.color ?? ''] ?? COLOR_HEX.blush
-  const face = FACES[character]
-  const big = size >= 80
-  const maskId = `ink-${useId().replace(/[^a-zA-Z0-9]/g, '')}`
-  const accessory = avatar?.accessory ?? null
-  // The frog's party hat sits behind its eyes, peeking out between them.
-  const behind = character === 'frog' && accessory === 'hat'
-  const extra = (
-    <g className="acc">
-      <Accessory kind={accessory} face={face} character={character} />
-    </g>
-  )
-  const drawing = (
-    <>
-      {behind && extra}
-      <Body character={character} />
-      <FaceMarks {...face} />
-      {!behind && extra}
-    </>
-  )
-  // The ink patch tile is 420 px on screen, like on the headlines, whatever the avatar's size.
-  const tile = (420 * 40) / size
+  const accessory = avatar?.accessory ? (RENAMED[avatar.accessory] ?? avatar.accessory) : null
+  const clip = `av-${useId().replace(/[^a-zA-Z0-9]/g, '')}`
+  const f = frame(character, accessory)
   return (
     <svg
-      className={`${className}${big ? ' av-big' : ''}`}
+      className={`${className}${size >= 80 ? ' av-big' : ''}`}
       viewBox="0 0 40 40"
       width={size}
       height={size}
@@ -233,22 +191,16 @@ export function Avatar({ avatar, size = 34, label, className = 'av', style }: Pr
       aria-label={label}
       aria-hidden={label ? undefined : true}
     >
+      <defs>
+        <clipPath id={clip}>
+          <circle cx="20" cy="20" r="20" />
+        </clipPath>
+      </defs>
       <circle cx="20" cy="20" r="20" fill={color} />
-      {big ? (
-        // Big avatars get the headline ink: the drawing without lines underneath, then the full
-        // drawing on top through the patchy ink mask, so the lines are 50 to 100% opaque in patches.
-        <g className="av-ink">
-          <defs>
-            <mask id={maskId} maskUnits="userSpaceOnUse" x="-4" y="-4" width="48" height="48" style={{ maskType: 'alpha' }}>
-              <image href={inkPatch} x={-tile * 0.31} y={-tile * 0.22} width={tile} height={tile} preserveAspectRatio="none" />
-            </mask>
-          </defs>
-          <g className="av-base">{drawing}</g>
-          <g mask={`url(#${maskId})`}>{drawing}</g>
-        </g>
-      ) : (
-        drawing
-      )}
+      <g clipPath={`url(#${clip})`}>
+        <image href={ART[character].src} x={f.x} y={f.y} width={f.w} height={f.h} />
+        {accessory && <Extra kind={accessory} character={character} />}
+      </g>
     </svg>
   )
 }

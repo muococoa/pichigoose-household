@@ -240,12 +240,17 @@
     "characters": {
       "onigiri": "Onigiri",
       "lemon": "Lemon",
-      "mug": "Mug",
       "marshmallow": "Marshmallow",
       "toast": "Toast",
       "cloud": "Cloud",
       "frog": "Frog",
-      "cat": "Cat"
+      "cat": "Cat",
+      "dog": "Dog",
+      "pickle": "Pickle",
+      "goldfish": "Goldfish",
+      "turtle": "Turtle",
+      "carrot": "Carrot",
+      "plant": "Plant"
     },
     "colors": {
       "blush": "Blush",
@@ -262,7 +267,10 @@
       "bow": "Bow",
       "glasses": "Glasses",
       "flower": "Flower",
-      "hat": "Party hat"
+      "bowtie": "Bow tie",
+      "mustache": "Mustache",
+      "partyhat": "Party hat",
+      "witchhat": "Witch hat"
     },
     "saveChanges": "Save changes"
   },
