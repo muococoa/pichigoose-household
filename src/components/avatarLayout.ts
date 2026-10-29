@@ -436,13 +436,13 @@ export const AVATAR_LAYOUT: Record<string, CharacterLayout> = {
         "ry": 27.47
       },
       "glasses": {
-        "x": 5.92,
-        "y": 7.53,
-        "w": 28.49,
-        "h": 12.09,
+        "x": 9.1,
+        "y": 10.88,
+        "w": 22.12,
+        "h": 9.39,
         "r": 5.5,
         "rx": 20.13,
-        "ry": 13.69
+        "ry": 15.67
       },
       "mustache": {
         "x": 10.41,
