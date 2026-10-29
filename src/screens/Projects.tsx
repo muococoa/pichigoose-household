@@ -301,9 +301,15 @@ export function ProjectScreen() {
           <Hand as="h1" size={38} lineHeight={42} style={{ margin: 0, flex: 1, minWidth: 0 }}>
             {project.name}
           </Hand>
+          {/* Start another project from inside one (Nora, 29 Oct): opens the name pop-up on the Projects page. */}
+          <button type="button" className="stk prim desktop-only" onClick={() => navigate('/projects?new=1')} style={{ marginLeft: 'auto', transform: 'rotate(-1deg)' }}>
+            <PlusIcon />
+            {t('projects.new')}
+          </button>
           <Menu
             label={t('common.more')}
             items={[
+              { label: t('projects.new'), onClick: () => navigate('/projects?new=1') },
               { label: t('projects.rename'), onClick: () => setRenaming(project.name) },
               { label: finished ? t('projects.reopen') : t('projects.finish'), onClick: () => db.update('projects', project.id, { done_at: finished ? null : new Date().toISOString() }) },
               { label: t('projects.delete'), onClick: () => setDeleting(true), danger: true, zone: true },

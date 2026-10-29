@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
 import { db } from '../data/store'
@@ -288,7 +288,10 @@ export function ShoppingScreen() {
         </button>
         {x.added_by_pichi ? (
           <span className={`av-fade${on ? ' done' : ''}`}>
-            <PichiAvatar />
+            {/* Like people's avatars open their profile, Pichi's opens her page. */}
+            <Link to="/pichi" aria-label={t('pichi.title')} style={{ display: 'flex', borderRadius: '50%' }} onClick={(e) => e.stopPropagation()}>
+              <PichiAvatar />
+            </Link>
           </span>
         ) : who && (
           <span className={`av-fade${on ? ' done' : ''}`}>

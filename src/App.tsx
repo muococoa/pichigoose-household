@@ -18,7 +18,7 @@ import { PantryScreen } from './screens/Pantry'
 import { TodosScreen } from './screens/Todos'
 import { NoteScreen, NotesScreen } from './screens/Notes'
 import { ProjectScreen, ProjectsScreen } from './screens/Projects'
-import { PichiScreen } from './screens/Pichi'
+import { AboutScreen, PichiProfileScreen } from './screens/Pichi'
 import { ProfileScreen, SettingsScreen } from './screens/Profile'
 import { HouseholdsScreen } from './screens/Households'
 import { PersonScreen } from './screens/Person'
@@ -138,9 +138,9 @@ export default function App() {
           <Route path="/messages" element={<Inside><MessagesScreen /></Inside>} />
           <Route path="/messages/:chat" element={<Inside><ChatScreen /></Inside>} />
           <Route path="/notes/:id" element={<Inside><NoteScreen /></Inside>} />
-          {/* Pichi's page is public at /about, signed in or not. */}
-          <Route path="/about" element={<PichiScreen />} />
-          <Route path="/pichi" element={<Inside><PichiScreen /></Inside>} />
+          {/* The About page is public, signed in or not. Pichi's profile is inside the app. */}
+          <Route path="/about" element={<AboutScreen />} />
+          <Route path="/pichi" element={<Inside><PichiProfileScreen /></Inside>} />
           <Route path="/projects" element={<Inside><ProjectsScreen /></Inside>} />
           <Route path="/projects/:id" element={<Inside><ProjectScreen /></Inside>} />
           <Route path="/profile" element={<Inside><ProfileScreen /></Inside>} />

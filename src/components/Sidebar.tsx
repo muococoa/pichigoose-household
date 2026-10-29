@@ -78,6 +78,10 @@ export function Sidebar() {
           </span>
         </span>
       </Link>
+      {/* The quiet signature at the end of the notebook (Nora, 29 Oct); opens the About page. */}
+      <Link to="/about" className="cap" style={{ fontSize: 12, padding: '10px 4px 0' }}>
+        {t('pichi.footer')}
+      </Link>
       </div>
       <AddSheet open={adding} onClose={() => setAdding(false)} />
     </aside>
