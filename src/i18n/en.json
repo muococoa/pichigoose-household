@@ -105,7 +105,8 @@
     "todos": "To-dos",
     "notes": "Notes",
     "money": "Money",
-    "messages": "Messages"
+    "messages": "Messages",
+    "projects": "Projects"
   },
   "home": {
     "hi": "Hi {{name}}!",
@@ -151,12 +152,13 @@
     "introAlone": "Drag to change the order. This order is only yours.",
     "shown": "Shown",
     "hidden": "Hidden",
-    "hiddenNote": "Hidden sections are still in the tabs below.",
+    "hiddenNote": "Hidden sections sit as small labels at the bottom of Home.",
     "reset": "Reset",
     "done": "Done",
     "drag": "Drag to move {{name}}",
     "dropHere": "drop it here",
-    "hiddenNoteDesktop": "Hidden sections are still in the sidebar."
+    "hiddenNoteDesktop": "Hidden sections are still in the sidebar.",
+    "introDesktop": "Choose what shows on your home. To change the order, drag the notes on your home."
   },
   "shopping": {
     "title": "Shopping",

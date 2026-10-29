@@ -16,7 +16,7 @@ import { CommentCount, useCommentCounts } from '../components/Comments'
 import { TypingBar } from '../components/TypingBar'
 import { autoFocusField } from '../lib/keyboard'
 import { useKept } from '../lib/kept'
-import { useBack, useBackInApp } from '../lib/back'
+import { useBackInApp } from '../lib/back'
 import { ago } from '../lib/time'
 import { PersonLink } from './Person'
 import { TodoSheet } from './Todos'
@@ -74,7 +74,6 @@ export function ProjectsScreen() {
   const { t, i18n } = useTranslation()
   const me = useMe()
   const navigate = useNavigate()
-  const back = useBack()
   const { hid, projects, lists, progress } = useProjectData()
   const [naming, setNaming] = useKept<string | null>(`projects:${hid}:new`, null)
   // "A project" in Add something lands here with ?new=1 and opens the name pop-up.
@@ -96,12 +95,10 @@ export function ProjectsScreen() {
   }
 
   return (
-    <Screen className="has-fab" doodle={active.length ? 'walk' : undefined}>
+    // A tab in the menu now (Nora, 29 Oct), so no back arrow.
+    <Screen tabbar className="has-fab" doodle={active.length ? 'walk' : undefined}>
       <div style={{ padding: 'calc(var(--top) + 8px) 22px 0 40px' }}>
-        <div className="row" style={{ gap: 6, marginLeft: -10 }}>
-          <button type="button" aria-label={t('common.back')} onClick={back} style={{ display: 'flex', color: '#1E1A30' }}>
-            <BackIcon />
-          </button>
+        <div className="row" style={{ gap: 6 }}>
           <Hand as="h1" style={{ margin: 0 }}>
             {t('projects.title')}
           </Hand>

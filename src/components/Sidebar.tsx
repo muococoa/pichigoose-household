@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useHousehold, useMyProfile } from '../data/hooks'
 import { Avatar } from './Avatar'
 import { Hand, Tape } from './Scrapbook'
-import { BasketIcon, ChevronDown, HomeIcon, InkCircle, MessagesIcon, NoteIcon, PlusIcon, TodoIcon } from './Icons'
+import { BasketIcon, HomeIcon, InkChevron, InkCircle, MessagesIcon, NoteIcon, PlusIcon, ProjectIcon, TodoIcon } from './Icons'
 import { AddSheet } from '../screens/AddSheet'
 import logo from '../../assets/logo-pichigoose.png'
 import { useUnreadTotal } from '../data/chats'
@@ -23,8 +23,10 @@ export function Sidebar() {
     { to: '/', label: t('tabs.home'), icon: <HomeIcon /> },
     { to: '/shopping', label: t('tabs.shopping'), icon: <BasketIcon /> },
     { to: '/todos', label: t('tabs.todos'), icon: <TodoIcon /> },
-    { to: '/notes', label: t('tabs.notes'), icon: <NoteIcon /> },
+    { to: '/projects', label: t('tabs.projects'), icon: <ProjectIcon /> },
     { to: '/messages', label: t('tabs.messages'), icon: <MessagesIcon /> },
+    // Notes stays on desktop, last (Nora, 29 Oct).
+    { to: '/notes', label: t('tabs.notes'), icon: <NoteIcon /> },
   ]
 
   return (
@@ -41,7 +43,10 @@ export function Sidebar() {
           <Hand size={34} lineHeight={36}>
             {household ? name(household) : ''}
           </Hand>
-          <ChevronDown />
+          {/* Like on the phone: the ink chevron sits low by the bottom of the letters, a little away from them. */}
+          <span style={{ display: 'flex', alignSelf: 'flex-end', marginBottom: 3, marginLeft: 6 }}>
+            <InkChevron />
+          </span>
         </span>
         <span className="cap">
           {household?.address} · {t('common.people', { count: people.length })}

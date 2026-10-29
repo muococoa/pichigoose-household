@@ -121,6 +121,14 @@ export const NoteIcon = (p: P) => (
     <path d="M9 13h8M9 17h6" />
   </Svg>
 )
+/** Projects: a toolbox, for the bigger things at home. */
+export const ProjectIcon = (p: P) => (
+  <Svg {...p}>
+    <rect x="4" y="9.5" width="18" height="11.5" rx="2" />
+    <path d="M10 9.5V6.5h6v3" />
+    <path d="M4 14.5h18M13 13v3.2" />
+  </Svg>
+)
 export const MessagesIcon = (p: P) => (
   <Svg {...p}>
     <path d="M13.4 4.6c5 0 8.6 3.4 8.6 7.7s-3.6 7.6-8.6 7.6c-1.3 0-2.5-.2-3.6-.6L5.2 21.4l1.3-4.3C5 15.8 4.4 14.1 4.4 12.3c0-4.3 3.9-7.7 9-7.7Z" />
@@ -219,6 +227,12 @@ export const TodoFilled = ({ size }: { size?: number }) => (
 export const NoteFilled = ({ size }: { size?: number }) => (
   <Filled size={size} holes={<><path d="M16 4.5v4h4" strokeWidth={1.6} /><path d="M9 13h8M9 17h6" strokeWidth={1.8} /></>}>
     <path d="M6 4.5h10l4 4V21.5H6Z" fill="currentColor" />
+  </Filled>
+)
+export const ProjectFilled = ({ size }: { size?: number }) => (
+  <Filled size={size} holes={<path d="M4 14.5h18M13 13v3.2" strokeWidth={1.8} />}>
+    <path d="M10 9.5V6.5h6v3" />
+    <rect x="4" y="9.5" width="18" height="11.5" rx="2" fill="currentColor" />
   </Filled>
 )
 export const MessagesFilled = ({ size }: { size?: number }) => (

@@ -107,7 +107,8 @@
     "todos": "Zadaci",
     "notes": "Beleške",
     "money": "Novac",
-    "messages": "Poruke"
+    "messages": "Poruke",
+    "projects": "Projekti"
   },
   "home": {
     "hi": "Ćao {{name}}!",
@@ -156,12 +157,13 @@
     "introAlone": "Prevuci da promeniš redosled. Ovaj redosled je samo tvoj.",
     "shown": "Prikazano",
     "hidden": "Skriveno",
-    "hiddenNote": "Skriveni delovi su i dalje u tabovima ispod.",
+    "hiddenNote": "Sakrivene sekcije stoje kao male etikete na dnu početne.",
     "reset": "Vrati",
     "done": "Gotovo",
     "drag": "Prevuci {{name}}",
     "dropHere": "spusti ovde",
-    "hiddenNoteDesktop": "Skriveni delovi su i dalje u bočnom meniju."
+    "hiddenNoteDesktop": "Skriveni delovi su i dalje u bočnom meniju.",
+    "introDesktop": "Izaberi šta se vidi na tvojoj početnoj. Redosled menjaš prevlačenjem beleški na početnoj."
   },
   "shopping": {
     "title": "Kupovina",

@@ -53,7 +53,7 @@ export function DragBoard<K extends string>({ items, onReorder, dropLabel }: { i
       <SortableContext items={order} strategy={rectSortingStrategy}>
         {/* As many columns as fit, three on a big screen. Like iPhone widgets (Nora, 29 Oct): each note slides up
             under the one above it, so there are no gaps; the grid's rows are 1 px and each note spans its own height. */}
-        <div className="board-grid">
+        <div className="board-grid packed">
           {order.map((key) => (
             <Slot key={key} id={key} wide={wideOf.get(key)} dropLabel={dropLabel} justDropped={() => Date.now() - lastDrop.current < 400}>
               {byKey.get(key)}

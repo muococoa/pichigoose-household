@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState
 import { createPortal } from 'react-dom'
 import { NavLink, useLocation, useNavigate, useNavigationType } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { BasketFilled, BasketIcon, HomeFilled, HomeIcon, InkCircle, MessagesFilled, MessagesIcon, NoteFilled, NoteIcon, TodoFilled, TodoIcon } from './Icons'
+import { BasketFilled, BasketIcon, HomeFilled, HomeIcon, InkCircle, MessagesFilled, MessagesIcon, ProjectFilled, ProjectIcon, TodoFilled, TodoIcon } from './Icons'
 import { DoodleSpot, Stamp, STAMP_COLORS, type DoodlePose } from './Scrapbook'
 import { flush, refetchAll, useOutboxCount } from '../data/store'
 import { useDesktop } from '../lib/desktop'
@@ -87,7 +87,7 @@ function useSwipeBack(phone: boolean) {
     !phone || path === '/' || browserOwnsLeftEdge()
       ? null
       : () => {
-          if (['/shopping', '/todos', '/notes'].includes(path) || location.key === 'default') navigate('/', { state: { back: true }, replace: true })
+          if (['/shopping', '/todos', '/projects', '/notes'].includes(path) || location.key === 'default') navigate('/', { state: { back: true }, replace: true })
           else navigate(-1)
         }
   useEdgeSwipe('left', action)
@@ -133,11 +133,12 @@ export function TabBar() {
   const unread = useUnreadTotal()
   const { pathname } = useLocation()
   // Outlined icons; the selected one is filled with ink, like WhatsApp's menu.
+  // Home in the middle (Nora, 29 Oct). Notes lives on Home as a note; Projects takes its place in the menu.
   const tabs = [
-    { to: '/', label: t('tabs.home'), icon: <HomeIcon size={ICON} width={STROKE} />, on: <HomeFilled size={ICON} /> },
     { to: '/shopping', label: t('tabs.shopping'), icon: <BasketIcon size={ICON} width={STROKE} />, on: <BasketFilled size={ICON} /> },
     { to: '/todos', label: t('tabs.todos'), icon: <TodoIcon size={ICON} width={STROKE} />, on: <TodoFilled size={ICON} /> },
-    { to: '/notes', label: t('tabs.notes'), icon: <NoteIcon size={ICON} width={STROKE} />, on: <NoteFilled size={ICON} /> },
+    { to: '/', label: t('tabs.home'), icon: <HomeIcon size={ICON} width={STROKE} />, on: <HomeFilled size={ICON} /> },
+    { to: '/projects', label: t('tabs.projects'), icon: <ProjectIcon size={ICON} width={STROKE} />, on: <ProjectFilled size={ICON} /> },
     { to: '/messages', label: t('tabs.messages'), icon: <MessagesIcon size={ICON} width={STROKE} />, on: <MessagesFilled size={ICON} /> },
   ]
   const index = tabs.findIndex((tab) => tab.to === pathname)

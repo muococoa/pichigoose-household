@@ -210,6 +210,25 @@ export function HomeScreen() {
     return completeLayout(membership?.home_layout, rooms.rows)
   }, [membership, rooms.rows])
   const layout = useMemo(() => fullLayout.filter((s) => s.visible && s.section !== 'money'), [fullLayout])
+  // Where each hidden section lives, for its label at the bottom of Home (phone).
+  const hiddenLinks = fullLayout
+    .filter((s) => !s.visible)
+    .flatMap(({ section: s }): { to: string; label: string }[] => {
+      if (s.startsWith('room:')) {
+        const room = rooms.rows.find((r) => `room:${r.id}` === s)
+        return room ? [{ to: `/pantry?room=${room.id}`, label: room.name.toLocaleLowerCase() }] : []
+      }
+      const at: Partial<Record<Section, { to: string; label: string }>> = {
+        shopping: { to: '/shopping', label: t('home.toBuy') },
+        todos: { to: '/todos', label: t('home.todos') },
+        projects: { to: '/projects', label: t('home.projects') },
+        notes: { to: '/notes', label: t('home.notes') },
+        pantry: { to: '/pantry', label: t('home.shelf.pantry') },
+        bathroom: { to: '/pantry', label: t('home.shelf.bathroom') },
+      }
+      const link = at[s]
+      return link ? [link] : []
+    })
 
   // Desktop: notes moved on the board keep their new order. Hidden sections, money and Pichi's news
   // keep their places; only the board's own slots are reshuffled.
@@ -500,6 +519,17 @@ export function HomeScreen() {
         </div>
         <PendingInvites />
         {layout.map((s) => section(s.section))}
+        {/* Hidden from Home, still one tap away (Nora, 29 Oct): small labels at the bottom. Notes isn't in the menu,
+            so this is how you reach it if you hide its note. */}
+        {hiddenLinks.length > 0 && (
+          <div className="row" style={{ flexWrap: 'wrap', gap: 10, paddingBottom: 6 }}>
+            {hiddenLinks.map((h, i) => (
+              <Link key={h.to} to={h.to} className="stk sec sm" style={{ transform: `rotate(${i % 2 ? 1.5 : -1.5}deg)` }}>
+                {h.label}
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
 
       <Floating>

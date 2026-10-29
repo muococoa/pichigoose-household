@@ -64,11 +64,12 @@ html[data-kb="open"] .tabbar { visibility: hidden }
 }
 @media (max-width: 374px) { :root { --frame: 4px; --tabbar-gap: 10px; --tabbar-h: 56px; --paper-radius: calc(28px + 10px); --tabbar: calc(56px + var(--tabbar-gap) + var(--frame)) } }
 
-/* Changing screens: the new sheet of paper slides in (kinetic ease-out, 0.35 s). The tab bar stays still. */
-html[data-nav="forward"] .screen > .scroll { animation: sheet-in-right .35s cubic-bezier(.16, 1, .3, 1) }
-html[data-nav="back"] .screen > .scroll { animation: sheet-in-left .35s cubic-bezier(.16, 1, .3, 1) }
-@keyframes sheet-in-right { from { transform: translateX(28%); opacity: .4; box-shadow: -10px 0 24px rgba(30, 26, 48, .12) } }
-@keyframes sheet-in-left { from { transform: translateX(-28%); opacity: .4; box-shadow: 10px 0 24px rgba(30, 26, 48, .12) } }
+/* Changing screens: the new sheet of paper slides in, like WhatsApp on iPhone (Nora, 29 Oct): one long, soft
+   iOS curve (quick start, a slow, gentle landing), and it fades in only at the very start. The tab bar stays still. */
+html[data-nav="forward"] .screen > .scroll { animation: sheet-in-right .5s cubic-bezier(.32, .72, 0, 1) }
+html[data-nav="back"] .screen > .scroll { animation: sheet-in-left .5s cubic-bezier(.32, .72, 0, 1) }
+@keyframes sheet-in-right { from { transform: translateX(34%); opacity: 0 } 30% { opacity: 1 } }
+@keyframes sheet-in-left { from { transform: translateX(-34%); opacity: 0 } 30% { opacity: 1 } }
 
 /* Pull to refresh: a small paper sticker with an ink circle slides down from the top edge, over the page. */
 .pull-ink {
@@ -499,10 +500,10 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 .composer-quote-text { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
 .composer-quote button { flex: none; display: flex; padding: 6px; color: #857A8C; border-radius: 50% }
 /* Lists and rooms: the page slides in from the side you're going to (the washi tape you land on bounces). */
-.slide-next { animation: page-from-right .38s cubic-bezier(.16, 1, .3, 1) }
-.slide-prev { animation: page-from-left .38s cubic-bezier(.16, 1, .3, 1) }
-@keyframes page-from-right { from { transform: translateX(36px); opacity: 0 } }
-@keyframes page-from-left { from { transform: translateX(-36px); opacity: 0 } }
+.slide-next { animation: page-from-right .5s cubic-bezier(.32, .72, 0, 1) }
+.slide-prev { animation: page-from-left .5s cubic-bezier(.32, .72, 0, 1) }
+@keyframes page-from-right { from { transform: translateX(22%); opacity: 0 } 30% { opacity: 1 } }
+@keyframes page-from-left { from { transform: translateX(-22%); opacity: 0 } 30% { opacity: 1 } }
 @media (prefers-reduced-motion: reduce) { .slide-next, .slide-prev { animation: none } }
 /* A sticky flag, like the ones stuck to a notebook's edge (Nora, 29 Oct): the note itself is cut into an arrow at its
    right end, and that end is a boomerang-shaped band in the theme color. The Settings note to change your character. */

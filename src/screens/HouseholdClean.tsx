@@ -57,7 +57,7 @@ export function CleanHouseholdButton({ size = 38 }: { size?: number }) {
           </>
         ) : (
         <>
-        <div style={{ position: 'relative' }}>
+        <div className="peek-wrap" style={{ position: 'relative' }}>
           <p className="body" style={{ margin: '0 0 18px', paddingRight: 44 }}>
             {t('household.clean.text')}
             <br />
@@ -113,7 +113,7 @@ export function DeleteHouseholdSheet({ household, onClose, onDeleted }: { househ
 
   return (
     <Sheet small open={Boolean(household)} onClose={() => { setError(''); setTyped(''); onClose() }} title={household ? t('household.delete.title', { name: shownName }) : ''}>
-      <div style={{ position: 'relative' }}>
+      <div className="peek-wrap" style={{ position: 'relative' }}>
         <p className="body" style={{ margin: '0 0 18px', paddingRight: 44 }}>
           {t('household.delete.text')}
           <br />

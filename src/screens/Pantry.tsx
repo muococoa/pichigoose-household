@@ -360,7 +360,7 @@ export function PantryScreen() {
 
       <Sheet small open={cleaning} onClose={() => setCleaning(false)} title={t('pantry.clean.room.title', { name: room?.name ?? '' })}>
         {/* Pichi peeks in from the right edge, looking at you: are you sure? */}
-        <div style={{ position: 'relative' }}>
+        <div className="peek-wrap" style={{ position: 'relative' }}>
           <p className="body" style={{ margin: '0 0 18px', paddingRight: 44 }}>
             {t('pantry.clean.room.text', { name: room?.name ?? '' })}
             <br />

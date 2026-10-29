@@ -11,6 +11,7 @@ import { BackIcon, ChevronDown, CloseIcon, DotsIcon, PlusIcon, SearchIcon } from
 import { MyHouseholds } from './MyHouseholds'
 import { ago } from '../lib/time'
 import { useDesktop } from '../lib/desktop'
+import { useBack } from '../lib/back'
 import { CommentCount, Comments, useCommentCounts } from '../components/Comments'
 import { HeartButton, HeartedBy, useHeartsOn } from '../components/Hearts'
 
@@ -45,6 +46,7 @@ export function NotesScreen() {
   const [query, setQuery] = useState('')
   const [switching, setSwitching] = useState(false)
   const desktop = useDesktop()
+  const back = useBack()
   // Desktop: /notes/<id> keeps the grid and opens the note in a panel next to it.
   const { id: openId } = useParams()
   const panel = desktop && Boolean(openId)
@@ -106,15 +108,23 @@ export function NotesScreen() {
   }
 
   return (
-    <Screen tabbar wide={desktop} className="has-fab" doodle={found.length ? 'stand-right' : undefined}>
+    // On the phone Notes isn't in the menu any more (Nora, 29 Oct): it opens from its note on Home, with a back arrow.
+    <Screen wide={desktop} className="has-fab" doodle={found.length ? 'stand-right' : undefined}>
       <div style={{ padding: 'calc(var(--top) + 10px) 22px 0 40px', marginRight: panel ? 400 : 0 }}>
         <div className="row" style={{ justifyContent: 'space-between', gap: 10 }}>
-          <Hand as="h1" style={{ margin: 0 }}>
-            {t('notes.title')}
-          </Hand>
+          <div className="row" style={{ gap: 6, marginLeft: desktop ? 0 : -10, minWidth: 0 }}>
+            {!desktop && (
+              <button type="button" aria-label={t('common.back')} onClick={back} style={{ display: 'flex', color: '#1E1A30' }}>
+                <BackIcon />
+              </button>
+            )}
+            <Hand as="h1" style={{ margin: 0 }}>
+              {t('notes.title')}
+            </Hand>
+          </div>
           {desktop && (
             <div style={{ position: 'relative', width: 280 }}>
-              <span style={{ position: 'absolute', left: 14, top: 16, color: '#857A8C', display: 'flex' }}>
+              <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#857A8C', display: 'flex', pointerEvents: 'none' }}>
                 <SearchIcon />
               </span>
               <input className="input" type="search" style={{ paddingLeft: 42 }} placeholder={t('notes.search')} aria-label={t('notes.search')} value={query} onChange={(e) => setQuery(e.target.value)} />
@@ -126,7 +136,7 @@ export function NotesScreen() {
           </button>
         </div>
         <div className="phone-only" style={{ position: 'relative', marginTop: 16 }}>
-          <span style={{ position: 'absolute', left: 14, top: 16, color: '#857A8C', display: 'flex' }}>
+          <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#857A8C', display: 'flex', pointerEvents: 'none' }}>
             <SearchIcon />
           </span>
           <input className="input" type="search" style={{ paddingLeft: 42 }} placeholder={t('notes.search')} aria-label={t('notes.search')} value={query} onChange={(e) => setQuery(e.target.value)} />

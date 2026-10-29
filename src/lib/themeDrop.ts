@@ -34,23 +34,24 @@ export function dropTheme(id: string, from: HTMLElement, done: () => void) {
   const drop = dot(16, { background: hex, borderRadius: '50% 50% 50% 50% / 60% 60% 40% 40%' })
   const fall = drop.animate(
     [
-      { transform: 'translateY(-110px) scale(.7, 1.2)', opacity: 0 },
-      { transform: 'translateY(-90px) scale(.75, 1.2)', opacity: 1, offset: 0.15 },
-      { transform: 'translateY(0) scale(.85, 1.25)', opacity: 1, offset: 0.8 },
-      { transform: 'translateY(2px) scale(1.7, .45)', opacity: 1 },
+      { transform: 'translateY(-110px) scale(.8, 1.1)', opacity: 0 },
+      { transform: 'translateY(-96px) scale(.8, 1.15)', opacity: 1, offset: 0.12 },
+      { transform: 'translateY(0) scale(.85, 1.2)', opacity: 1, offset: 0.86 },
+      { transform: 'translateY(1px) scale(1.4, .6)', opacity: 1 },
     ],
-    { duration: 420, easing: 'cubic-bezier(.55, 0, 1, .45)', fill: 'forwards' },
+    // Falls like a drop: slow at first, faster near the paper (one easy curve, no sudden stops).
+    { duration: 480, easing: 'cubic-bezier(.45, 0, .8, .4)', fill: 'forwards' },
   )
 
   fall.finished.then(() => {
-    drop.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, fill: 'forwards' })
+    drop.animate([{ opacity: 1, transform: 'translateY(1px) scale(1.4, .6)' }, { opacity: 0, transform: 'translateY(1px) scale(2.2, .3)' }], { duration: 260, easing: 'ease-out', fill: 'forwards' })
     // Ripples: three rings spreading out, one after the other.
     for (let i = 0; i < 3; i++) {
       const ring = dot(20, { border: `2px solid ${hex}`, boxSizing: 'border-box' })
-      ring.animate([{ transform: 'scale(.4)', opacity: 0.9 }, { transform: `scale(${5 + i * 2.5})`, opacity: 0 }], {
-        duration: 900,
-        delay: i * 120,
-        easing: 'cubic-bezier(.2, .7, .3, 1)',
+      ring.animate([{ transform: 'scale(.5)', opacity: 0.75 }, { transform: `scale(${5 + i * 2.5})`, opacity: 0 }], {
+        duration: 1200,
+        delay: i * 150,
+        easing: 'cubic-bezier(.16, 1, .3, 1)',
         fill: 'both',
       })
     }
@@ -63,13 +64,14 @@ export function dropTheme(id: string, from: HTMLElement, done: () => void) {
     })
     t.ready.then(() => {
       document.documentElement.animate(
-        { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${far * 0.6}px at ${x}px ${y}px)`, `circle(${far}px at ${x}px ${y}px)`] },
-        { duration: 800, delay: 120, easing: 'cubic-bezier(.65, 0, .35, 1)', fill: 'both', pseudoElement: '::view-transition-new(root)' },
+        // One smooth curve from the drop to the corners: quick at first, then slowing gently as it fills.
+        { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${far}px at ${x}px ${y}px)`] },
+        { duration: 1100, delay: 60, easing: 'cubic-bezier(.4, 0, .2, 1)', fill: 'both', pseudoElement: '::view-transition-new(root)' },
       )
     })
     t.finished.then(() => {
       // The plop: the swatch you picked bounces once the color has landed.
-      from.animate([{ scale: 1 }, { scale: 1.3 }, { scale: 0.92 }, { scale: 1 }], { duration: 500, easing: KINETIC })
+      from.animate([{ scale: 1 }, { scale: 1.18 }, { scale: 0.96 }, { scale: 1 }], { duration: 600, easing: KINETIC })
       setTimeout(() => layer.remove(), 600)
     })
   })
