@@ -180,6 +180,8 @@ export function HomeScreen() {
     () => [...notes.rows].sort((a, b) => Number(b.pinned) - Number(a.pinned) || b.updated_at.localeCompare(a.updated_at)),
     [notes.rows],
   )
+  // On the desktop board the notes widget is wide (two columns) once there's more than one note: three notes across.
+  const noteCols = pinnedNotes.length > 1 ? 3 : 2
 
   // Pichi's news. Real notifications arrive in phase 4. Until then she tells you what's new on the list.
   const news = useMemo(() => {
@@ -392,9 +394,12 @@ export function HomeScreen() {
         <Tape kind={look.tape} style={look.tapeStyle} />
         <NoteHead title={t('home.notes')} to="/notes" right={t('common.seeAll')} />
         {desktop ? (
-          // Desktop: the notes as small sticky notes, two across.
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 22, paddingTop: 6 }}>
-            {pinnedNotes.slice(0, 4).map((n, i) => {
+          // Desktop: the notes as small sticky notes, two across (three when the notes widget is wide). The ones on the
+          // left edge are clipped on their left, those on the right edge on their right, and the middle ones are taped
+          // at the top right (Nora, 29 Oct).
+          <div style={{ display: 'grid', gridTemplateColumns: `repeat(${noteCols}, minmax(0, 1fr))`, gap: 22, paddingTop: 6 }}>
+            {pinnedNotes.slice(0, noteCols * 2).map((n, i) => {
+              const col = i % noteCols
               const by = person(n.updated_by)
               return (
                 <button
@@ -404,7 +409,7 @@ export function HomeScreen() {
                   className={`note ${colorOf(n.id)}`}
                   style={{ display: 'block', width: '100%', textAlign: 'left', padding: '16px 18px 30px', minHeight: 104, transform: `rotate(${MINI_TILT[i % MINI_TILT.length]}deg)`, boxShadow: '1px 2px 0 rgba(30,26,48,.14)', minWidth: 0 }}
                 >
-                  <PaperClip side="left" />
+                  {col === 0 ? <PaperClip side="left" /> : col === noteCols - 1 ? <PaperClip side="right" /> : <Tape kind={i % 2 ? 'ty' : 'tb'} style={{ top: -9, right: 12, width: 54, height: 18, transform: 'rotate(5deg)' }} />}
                   <div style={{ fontSize: 17, lineHeight: '22px', fontWeight: 800, color: '#1E1A30', overflowWrap: 'break-word', hyphens: 'auto' }}>{n.title || t('notes.untitled')}</div>
                   <div className="cap" style={{ marginTop: 4 }}>
                     {n.pinned ? t('notes.pinned') : `${by?.display_name ?? ''} · ${ago(n.updated_at, i18n.language)}`}

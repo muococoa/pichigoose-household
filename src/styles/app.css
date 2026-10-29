@@ -405,11 +405,10 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 /* Stickers: the small button next to Send opens a tray of your pack above the field; a tap sends one.
    A sticker in the chat has no bubble, like WhatsApp: it sits right on the paper, with the time under it. */
 .sticker-box { display: flex; flex: none; align-self: center }
-/* A round button the same size and colors as Send (white icon on the soft theme color, Send's look before you type),
-   so the two sit together as a pair next to the field. */
-.sticker-btn { display: grid; place-items: center; width: 40px; height: 40px; color: #FFFFFF; background: color-mix(in srgb, var(--hero) 38%, #FFFDF8); border-radius: 50%; transition: background .15s, transform .2s var(--ease-out) }
-.sticker-btn svg { display: block; width: 22px; height: 22px }
-.sticker-btn.on { background: var(--hero) }
+/* Just the line drawing, floating, in the soft theme color of Send before you type (Nora, 29 Oct). */
+.sticker-btn { display: grid; place-items: center; width: 40px; height: 40px; color: color-mix(in srgb, var(--hero) 45%, #FFFDF8); border-radius: 50%; transition: color .15s, transform .2s var(--ease-out) }
+.sticker-btn svg { display: block; width: 26px; height: 26px }
+.sticker-btn.on { color: var(--hero) }
 .sticker-btn:active { transform: scale(.92) }
 .sticker-tray {
   position: absolute; left: 0; right: 0; bottom: calc(100% + 8px); z-index: 5; display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; padding: 10px;
