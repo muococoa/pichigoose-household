@@ -51,6 +51,15 @@ const EXTRA: Record<string, string> = {
   partyhat: partyHatImg,
   witchhat: witchHatImg,
 }
+// Load every drawing ahead of time, so switching characters in the builder shows the new one at once
+// (otherwise the old drawing flashes at the new size while the new one loads).
+if (typeof window !== 'undefined') {
+  for (const src of [...Object.values(ART), ...Object.values(EXTRA)]) {
+    const img = new Image()
+    img.src = src
+  }
+}
+
 /** Older saved extras, from before Nora's paintings. */
 const RENAMED: Record<string, string> = { hat: 'partyhat' }
 
@@ -90,9 +99,9 @@ export function Avatar({ avatar, size = 34, label, className = 'av', style }: Pr
       <circle cx="20" cy="20" r="20" fill={color} />
       <g clipPath={`url(#${clip})`}>
         <g transform={fit ? `translate(${fit[1]} ${fit[2]}) scale(${fit[0]})` : undefined}>
-          <image href={ART[character]} x={place.x} y={place.y} width={place.w} height={place.h} />
+          <image key={character} href={ART[character]} x={place.x} y={place.y} width={place.w} height={place.h} />
           {extra && accessory && (
-            <image href={EXTRA[accessory]} x={extra.x} y={extra.y} width={extra.w} height={extra.h} transform={`rotate(${extra.r} ${extra.rx} ${extra.ry})`} />
+            <image key={`${character}-${accessory}`} href={EXTRA[accessory]} x={extra.x} y={extra.y} width={extra.w} height={extra.h} transform={`rotate(${extra.r} ${extra.rx} ${extra.ry})`} />
           )}
         </g>
       </g>

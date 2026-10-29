@@ -23,13 +23,24 @@ CHARACTERS = ['onigiri', 'lemon', 'marshmallow', 'toast', 'cloud', 'frog', 'cat'
 EXTRAS = {'bow': 'bow', 'bowtie': 'bow-tie', 'glasses': 'glasses', 'mustache': 'mustache', 'flower': 'flower', 'partyhat': 'party-hat', 'witchhat': 'witch-hat'}
 # Busts are cut off by the circle at the bottom, like a portrait.
 BUSTS = {'cat', 'dog'}
+# Characters whose face would be too small whole: framed as a portrait instead, zoomed in on the face
+# and cropped by the circle (Nora: it's fine to crop them, like Pichi). Eye distance, and where the
+# point between the eyes goes, all in circle units.
+PORTRAITS = {
+    'frog': {'d': 11, 'x': 20, 'y': 15},
+    'turtle': {'d': 9, 'x': 21.5, 'y': 15.5},
+    'pickle': {'d': 7.2, 'x': 20, 'y': 16.5},
+    'carrot': {'d': 7.2, 'x': 20, 'y': 17.5},
+    'plant': {'d': 6.8, 'x': 20, 'y': 23.5},
+}
 R = 20  # circle radius, on a 40 x 40 grid
 
 # Per character, per extra: size (times the computed size), nudge (in eye distances), turn (degrees).
 TWEAKS = {
-    'frog': {'glasses': {'size': 0.85}, 'bowtie': {'nudge': (0, -0.2)}, 'partyhat': {'sink': 0.05}, 'witchhat': {'sink': 0.12}},
+    'frog': {'glasses': {'size': 0.85}, 'bowtie': {'nudge': (0, -0.2)}, 'partyhat': {'sink': 0.05}, 'witchhat': {'sink': 0.12}, 'bow': {'nudge': (0.32, -0.7), 'size': 0.78}, 'flower': {'nudge': (-0.35, -0.75), 'size': 0.85}},
+    'lemon': {'bow': {'nudge': (0.35, -0.35)}},
     'plant': {'partyhat': {'size': 0.9, 'top': 'highest'}, 'witchhat': {'size': 0.9, 'top': 'highest'}, 'bowtie': {'nudge': (0, -0.35)}},
-    'carrot': {'partyhat': {'size': 0.85}},
+    'carrot': {'partyhat': {'top_frac': 0.33}, 'witchhat': {'top_frac': 0.33}},
     'goldfish': {'bow': {'nudge': (0.4, 0.2)}},
 }
 
@@ -133,6 +144,10 @@ def extra_info(key):
 
 def char_frame(name, me):
     """Scale (circle units per drawing pixel) and offset, optically centered."""
+    if name in PORTRAITS:
+        p = PORTRAITS[name]
+        s = p['d'] / me['d']
+        return s, p['x'] - me['eye'][0] * s, p['y'] - me['eye'][1] * s
     if name in BUSTS:
         s = 33 / me['w']
         cx = 20 - me['centroid'][0] * s
@@ -211,6 +226,9 @@ def place_extra(name, key, me, frame, ex):
         base_angle = math.degrees(math.atan2(br[1] - bl[1], br[0] - bl[0]))
         anchor = (((bl[0] + br[0]) / 2) / ex['w'], ((bl[1] + br[1]) / 2) / ex['h'])
         top = me['top']
+        if 'top_frac' in tw:
+            # A set height on the drawing (like where a carrot's leaves start), above the face.
+            top = (me['eye'][0], tw['top_frac'] * me['h'])
         if tw.get('top') == 'highest':
             # The very top of the drawing above the face (past any gaps, like a plant's leaves).
             ys, xs = np.where(me['alpha'] > 60)
@@ -240,6 +258,16 @@ def fit_hat(char_box, hat):
     return [round(k, 3), round(dx, 2), round(dy, 2)]
 
 
+def fit_hat_portrait(hat):
+    """Portraits and busts stay cut off at the bottom: shrink toward the bottom of the circle just
+    enough for the hat to fit, so the face stays big."""
+    cx, cy = hat['rx'], hat['ry']
+    corners = [(hat['x'], hat['y']), (hat['x'] + hat['w'], hat['y']), (hat['x'], hat['y'] + hat['h']), (hat['x'] + hat['w'], hat['y'] + hat['h'])]
+    top = min(rot(p, (cx, cy), math.radians(hat['r']))[1] for p in corners)
+    k = min(1.0, 38.0 / (40 - top))
+    return [round(k, 3), round(20 - 20 * k, 2), round(40 - 40 * k, 2)]
+
+
 def main():
     extras = {k: extra_info(k) for k in EXTRAS}
     layout = {}
@@ -251,10 +279,10 @@ def main():
         entry = {'x': round(box[0], 2), 'y': round(box[1], 2), 'w': round(box[2], 2), 'h': round(box[3], 2), 'extras': {}}
         for key in EXTRAS:
             e = place_extra(name, key, me, frame, extras[key])
-            if key in ('partyhat', 'witchhat') and name not in BUSTS:
+            if key in ('partyhat', 'witchhat') and name not in BUSTS and name not in PORTRAITS:
                 e['fit'] = fit_hat(box, e)
             elif key in ('partyhat', 'witchhat'):
-                e['fit'] = fit_hat((box[0], box[1], box[2], min(box[3], 40 - box[1])), e)
+                e['fit'] = fit_hat_portrait(e)
             entry['extras'][key] = e
         layout[name] = entry
     body = json.dumps(layout, indent=2)
