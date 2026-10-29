@@ -13,6 +13,7 @@ import goldfish from '../../assets/avatars/goldfish.webp'
 import turtle from '../../assets/avatars/turtle.webp'
 import carrot from '../../assets/avatars/carrot.webp'
 import plant from '../../assets/avatars/plant.webp'
+import mug from '../../assets/avatars/mug.webp'
 import bowImg from '../../assets/avatars/extras/bow.webp'
 import bowTieImg from '../../assets/avatars/extras/bow-tie.webp'
 import glassesImg from '../../assets/avatars/extras/glasses.webp'
@@ -24,7 +25,7 @@ import witchHatImg from '../../assets/avatars/extras/witch-hat.webp'
 // Avatars: Nora's painted characters, each on a pastel circle, with her painted extras placed on
 // each one by hand (a hat on the head, glasses on the eyes). Never redrawn, only placed.
 
-export const CHARACTERS = ['onigiri', 'lemon', 'marshmallow', 'toast', 'cloud', 'frog', 'cat', 'dog', 'pickle', 'goldfish', 'turtle', 'carrot', 'plant'] as const
+export const CHARACTERS = ['onigiri', 'lemon', 'marshmallow', 'toast', 'cloud', 'frog', 'cat', 'dog', 'pickle', 'goldfish', 'turtle', 'carrot', 'plant', 'mug'] as const
 export const COLORS = ['blush', 'mint', 'mist', 'sage', 'peach', 'butter', 'lilac', 'sand'] as const
 export const ACCESSORIES = ['none', 'bow', 'bowtie', 'glasses', 'mustache', 'flower', 'partyhat', 'witchhat'] as const
 
@@ -55,6 +56,7 @@ const ART: Record<string, Art> = {
   turtle: { src: turtle, ratio: 349 / 384 },
   carrot: { src: carrot, ratio: 198 / 384 },
   plant: { src: plant, ratio: 382 / 384 },
+  mug: { src: mug, ratio: 384 / 303 },
 }
 const EXTRA: Record<string, Art> = {
   bow: { src: bowImg, ratio: 384 / 278 },
@@ -101,6 +103,7 @@ const PLACES: Record<string, Place> = {
   goldfish: { box: 30, cx: 21, cy: 21, eyes: [0.18, 0.5, 0.16], mouth: 0.55, top: [0.3, 0.17, -16], head: 0.32, bow: [0.47, 0.18], flower: [0.12, 0.32], tie: [0.24, 0.78] },
   turtle: { box: 31, cx: 20, cy: 22, eyes: [0.83, 0.2, 0.12], mouth: 0.23, top: [0.79, 0.04, 6], head: 0.3, bow: [0.93, 0.1], flower: [0.64, 0.08], tie: [0.73, 0.43] },
   carrot: { box: 31, cx: 20, cy: 21, eyes: [0.41, 0.49, 0.22], mouth: 0.53, top: [0.56, 0.04, 4], head: 0.7, bow: [0.66, 0.28], flower: [0.2, 0.33], tie: [0.42, 0.66] },
+  mug: { box: 31, cx: 21, cy: 21, eyes: [0.38, 0.48, 0.22], mouth: 0.56, top: [0.4, 0.03, -5], head: 0.55, bow: [0.68, 0.07], flower: [0.1, 0.11], tie: [0.38, 0.68] },
   plant: { box: 31, cx: 20, cy: 21, eyes: [0.53, 0.82, 0.16], mouth: 0.86, top: [0.5, 0.03, -4], head: 0.36, bow: [0.77, 0.6], flower: [0.24, 0.6], tie: [0.53, 0.95] },
 }
 
