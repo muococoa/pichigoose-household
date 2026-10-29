@@ -17,7 +17,7 @@ export type Household = Row & { name: string; address: string; secret: string; k
 
 // pantry and bathroom are from before rooms: they stand for the first kitchen and bathroom room.
 // Every room has its own note on Home: room:<id>.
-export type Section = 'news' | 'shopping' | 'pantry' | 'bathroom' | 'todos' | 'money' | 'notes' | `room:${string}`
+export type Section = 'news' | 'shopping' | 'pantry' | 'bathroom' | 'todos' | 'projects' | 'money' | 'notes' | `room:${string}`
 export type LayoutEntry = { section: Section; visible: boolean }
 
 export type Member = Row & {
@@ -28,7 +28,18 @@ export type Member = Row & {
   joined_at: string
 }
 
-export type List = Row & { household_id: string; name: string; position: number; created_at: string }
+/** A shopping list. A project's list (project_id set) is a tab in Shopping while the project isn't finished. */
+export type List = Row & { household_id: string; name: string; position: number; created_at: string; project_id?: string | null }
+
+/** A bigger house goal, made of steps to do (to-dos) and things to buy (its own shopping list). */
+export type Project = Row & {
+  household_id: string
+  name: string
+  position: number
+  created_by: string | null
+  created_at: string
+  done_at: string | null
+}
 
 export type Item = Row & {
   list_id: string
@@ -82,6 +93,9 @@ export type Todo = Row & {
   done_by: string | null
   created_by: string | null
   created_at: string
+  /** A step of this project, in its place in the project's order. */
+  project_id?: string | null
+  position?: number
 }
 
 export type Note = Row & {
@@ -274,6 +288,21 @@ export function useTodos(householdId: string | null) {
   )
 }
 
+/** The household's projects, in their order. */
+export function useProjects(householdId: string | null) {
+  return useCollection<Project>(
+    householdId
+      ? {
+          key: `projects:${householdId}`,
+          table: 'projects',
+          belongs: (r) => r.household_id === householdId,
+          load: () => supabase.from('projects').select('*').eq('household_id', householdId),
+          realtime: `household_id=eq.${householdId}`,
+        }
+      : null,
+  )
+}
+
 export function useNotes(householdId: string | null) {
   return useCollection<Note>(
     householdId
@@ -459,6 +488,7 @@ export const DEFAULT_LAYOUT: LayoutEntry[] = [
   { section: 'pantry', visible: true },
   { section: 'bathroom', visible: true },
   { section: 'todos', visible: true },
+  { section: 'projects', visible: true },
   { section: 'money', visible: true },
   { section: 'notes', visible: true },
 ]

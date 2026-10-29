@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth, useMe } from '../auth'
 import {
+  useProjects,
   completeLayout,
   useHousehold,
   useItemsIn,
@@ -36,6 +37,7 @@ import { db } from '../data/store'
 import { ShelfRows, groupLow, groupThings, useShelfWidth, type Group } from '../components/Shelves'
 import { spotOf } from './Pantry'
 import { useSwipeBetween } from '../components/Slide'
+import { ProgressLine } from './Projects'
 
 // Desktop: the small notes inside the notes section, each a little tilted and held with a paper clip on the left edge
 // (the bottom right corner is for the comment bubble).
@@ -46,6 +48,7 @@ type Look = { note: string; tape: TapeKind; tapeStyle: React.CSSProperties; rota
 const LOOK: Record<string, Look> = {
   news: { note: 'n-lilac', tape: 'ttri', tapeStyle: {}, rotate: 0 },
   todos: { note: 'n-blush', tape: 'tdots', tapeStyle: { top: -10, left: 28, transform: 'rotate(-4deg)' }, rotate: -1 },
+  projects: { note: 'n-peach', tape: 'tp', tapeStyle: { top: -10, right: 40, transform: 'rotate(4deg)' }, rotate: 0.6 },
   shopping: { note: 'n-butter', tape: 'tm', tapeStyle: { top: -10, right: 34, transform: 'rotate(5deg)' }, rotate: 1 },
   pantry: { note: 'n-sand', tape: 'ty', tapeStyle: { top: -10, left: 36, transform: 'rotate(-3deg)' }, rotate: -0.8 },
   bathroom: { note: 'n-mint', tape: 'tb', tapeStyle: { top: -10, right: 40, transform: 'rotate(4deg)' }, rotate: 0.7 },
@@ -114,6 +117,7 @@ export function HomeScreen() {
   const { household, membership, people, name } = useHousehold()
   const hid = household?.id ?? null
   const lists = useLists(hid)
+  const projects = useProjects(hid)
   // "to buy" shows what's left on every list in the household, not just the first one.
   const items = useItemsIn(lists.rows.map((l) => l.id))
   const listName = (id: string) => lists.rows.find((l) => l.id === id)?.name ?? ''
@@ -153,10 +157,15 @@ export function HomeScreen() {
   const todayCount = openTodos.filter((x) => x.due_date && daysFromToday(fromDateString(x.due_date)) <= 0).length
   // In the lists' own order (Groceries first, then the rest as arranged), newest first within a list.
   const listPos = (id: string) => lists.rows.find((l) => l.id === id)?.position ?? 99
+  // A finished project's list is off the shopping list.
+  const finishedList = (id: string) => {
+    const pid = lists.rows.find((l) => l.id === id)?.project_id
+    return Boolean(pid && projects.rows.find((p) => p.id === pid)?.done_at)
+  }
   const toBuy = useMemo(
-    () => items.rows.filter((x) => !x.checked_at).sort((a, b) => listPos(a.list_id) - listPos(b.list_id) || b.created_at.localeCompare(a.created_at)),
+    () => items.rows.filter((x) => !x.checked_at && !finishedList(x.list_id)).sort((a, b) => listPos(a.list_id) - listPos(b.list_id) || b.created_at.localeCompare(a.created_at)),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [items.rows, lists.rows],
+    [items.rows, lists.rows, projects.rows],
   )
   // The pantry note shows what's running out first, from the pantry and the bathroom cabinet.
   // Grouped like on the shelves (three bottles of wine are one), what's running out first.
@@ -243,6 +252,35 @@ export function HomeScreen() {
               {t('home.hi', { name: profile?.display_name ?? '' })}
             </Hand>
             <div style={{ fontSize: desktop ? 16 : 14, lineHeight: desktop ? '22px' : '20px', fontWeight: 600, marginTop: 2, color: 'rgba(255, 255, 255, .82)' }}>{news}</div>
+          </div>
+        </div>
+      )
+    }
+    if (s === 'projects') {
+      // The projects under way, each with how far along it is.
+      const active = projects.rows.filter((p) => !p.done_at).sort((a, b) => a.position - b.position || a.created_at.localeCompare(b.created_at))
+      return (
+        <div key="projects" className={`note ${look.note} note-link`} onClick={open('/projects')} style={{ transform: `rotate(${look.rotate}deg)` }}>
+          <Tape kind={look.tape} style={look.tapeStyle} />
+          <NoteHead title={t('home.projects')} to="/projects" right={t('common.seeAll')} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {active.slice(0, 3).map((p) => {
+              const steps = todos.rows.filter((x) => x.project_id === p.id)
+              const list = lists.rows.find((l) => l.project_id === p.id)
+              const buys = list ? items.rows.filter((x) => x.list_id === list.id) : []
+              const done = steps.filter((x) => x.done_at).length + buys.filter((x) => x.checked_at).length
+              const count = steps.length + buys.length
+              return (
+                <Link key={p.id} to={`/projects/${p.id}`} onClick={(e) => e.stopPropagation()} style={{ display: 'block' }}>
+                  <div className="ln" style={{ justifyContent: 'space-between' }}>
+                    <span>{p.name}</span>
+                    <span className="cap">{t('projects.progress', { done, count })}</span>
+                  </div>
+                  <ProgressLine done={done} count={count} />
+                </Link>
+              )
+            })}
+            {!active.length && <Empty>{t('home.noProjects')}</Empty>}
           </div>
         </div>
       )

@@ -144,7 +144,9 @@
     "shelf": {
       "pantry": "kuhinja",
       "bathroom": "kupatilo"
-    }
+    },
+    "projects": "projekti",
+    "noProjects": "Još nema projekata."
   },
   "arrange": {
     "title": "Složi svoju početnu",
@@ -507,5 +509,30 @@
     "reply": "Odgovori",
     "replyingTo": "Odgovor za: {{name}}",
     "replyingToSelf": "Odgovor sebi"
+  },
+  "projects": {
+    "title": "Projekti",
+    "new": "Novi projekat",
+    "namePlaceholder": "Nova kuhinja",
+    "name": "Ime projekta",
+    "create": "Započni projekat",
+    "toDo": "Za uraditi",
+    "toBuy": "Za kupiti",
+    "addTodo": "Dodaj korak...",
+    "addBuy": "Dodaj nešto za kupovinu...",
+    "progress": "{{done}} od {{count}} gotovo",
+    "empty": "Još nema projekata. Započni jedan za sledeću veliku stvar u kući.",
+    "emptyTodo": "Još nema koraka.",
+    "emptyBuy": "Još ništa za kupovinu.",
+    "onList": "Ovo je i na spisku za kupovinu, pod {{name}}.",
+    "finished": "Završeni",
+    "finish": "Označi kao završen",
+    "reopen": "Nije još završen",
+    "rename": "Preimenuj projekat",
+    "delete": "Obriši projekat",
+    "deleteTitle": "Obrisati {{name}}?",
+    "deleteText": "Brišu se i njegovi koraci i spisak za kupovinu, za sve.",
+    "drag": "Prevuci da pomeriš {{name}}",
+    "finishedOn": "Završen {{when}}"
   }
 }

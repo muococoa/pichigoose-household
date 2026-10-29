@@ -478,6 +478,12 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 }
 /* The band is 12 px thick (34 px box, 22 px point). */
 .flag-tip { right: 0; width: 34px; background: var(--hero); clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 50%, calc(100% - 22px) 100%, 0 100%, 22px 50%) }
+/* Projects: rows you drag by their six dots, and a thin pencil line for how far along a project is. */
+.project-row { position: relative; display: flex; align-items: center; gap: 4px; margin-left: -26px; background: transparent; border-radius: 10px }
+.project-row.lifted { z-index: 3; background: #FFFDF8; box-shadow: 0 6px 16px -6px rgba(30, 26, 48, .3) }
+.project-row .grip { flex: none; display: grid; place-items: center; width: 22px; height: 40px; touch-action: none; cursor: grab; opacity: .7 }
+.progress-line { display: block; height: 4px; margin-top: 8px; border-radius: 2px; background: rgba(30, 26, 48, .1); overflow: hidden }
+.progress-line span { display: block; height: 100%; border-radius: 2px; background: var(--hero-dark); transition: width .5s var(--ease-out) }
 .day-stamp { display: flex; justify-content: center; margin: 18px 0 4px }
 .say-hi { text-align: center; color: #63586B; font-size: 15px; font-weight: 600; margin: 48px 0 }
 /* One typing bar for every place you type a short text (Nora, 29 Oct): chat, comments and Shopping's add field. A strip

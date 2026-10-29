@@ -139,7 +139,9 @@
     "shelf": {
       "pantry": "kitchen",
       "bathroom": "bathroom"
-    }
+    },
+    "projects": "projects",
+    "noProjects": "No projects yet."
   },
   "arrange": {
     "title": "Arrange your home",
@@ -499,5 +501,30 @@
     "reply": "Reply",
     "replyingTo": "Replying to {{name}}",
     "replyingToSelf": "Replying to yourself"
+  },
+  "projects": {
+    "title": "Projects",
+    "new": "New project",
+    "namePlaceholder": "Kitchen renewal",
+    "name": "Project name",
+    "create": "Start project",
+    "toDo": "To do",
+    "toBuy": "To buy",
+    "addTodo": "Add a step...",
+    "addBuy": "Add something to buy...",
+    "progress": "{{done}} of {{count}} done",
+    "empty": "No projects yet. Start one for the next big thing at home.",
+    "emptyTodo": "No steps yet.",
+    "emptyBuy": "Nothing to buy yet.",
+    "onList": "Also on the shopping list, under {{name}}.",
+    "finished": "Finished",
+    "finish": "Mark as finished",
+    "reopen": "Not finished yet",
+    "rename": "Rename project",
+    "delete": "Delete project",
+    "deleteTitle": "Delete {{name}}?",
+    "deleteText": "Its steps and its shopping list go with it, for everyone.",
+    "drag": "Drag to move {{name}}",
+    "finishedOn": "Finished {{when}}"
   }
 }

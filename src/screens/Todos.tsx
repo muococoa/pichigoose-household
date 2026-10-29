@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
 import { db } from '../data/store'
-import { useHousehold, useTodos, type Profile, type Todo } from '../data/hooks'
+import { useHousehold, useProjects, useTodos, type Profile, type Todo } from '../data/hooks'
 import { recentlyDone, toggleTodo } from '../data/actions'
 import { Floating, Screen } from '../components/Shell'
 import { Avatar, NobodyAvatar } from '../components/Avatar'
@@ -54,6 +54,7 @@ export function TodosScreen() {
   const { household, people, name } = useHousehold()
   const hid = household?.id ?? null
   const todos = useTodos(hid)
+  const projects = useProjects(hid)
   const [filter, setFilter] = useState<string>('all')
   const desktop = useDesktop()
   const [quick, setQuick] = useState('')
@@ -133,6 +134,9 @@ export function TodosScreen() {
       parts.push(days < 0 && !x.done_at ? `${dueLabel(x.due_date, i18n.language)}, ${t('todos.late')}` : dueLabel(x.due_date, i18n.language))
     }
     if (x.repeat) parts.push(t('todos.repeats'))
+    // A step of a project carries the project's name.
+    const project = x.project_id ? projects.rows.find((p) => p.id === x.project_id) : undefined
+    if (project) parts.unshift(project.name)
     if (!x.assignee_id) parts.push(t('todos.nobody'))
     return parts.join(' · ')
   }
@@ -257,7 +261,7 @@ export function TodosScreen() {
   )
 }
 
-function TodoSheet({ todo, householdId, people, onClose }: { todo: Todo | null; householdId: string; people: Profile[]; onClose: () => void }) {
+export function TodoSheet({ todo, householdId, people, onClose }: { todo: Todo | null; householdId: string; people: Profile[]; onClose: () => void }) {
   const { t, i18n } = useTranslation()
   const me = useMe()
   const today = new Date()

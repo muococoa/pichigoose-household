@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
 import { db } from '../data/store'
-import { useHousehold, useItems, useLists, usePantry, type Item, type List } from '../data/hooks'
+import { useHousehold, useItems, useLists, useProjects, usePantry, type Item, type List } from '../data/hooks'
 import { recentlyBought, toggleItem } from '../data/actions'
 import { Floating, Screen } from '../components/Shell'
 import { Avatar } from '../components/Avatar'
@@ -51,9 +51,14 @@ export function ShoppingScreen() {
   const { household, people } = useHousehold()
   const hid = household?.id ?? null
   const lists = useLists(hid)
+  // A finished project's list leaves Shopping (it stays in the project).
+  const projects = useProjects(hid)
   const sortedLists = useMemo(
-    () => [...lists.rows].sort((a, b) => a.position - b.position || a.created_at.localeCompare(b.created_at)),
-    [lists.rows],
+    () =>
+      lists.rows
+        .filter((l) => !l.project_id || projects.rows.some((p) => p.id === l.project_id && !p.done_at))
+        .sort((a, b) => a.position - b.position || a.created_at.localeCompare(b.created_at)),
+    [lists.rows, projects.rows],
   )
   const [picked, setPicked] = useState<string | null>(() => (hid ? savedList(hid) : null))
   const list = sortedLists.find((l) => l.id === picked) ?? sortedLists[0] ?? null

@@ -17,6 +17,7 @@ import { ShoppingScreen } from './screens/Shopping'
 import { PantryScreen } from './screens/Pantry'
 import { TodosScreen } from './screens/Todos'
 import { NoteScreen, NotesScreen } from './screens/Notes'
+import { ProjectScreen, ProjectsScreen } from './screens/Projects'
 import { ProfileScreen, SettingsScreen } from './screens/Profile'
 import { HouseholdsScreen } from './screens/Households'
 import { PersonScreen } from './screens/Person'
@@ -136,6 +137,8 @@ export default function App() {
           <Route path="/messages" element={<Inside><MessagesScreen /></Inside>} />
           <Route path="/messages/:chat" element={<Inside><ChatScreen /></Inside>} />
           <Route path="/notes/:id" element={<Inside><NoteScreen /></Inside>} />
+          <Route path="/projects" element={<Inside><ProjectsScreen /></Inside>} />
+          <Route path="/projects/:id" element={<Inside><ProjectScreen /></Inside>} />
           <Route path="/profile" element={<Inside><ProfileScreen /></Inside>} />
           <Route path="/settings" element={<Inside><SettingsScreen /></Inside>} />
           <Route path="/households" element={<Inside><HouseholdsScreen /></Inside>} />

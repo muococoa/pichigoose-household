@@ -135,6 +135,21 @@ Shared chores (T1 to T4).
 
 When a repeating to-do is ticked off, the app sets `done_at` and creates the next one with the new due date [Claude].
 
+### projects
+Bigger house goals, like "Kitchen renewal" or "Living room" [Nora].
+
+| column | type | notes |
+|---|---|---|
+| id | uuid, primary key | |
+| household_id | uuid, references households | |
+| name | text | 1 to 60 characters |
+| position | int | the order of the projects |
+| created_by | uuid, references profiles | |
+| created_at | timestamptz | |
+| done_at | timestamptz, nullable | set when the project is finished; its list then leaves Shopping |
+
+Steps to do are `todos` with `project_id` (and `position` for their order); things to buy are on the project's own `lists` row (`project_id` set), a tab in Shopping. Deleting a project deletes its to-dos and its list. A to-do's or list's household always comes from its project (trigger). Everyone in the household manages projects. Live updates on.
+
 ### notes
 Shared household info (N1, N2).
 
