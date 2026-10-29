@@ -22,9 +22,9 @@ export function PichiProfileScreen() {
   const pantry = usePantry(hid)
 
   const hers = items.rows.filter((x) => x.added_by_pichi)
+  // Pichi doesn't buy anything (Nora, 29 Oct): she only tells you when things run out.
   const stats = [
     { key: 'person.itemsAdded', n: hers.length, note: 'n-butter' },
-    { key: 'person.itemsBought', n: hers.filter((x) => x.checked_at).length, note: 'n-mist' },
     { key: 'pichi.watching', n: groupThings(pantry.rows).length, note: 'n-sage' },
     { key: 'pichi.low', n: groupThings(pantry.rows).filter((g) => groupLow(g.rows)).length, note: 'n-blush' },
   ]
@@ -46,7 +46,7 @@ export function PichiProfileScreen() {
         </Link>
         <div className="person-stats">
           {stats.map((x, i) => (
-            <div key={x.key} className={`note ${x.note}`} style={{ transform: `rotate(${[-1.5, 1.2, 1, -1][i]}deg)` }}>
+            <div key={x.key} className={`note ${x.note}`} style={{ transform: `rotate(${[-1.5, 1.2, 1][i]}deg)` }}>
               <Hand size={40} lineHeight={42}>
                 {String(x.n)}
               </Hand>
