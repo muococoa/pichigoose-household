@@ -40,7 +40,8 @@ a { color: inherit; text-decoration: none }
   html, body { background: #D6C8E6 }
   .screen:not(.page) {
     --top: 10px; height: calc(100dvh - var(--status) - var(--frame)); min-height: 0; margin: var(--status) var(--frame) var(--frame); border-radius: var(--paper-radius);
-    box-shadow: 0 1px 0 rgba(30, 26, 48, .06), 0 10px 26px -12px rgba(30, 26, 48, .35);
+    /* Small enough to fit inside the lilac frame, so the screen's edge never cuts it off. */
+    box-shadow: 0 0 0 1px rgba(30, 26, 48, .04), 0 2px 4px -1px rgba(30, 26, 48, .14), 0 3px 8px -3px rgba(30, 26, 48, .22);
   }
   .screen.chat-screen { top: calc(var(--vvtop, 0px) + var(--status)); bottom: var(--frame); left: var(--frame); right: var(--frame); max-width: calc(430px - 2 * var(--frame)); height: auto; margin: 0 auto }
   #root::before {
