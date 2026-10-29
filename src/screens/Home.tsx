@@ -302,16 +302,21 @@ export function HomeScreen() {
             right={lowCount ? `${t('home.pantryLow', { count: lowCount })} · ${t('common.seeAll')}` : t('common.seeAll')}
           />
           {shelf.length ? (
-            // One shelf of what's running out first.
-            <div ref={shelfBox.ref} style={{ padding: '10px 6px 0' }}>
-              <ShelfRows
-                groups={shelf}
-                width={shelfBox.width}
-                height={56}
-                maxRows={1}
-                compact
-                onOpen={(g) => navigate(g.rows[0].place === 'bathroom' ? '/pantry?place=bathroom' : '/pantry')}
-              />
+            // Kitchen and bathroom, each one shelf of what's running out first.
+            <div ref={shelfBox.ref} style={{ padding: '6px 6px 0', display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {(['pantry', 'bathroom'] as const).map((place) => {
+                const here = shelf.filter((g) => g.rows[0].place === place)
+                if (!here.length) return null
+                const to = place === 'bathroom' ? '/pantry?place=bathroom' : '/pantry'
+                return (
+                  <div key={place}>
+                    <Link to={to} className="cap" style={{ display: 'inline-block', fontWeight: 800, marginBottom: 6 }}>
+                      {t(`home.shelf.${place}`)}
+                    </Link>
+                    <ShelfRows groups={here} width={shelfBox.width} height={56} maxRows={1} compact onOpen={() => navigate(to)} />
+                  </div>
+                )
+              })}
             </div>
           ) : (
             <Empty>{t('home.noPantry')}</Empty>

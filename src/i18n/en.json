@@ -136,7 +136,11 @@
     "pantryLow_one": "{{count}} running low",
     "pantryLow_other": "{{count}} running low",
     "noPantry": "Nothing on the shelves yet.",
-    "newsPichi": "I put {{item}} on the list. It's almost out!"
+    "newsPichi": "I put {{item}} on the list. It's almost out!",
+    "shelf": {
+      "pantry": "kitchen",
+      "bathroom": "bathroom"
+    }
   },
   "arrange": {
     "title": "Arrange your home",

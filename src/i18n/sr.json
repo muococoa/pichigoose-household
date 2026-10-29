@@ -141,7 +141,11 @@
     "pantryLow_few": "{{count}} pri kraju",
     "pantryLow_other": "{{count}} pri kraju",
     "noPantry": "Još ništa na policama.",
-    "newsPichi": "Stavila sam {{item}} na spisak. Skoro je nestalo!"
+    "newsPichi": "Stavila sam {{item}} na spisak. Skoro je nestalo!",
+    "shelf": {
+      "pantry": "kuhinja",
+      "bathroom": "kupatilo"
+    }
   },
   "arrange": {
     "title": "Složi svoju početnu",
