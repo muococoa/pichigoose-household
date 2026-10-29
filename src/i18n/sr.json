@@ -181,7 +181,13 @@
     "shareTitle": "{{name}}",
     "emptyAbove": "Lista je još prazna. Dodaj prvu stvar iznad.",
     "pichiPeeked": "Pichi je provirila: ostalo još {{level}}% · {{when}}",
-    "pichiNoticed": "Pichi je primetila da je skoro nestalo · {{when}}"
+    "pichiNoticed": "Pichi je primetila da je skoro nestalo · {{when}}",
+    "pantryCheck": {
+      "title": "Čekaj!",
+      "text": "Ali u ostavi je {{item}} skoro nestalo. Sigurno želiš da ga obrišeš sa spiska za kupovinu?",
+      "delete": "Da, obriši",
+      "keep": "Ne, ostavi"
+    }
   },
   "todos": {
     "title": "Zadaci",

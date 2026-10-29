@@ -176,7 +176,13 @@
     "shareTitle": "{{name}}",
     "emptyAbove": "Nothing on the list yet. Add the first thing above.",
     "pichiPeeked": "Pichi peeked: only {{level}}% left · {{when}}",
-    "pichiNoticed": "Pichi noticed it's almost out · {{when}}"
+    "pichiNoticed": "Pichi noticed it's almost out · {{when}}",
+    "pantryCheck": {
+      "title": "Wait!",
+      "text": "But in the pantry, {{item}} is almost out. Are you sure you want to delete it from the shopping list?",
+      "delete": "Yes, delete",
+      "keep": "No, keep it"
+    }
   },
   "todos": {
     "title": "To-dos",

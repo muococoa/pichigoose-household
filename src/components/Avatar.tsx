@@ -1,5 +1,5 @@
 import { useId } from 'react'
-import { AVATAR_LAYOUT } from './avatarLayout'
+import { AVATAR_LAYOUT, type Placed } from './avatarLayout'
 import type { Avatar as AvatarData } from '../data/hooks'
 import onigiri from '../../assets/avatars/onigiri.webp'
 import lemon from '../../assets/avatars/lemon.webp'
@@ -65,25 +65,45 @@ if (typeof window !== 'undefined') {
 /** Older saved extras, from before Nora's paintings. */
 const RENAMED: Record<string, string> = { hat: 'partyhat' }
 
+/** Scale and move so the character and its extra both fit in the circle, with a margin around them. */
+function fitAll(place: { x: number; y: number; w: number; h: number }, extra: Placed | null): [number, number, number] {
+  const xs = [place.x, place.x + place.w]
+  const ys = [place.y, place.y + place.h]
+  if (extra) {
+    const a = (extra.r * Math.PI) / 180
+    for (const [px, py] of [[extra.x, extra.y], [extra.x + extra.w, extra.y], [extra.x, extra.y + extra.h], [extra.x + extra.w, extra.y + extra.h]]) {
+      const dx = px - extra.rx
+      const dy = py - extra.ry
+      xs.push(extra.rx + dx * Math.cos(a) - dy * Math.sin(a))
+      ys.push(extra.ry + dx * Math.sin(a) + dy * Math.cos(a))
+    }
+  }
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys)
+  const k = Math.min(1, 29 / Math.max(x1 - x0, y1 - y0))
+  return [k, 20 - ((x0 + x1) / 2) * k, 20 - ((y0 + y1) / 2) * k]
+}
+
 type Props = {
   avatar?: Partial<AvatarData> | null
   /** The avatar builder: the whole character, which never moves when an extra is added. */
   full?: boolean
+  /** A profile: the whole character and its extra, all in view with room around them. */
+  whole?: boolean
   size?: number
   label?: string
   className?: string
   style?: React.CSSProperties
 }
 
-export function Avatar({ avatar, full, size = 34, label, className = 'av', style }: Props) {
+export function Avatar({ avatar, full, whole, size = 34, label, className = 'av', style }: Props) {
   const character = avatar?.character && ART[avatar.character] ? avatar.character : 'onigiri'
   const color = COLOR_HEX[avatar?.color ?? ''] ?? COLOR_HEX.blush
   const accessory = avatar?.accessory ? (RENAMED[avatar.accessory] ?? avatar.accessory) : null
   const clip = `av-${useId().replace(/[^a-zA-Z0-9]/g, '')}`
   // Where everything goes comes from scripts/avatar-layout.py, measured from the drawings themselves.
-  const place = AVATAR_LAYOUT[character][full ? 'full' : 'row']
+  const place = AVATAR_LAYOUT[character][full || whole ? 'full' : 'row']
   const extra = accessory && EXTRA[accessory] ? place.extras[accessory] : null
-  const fit = extra?.fit
+  const fit = whole ? fitAll(place, extra) : full ? undefined : extra?.fit
   return (
     <svg
       className={`${className}${size >= 80 ? ' av-big' : ''}`}

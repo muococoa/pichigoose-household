@@ -7,7 +7,7 @@ import { useHousehold, useItems, useLists, usePantry, type Item, type List } fro
 import { recentlyBought, toggleItem } from '../data/actions'
 import { Floating, Screen } from '../components/Shell'
 import { Avatar } from '../components/Avatar'
-import { Check, Hand, PichiAvatar, Struck, Tick, useArrivals, EmptyState, Sheet, Stamp, STAMP_COLORS, showToast, tilt, type TapeKind } from '../components/Scrapbook'
+import { Check, Hand, PichiAvatar, PoseStamp, Struck, Tick, useArrivals, EmptyState, Sheet, Stamp, STAMP_COLORS, showToast, tilt, type TapeKind } from '../components/Scrapbook'
 import { BackIcon, PlusIcon, ShareIcon } from '../components/Icons'
 import { ago } from '../lib/time'
 import { DndContext, MouseSensor, TouchSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core'
@@ -16,6 +16,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { useDesktop } from '../lib/desktop'
 import { PersonLink } from './Person'
 import { CommentCount, Comments, useCommentCounts } from '../components/Comments'
+import { groupKey, groupLow } from '../components/Shelves'
 import { useBack } from '../lib/back'
 import { autoFocusField, focusField } from '../lib/keyboard'
 
@@ -81,6 +82,13 @@ export function ShoppingScreen() {
   const person = (id: string | null) => people.find((p) => p.id === id)
   // For the things Pichi put on the list: how much is left of them.
   const pantry = usePantry(hid)
+  // Deleting something the pantry still needs: Pichi asks first.
+  const [checking, setChecking] = useState<Item | null>(null)
+  function stillNeeded(x: Item) {
+    const thing = pantry.rows.find((p) => p.id === x.pantry_item_id)
+    if (!thing) return false
+    return groupLow(pantry.rows.filter((p) => groupKey(p) === groupKey(thing)))
+  }
   const commentsOn = useCommentCounts()
 
   function pick(l: List) {
@@ -397,7 +405,14 @@ export function ShoppingScreen() {
               className="stk sec"
               style={{ flex: 1, color: '#A8335A' }}
               onClick={() => {
-                if (editing) db.remove('list_items', editing.id)
+                if (!editing) return
+                // Still almost out in the pantry? Pichi checks first.
+                if (stillNeeded(editing)) {
+                  setChecking(editing)
+                  setEditing(null)
+                  return
+                }
+                db.remove('list_items', editing.id)
                 setEditing(null)
               }}
             >
@@ -406,6 +421,21 @@ export function ShoppingScreen() {
             <button type="submit" form="item-form" className="stk prim" style={{ flex: 1.4 }}>
               {t('common.save')}
             </button>
+        </div>
+      </Sheet>
+
+      <Sheet small open={Boolean(checking)} onClose={() => setChecking(null)} title={t('shopping.pantryCheck.title')}>
+        <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginBottom: 18 }}>
+          <PoseStamp pose="honk" color="#F8E6A8" width={70} height={80} zoom={1.15} focus="50% 30%" rotate={-4} />
+          <p className="body" style={{ margin: 0 }}>{checking ? t('shopping.pantryCheck.text', { item: checking.name }) : ''}</p>
+        </div>
+        <div className="row" style={{ gap: 12 }}>
+          <button type="button" className="stk sec" style={{ flex: 1, transform: 'rotate(-1deg)', color: '#A8335A' }} onClick={() => { if (checking) db.remove('list_items', checking.id); setChecking(null) }}>
+            {t('shopping.pantryCheck.delete')}
+          </button>
+          <button type="button" className="stk prim" style={{ flex: 1.3, transform: 'rotate(1deg)' }} onClick={() => setChecking(null)}>
+            {t('shopping.pantryCheck.keep')}
+          </button>
         </div>
       </Sheet>
     </Screen>
