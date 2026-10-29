@@ -535,5 +535,24 @@
     "deleteText": "Its steps and its shopping list go with it, for everyone.",
     "drag": "Drag to move {{name}}",
     "finishedOn": "Finished {{when}}"
+  },
+  "pichi": {
+    "title": "Hi, I'm Pichi",
+    "whoTitle": "Who is Pichi?",
+    "who": [
+      "Pichi started as a meme. A reporter in Serbia asked a little boy playing in the snow what he was sliding on, and he said proudly: “This is a pichigoose.” He meant the plastic seat you sit on in the snow. We always called it a guzzolino.",
+      "The name made the whole country smile. It made us smile too, at a time when we really needed it."
+    ],
+    "whyTitle": "Why Pichigoose",
+    "why": [
+      "Pichigoose began as my bullet journal. Then Danko and I moved in together, and there was so much we wanted to do that it all got a little overwhelming.",
+      "Danko is handy and always building something. I write everything down. We wanted one calm place to share it all, without spamming each other. If it's in the app, we'll get to it eventually."
+    ],
+    "usTitle": "Who made it",
+    "us": [
+      "Nora and Danko. We're in love with each other, and with this perfect thing called life. We're excited about every chapter, and we want it to be as stress-free as possible.",
+      "We hope Pichigoose brings a little joy to your home, like it did to ours."
+    ],
+    "footer": "© 2026 Pichigoose"
   }
 }

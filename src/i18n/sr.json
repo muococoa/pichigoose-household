@@ -543,5 +543,24 @@
     "deleteText": "Brišu se i njegovi koraci i spisak za kupovinu, za sve.",
     "drag": "Prevuci da pomeriš {{name}}",
     "finishedOn": "Završen {{when}}"
+  },
+  "pichi": {
+    "title": "Zdravo, ja sam Pichi",
+    "whoTitle": "Ko je Pichi?",
+    "who": [
+      "Pichi je nastala od jednog mema. Reporter je pitao malog dečaka koji se igrao u snegu na čemu se spušta, a on je ponosno rekao: „Ovo je pičiguz.\" Mislio je na plastiku na koju se sedne u snegu. Mi smo to uvek zvali guzolino.",
+      "Ime je nasmejalo celu Srbiju. Nasmejalo je i nas, baš kad nam je to trebalo."
+    ],
+    "whyTitle": "Zašto Pichigoose",
+    "why": [
+      "Pichigoose je počeo kao moj bullet journal. Onda smo Danko i ja počeli da živimo zajedno, i toliko toga smo hteli da uradimo da nas je sve to malo preplavilo.",
+      "Danko je majstor i stalno nešto pravi. Ja sve zapisujem. Hteli smo jedno mirno mesto za sve to, bez zatrpavanja porukama. Ako je u aplikaciji, stići ćemo i do toga."
+    ],
+    "usTitle": "Ko stoji iza nje",
+    "us": [
+      "Nora i Danko. Zaljubljeni smo jedno u drugo i u ovo savršeno čudo koje se zove život. Radujemo se svakom poglavlju i želimo da bude što manje stresno.",
+      "Nadamo se da će Pichigoose doneti malo radosti u vaš dom, kao što je doneo u naš."
+    ],
+    "footer": "© 2026 Pichigoose"
   }
 }

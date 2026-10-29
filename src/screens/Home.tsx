@@ -235,7 +235,10 @@ export function HomeScreen() {
     if (s === 'news') {
       return (
         <div key="news" style={{ display: 'flex', gap: desktop ? 16 : 12, alignItems: 'flex-start', marginTop: desktop ? 0 : -4 }}>
-          <PichiStamp />
+          {/* Tap Pichi to meet her. */}
+          <Link to="/pichi" aria-label={t('pichi.title')} style={{ display: 'block' }}>
+            <PichiStamp />
+          </Link>
           <div
             style={{
               position: 'relative',
