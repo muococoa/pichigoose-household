@@ -49,7 +49,8 @@ html[data-kb="open"] .tabbar { visibility: hidden }
   .screen.chat-screen { top: calc(var(--vvtop, 0px) + var(--status)); bottom: calc(var(--frame) + var(--kb)); left: var(--frame); right: var(--frame); max-width: calc(430px - 2 * var(--frame)); height: auto; margin: 0 auto }
   #root::before {
     content: ""; position: fixed; z-index: 40; top: calc(var(--status) - 10px); left: calc(var(--edge) + 70px); width: 92px; height: 22px; transform: rotate(-3deg); pointer-events: none;
-    background: radial-gradient(circle, rgba(211, 68, 113, .5) 2.5px, transparent 3px) 0 0/11px 11px, rgba(242, 193, 196, .85);
+    /* In the theme's colors: its note color, with dots of the theme color. */
+    background: radial-gradient(circle, color-mix(in srgb, var(--hero) 55%, transparent) 2.5px, transparent 3px) 0 0/11px 11px, color-mix(in srgb, var(--theme-note) 88%, transparent);
   }
 }
 /* Small phones get a slightly smaller menu (see the tab bar in scrapbook.css). */
@@ -456,6 +457,14 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 @keyframes page-from-right { from { transform: translateX(36px); opacity: 0 } }
 @keyframes page-from-left { from { transform: translateX(-36px); opacity: 0 } }
 @media (prefers-reduced-motion: reduce) { .slide-next, .slide-prev { animation: none } }
+/* A sticky flag, like the ones stuck to a notebook's edge (Nora, 29 Oct): a note in the theme's color whose right end
+   is an arrow in the theme color itself. The Settings note to change your character. */
+.flag-note { position: relative; background: var(--theme-note); margin-right: 24px }
+.flag-end {
+  position: absolute; top: 0; bottom: 0; left: 100%; width: 24px; pointer-events: none;
+  filter: drop-shadow(2px 3px 0 rgba(30, 26, 48, .13));
+}
+.flag-end::before { content: ""; position: absolute; inset: 0; background: var(--hero); clip-path: polygon(0 0, 100% 50%, 0 100%) }
 .day-stamp { display: flex; justify-content: center; margin: 18px 0 4px }
 .say-hi { text-align: center; color: #63586B; font-size: 15px; font-weight: 600; margin: 48px 0 }
 /* One typing bar for every place you type a short text (Nora, 29 Oct): chat, comments and Shopping's add field. A strip

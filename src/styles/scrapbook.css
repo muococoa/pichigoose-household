@@ -30,18 +30,20 @@
   --note-lilac: #D6C8E6;
   /* The desk around the paper: a pale tint of the theme (pale blush for Pichigoose's pink). See src/lib/theme.ts. */
   --desk: #EFD3D8;
+  /* A sticky note in the theme's color (the Settings note, the washi tape holding the app). */
+  --theme-note: #F2C1C4;
 }
 
 /* Theme colors, picked in Settings and saved per person (profiles.theme). Pink is Pichigoose's own.
    Violet stays the people color in every theme. */
-html[data-theme="blue"] { --hero: #3B6FA0; --hero-dark: #2C5480; --margin: rgba(59, 111, 160, .22); --desk: #D2DEEA }
-html[data-theme="green"] { --hero: #5E8A45; --hero-dark: #44682F; --margin: rgba(94, 138, 69, .24); --desk: #D6E1C8 }
-html[data-theme="orange"] { --hero: #D0643B; --hero-dark: #A64A26; --margin: rgba(208, 100, 59, .22); --desk: #F2DACB }
+html[data-theme="blue"] { --hero: #3B6FA0; --hero-dark: #2C5480; --margin: rgba(59, 111, 160, .22); --desk: #D2DEEA; --theme-note: #C3D6EA }
+html[data-theme="green"] { --hero: #5E8A45; --hero-dark: #44682F; --margin: rgba(94, 138, 69, .24); --desk: #D6E1C8; --theme-note: #CFDDB8 }
+html[data-theme="orange"] { --hero: #D0643B; --hero-dark: #A64A26; --margin: rgba(208, 100, 59, .22); --desk: #F2DACB; --theme-note: #F6CBB0 }
 /* Plum, so it stays apart from the violet that marks people. Yellow is a deep mustard so white text still reads on it. */
-html[data-theme="purple"] { --hero: #8A4FA3; --hero-dark: #6B3A80; --margin: rgba(138, 79, 163, .22); --desk: #E6D7EC }
-html[data-theme="yellow"] { --hero: #B27B12; --hero-dark: #875C08; --margin: rgba(178, 123, 18, .24); --desk: #F5EAC6 }
-html[data-theme="brown"] { --hero: #8B5E3C; --hero-dark: #6C4529; --margin: rgba(139, 94, 60, .22); --desk: #EADCCB }
-html[data-theme="black"] { --hero: #3A3540; --hero-dark: #1E1A24; --margin: rgba(58, 53, 64, .2); --desk: #E3E0E2 }
+html[data-theme="purple"] { --hero: #8A4FA3; --hero-dark: #6B3A80; --margin: rgba(138, 79, 163, .22); --desk: #E6D7EC; --theme-note: #DCC8E8 }
+html[data-theme="yellow"] { --hero: #B27B12; --hero-dark: #875C08; --margin: rgba(178, 123, 18, .24); --desk: #F5EAC6; --theme-note: #F8E6A8 }
+html[data-theme="brown"] { --hero: #8B5E3C; --hero-dark: #6C4529; --margin: rgba(139, 94, 60, .22); --desk: #EADCCB; --theme-note: #E6D0B8 }
+html[data-theme="black"] { --hero: #3A3540; --hero-dark: #1E1A24; --margin: rgba(58, 53, 64, .2); --desk: #E3E0E2; --theme-note: #D4D0D6 }
 
 /* The page: notebook paper, ruled every 32 px starting 6 px down, red margin at x = 26. */
 .scr {
