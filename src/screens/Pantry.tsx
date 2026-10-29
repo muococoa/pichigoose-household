@@ -12,6 +12,7 @@ import { CONTAINERS, ContainerDrawing, Shelf, guessContainer, insideSpan } from 
 import { useDesktop } from '../lib/desktop'
 import { Chip } from './Todos'
 import { useBack } from '../lib/back'
+import { autoFocusField } from '../lib/keyboard'
 
 const PLACES: Place[] = ['pantry', 'bathroom']
 const STEPS = [
@@ -390,7 +391,7 @@ function AddThingSheet({ open, place, onClose, onAdd }: { open: boolean; place: 
           <label className="label" htmlFor="new-thing">
             {t('pantry.name')}
           </label>
-          <input id="new-thing" className="input" autoFocus placeholder={t(place === 'pantry' ? 'pantry.namePlaceholder' : 'pantry.namePlaceholderBathroom')} value={name} onChange={(e) => setName(e.target.value)} />
+          <input id="new-thing" className="input" ref={autoFocusField} placeholder={t(place === 'pantry' ? 'pantry.namePlaceholder' : 'pantry.namePlaceholderBathroom')} value={name} onChange={(e) => setName(e.target.value)} />
         </div>
         <div>
           <span className="label">{t('pantry.looksLike')}</span>
@@ -406,9 +407,11 @@ function AddThingSheet({ open, place, onClose, onAdd }: { open: boolean; place: 
             ))}
           </div>
         </div>
-        <button type="submit" className="stk prim" style={{ width: '100%', transform: 'rotate(-1deg)' }} disabled={!name.trim()}>
-          {t('pantry.addButton')}
-        </button>
+        <div className="sheet-actions">
+          <button type="submit" className="stk prim" style={{ width: '100%', transform: 'rotate(-1deg)' }} disabled={!name.trim()}>
+            {t('pantry.addButton')}
+          </button>
+        </div>
       </form>
     </Sheet>
   )

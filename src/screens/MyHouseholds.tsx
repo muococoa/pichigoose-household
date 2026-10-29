@@ -9,6 +9,7 @@ import { Hand, Menu, Sheet } from '../components/Scrapbook'
 import { DotsIcon, SmallCheck } from '../components/Icons'
 import { copyText, joinLink } from '../lib/share'
 import { InviteSheet } from './Invite'
+import { autoFocusField } from '../lib/keyboard'
 
 /** The sheet that opens from the household name on Home. */
 export function MyHouseholds({ open, onClose, page }: { open: boolean; onClose: () => void; page?: boolean }) {
@@ -92,7 +93,7 @@ export function MyHouseholds({ open, onClose, page }: { open: boolean; onClose: 
           }}
           style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
         >
-          <input className="input" autoFocus value={label} onChange={(e) => setLabel(e.target.value)} aria-label={t('households.renameTitle')} />
+          <input className="input" ref={autoFocusField} value={label} onChange={(e) => setLabel(e.target.value)} aria-label={t('households.renameTitle')} />
           <button type="submit" className="stk prim" style={{ width: '100%' }}>
             {t('common.save')}
           </button>

@@ -17,6 +17,7 @@ import { useDesktop } from '../lib/desktop'
 import { PersonLink } from './Person'
 import { CommentCount, Comments, useCommentCounts } from '../components/Comments'
 import { useBack } from '../lib/back'
+import { autoFocusField, focusField } from '../lib/keyboard'
 
 const TAB_TAPES: TapeKind[] = ['tp', 'tm', 'ty', 'tb', 'tdots', 'tblocks', 'ttri', 'tcheck']
 const LIST_KEY = 'pichigoose.list'
@@ -107,7 +108,7 @@ export function ShoppingScreen() {
       position: 0,
     })
     setText('')
-    inputRef.current?.focus()
+    focusField(inputRef.current)
   }
 
   // Lists keep the order people give them (shared by the household). Groceries always stays first.
@@ -233,7 +234,7 @@ export function ShoppingScreen() {
             e.preventDefault()
             setAdding(true)
             // Focus right away, inside the tap, so the phone opens the keyboard.
-            inputRef.current?.focus()
+            focusField(inputRef.current)
           }}
         >
           <PlusIcon />
@@ -329,7 +330,7 @@ export function ShoppingScreen() {
 
       <Sheet small open={newList !== null} onClose={() => setNewList(null)} title={t('shopping.newList')}>
         <form onSubmit={addList} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <input className="input" autoFocus placeholder={t('shopping.newListPlaceholder')} aria-label={t('shopping.newList')} value={newList ?? ''} onChange={(e) => setNewList(e.target.value)} />
+          <input className="input" ref={autoFocusField} placeholder={t('shopping.newListPlaceholder')} aria-label={t('shopping.newList')} value={newList ?? ''} onChange={(e) => setNewList(e.target.value)} />
           <button type="submit" className="stk prim" style={{ width: '100%' }}>
             {t('shopping.addListButton')}
           </button>

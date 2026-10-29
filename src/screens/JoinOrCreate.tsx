@@ -12,6 +12,7 @@ import { PendingInvites } from './Invite'
 import { AskName } from './AskName'
 import { useDesktop } from '../lib/desktop'
 import { useBack } from '../lib/back'
+import { autoFocusField } from '../lib/keyboard'
 
 const PENDING_KEY = 'pichigoose.joinAddress'
 const SECRET_KEY = 'pichigoose.joinSecret'
@@ -297,7 +298,7 @@ export function JoinOrCreateScreen() {
             <input
               id="knock"
               className="input"
-              autoFocus
+              ref={autoFocusField}
               autoCapitalize="none"
               autoCorrect="off"
               spellCheck={false}

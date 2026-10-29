@@ -9,7 +9,8 @@
 // On Android the page itself shrinks (interactive-widget=resizes-content in index.html), so --kb
 // stays 0 there.
 
-const REMEMBER = 'pichigoose.keyboard'
+// (v2: heights saved before this were sometimes measured mid-push and came out too small.)
+const REMEMBER = 'pichigoose.keyboard.v2'
 const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
 
 function isField(el: Element | null): el is HTMLElement {
@@ -17,6 +18,30 @@ function isField(el: Element | null): el is HTMLElement {
   if (el instanceof HTMLTextAreaElement) return true
   if (el instanceof HTMLInputElement) return !['checkbox', 'radio', 'button', 'submit', 'range', 'color', 'file'].includes(el.type)
   return el.isContentEditable
+}
+
+/**
+ * Focuses a field without iPhone pushing the whole page up to show it. For a moment the field is
+ * moved far up out of sight, so iPhone thinks it's already visible and leaves the page alone; our
+ * own layout then lifts bars and pop-ups above the keyboard in one smooth movement.
+ */
+export function focusField(el: HTMLElement | null) {
+  if (!el) return
+  if (!isIOS || document.activeElement === el) {
+    el.focus({ preventScroll: true })
+    return
+  }
+  const before = el.style.transform
+  el.style.transform = 'translateY(-2000px)'
+  el.focus({ preventScroll: true })
+  requestAnimationFrame(() => {
+    el.style.transform = before
+  })
+}
+
+/** Use as `ref={autoFocusField}` instead of `autoFocus`, for fields that open with the keyboard up. */
+export function autoFocusField(el: HTMLElement | null) {
+  if (el) focusField(el)
 }
 
 function remembered() {
@@ -56,9 +81,6 @@ export function watchKeyboard() {
       }
     }
     set(open ? Math.round(covered) : 0)
-    // Bars, sheets and the chat already sit right on the keyboard, so iPhone's own push-up of the
-    // whole page isn't needed there and only makes things jump. Undo it.
-    if (open && vv.offsetTop > 0 && (document.activeElement as HTMLElement | null)?.closest?.('.add-bar, .composer, .sheet-back')) window.scrollTo(0, 0)
     // iPhone sometimes leaves the page pushed up after the keyboard closes. Put it back.
     if (!open && (window.scrollY || vv.offsetTop)) window.scrollTo(0, 0)
   }
@@ -66,6 +88,24 @@ export function watchKeyboard() {
   vv?.addEventListener('resize', update)
   vv?.addEventListener('scroll', update)
   update()
+
+  // Tapping a field: focus it ourselves, the way that keeps iPhone from pushing the page up
+  // (only for a real tap, not when a scroll happens to end on a field).
+  let tapped: EventTarget | null = null
+  document.addEventListener('touchstart', (e) => {
+    tapped = e.touches.length === 1 ? e.target : null
+  }, { passive: true })
+  document.addEventListener('touchmove', () => {
+    tapped = null
+  }, { passive: true })
+  document.addEventListener('touchend', (e) => {
+    const el = e.target as Element | null
+    if (!isIOS || el !== tapped || !isField(el) || el === document.activeElement) return
+    if ((el as HTMLInputElement).disabled || (el as HTMLInputElement).readOnly) return
+    if (el instanceof HTMLInputElement && ['date', 'time', 'datetime-local', 'month', 'week'].includes(el.type)) return
+    e.preventDefault()
+    focusField(el)
+  }, { passive: false })
 
   document.addEventListener('focusin', (e) => {
     const el = e.target as Element | null

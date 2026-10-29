@@ -5,6 +5,7 @@ import { db } from '../data/store'
 import { useMyProfile } from '../data/hooks'
 import { Sheet } from '../components/Scrapbook'
 import { FieldError } from '../components/FieldError'
+import { autoFocusField } from '../lib/keyboard'
 
 /** New accounts start with a name made from the email ("Eleonora.Vojnovic"). That one doesn't count. */
 export function madeFromEmail(name: string, email: string) {
@@ -47,7 +48,7 @@ export function AskName({ open, onClose, onJoin, save }: { open: boolean; onClos
         <div>
           <input
             className="input"
-            autoFocus
+            ref={autoFocusField}
             autoComplete="given-name"
             aria-label={t('join.whatCallYou')}
             value={name}
