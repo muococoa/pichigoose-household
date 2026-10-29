@@ -192,6 +192,15 @@ To brainstorm before building (Danko's and Nora's thoughts, 29 Oct):
 - **What are points for?** Glory only, or something real? One idea: coupons you give to people in your household ("breakfast in bed", "one chore skipped"). Needs thinking.
 - **Money in trophies** ("who spent the most on groceries"): careful. Money is personal and hidden when someone turns money tracking off, so it probably never belongs in trophies.
 
+- **A slider for how much game (Nora, 29 Oct):** each household picks its level in its settings, like a game's difficulty. A first draft:
+  0. **Off** (the default)
+  1. **Tutorial:** tiny icons with little labels next to people's names, no numbers.
+  2. **Casual:** a warm monthly recap, "who did the most dishes this month", no ranks.
+  3. **Normal:** trophies with gold, silver and bronze, a monthly ranking, the yearly recap.
+  4. **Hard:** plus streaks, levels, points and coupons.
+  5. **God mode:** everything, League of Legends style: live leaderboard, rivalries, seasons, optional photos.
+  Level names are placeholders. Open question: who sets the level? Claude's suggestion: everyone picks their own comfort level and the household plays at the **lowest** one, so the hesitant dad is never pulled into God mode.
+
 Placeholder trophy names (Claude's, for Nora to improve; no rhymes, just warm, funny and easy to remember):
 - Dishes: **Keeper of the Sink** · three months in a row: **Sink Royalty**
 - Laundry: **Laundry Wizard** · three months: **Grand Laundry Wizard**
