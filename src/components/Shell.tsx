@@ -1,8 +1,8 @@
-import { createContext, useContext, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { BasketIcon, HomeIcon, InkCircle, MessagesIcon, NoteIcon, TodoIcon } from './Icons'
+import { BasketFilled, BasketIcon, HomeFilled, HomeIcon, MessagesFilled, MessagesIcon, NoteFilled, NoteIcon, TodoFilled, TodoIcon } from './Icons'
 import { DoodleSpot, Stamp, STAMP_COLORS, type DoodlePose } from './Scrapbook'
 import { flush, refetchAll, useOutboxCount } from '../data/store'
 import { useDesktop } from '../lib/desktop'
@@ -74,31 +74,59 @@ export function Screen({ children, tabbar, footer, className = '', wide, center,
   )
 }
 
+// The bottom menu, floating like WhatsApp's: a frosted paper pill with the lists scrolling behind it.
+const ICON = 34
+const STROKE = (2 * 26) / ICON // the same 2 px line as every other icon, at the bigger size
+let lastTab = -1
+const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
 // Money comes in phase 3. Until then the tab is hidden so nothing leads nowhere.
 export function TabBar() {
   const { t } = useTranslation()
   const unread = useUnreadTotal()
+  const { pathname } = useLocation()
+  // Outlined icons; the selected one is filled with ink, like WhatsApp's menu.
   const tabs = [
-    { to: '/', label: t('tabs.home'), icon: <HomeIcon /> },
-    { to: '/shopping', label: t('tabs.shopping'), icon: <BasketIcon /> },
-    { to: '/todos', label: t('tabs.todos'), icon: <TodoIcon /> },
-    { to: '/notes', label: t('tabs.notes'), icon: <NoteIcon /> },
-    { to: '/messages', label: t('tabs.messages'), icon: <MessagesIcon /> },
+    { to: '/', label: t('tabs.home'), icon: <HomeIcon size={ICON} width={STROKE} />, on: <HomeFilled size={ICON} /> },
+    { to: '/shopping', label: t('tabs.shopping'), icon: <BasketIcon size={ICON} width={STROKE} />, on: <BasketFilled size={ICON} /> },
+    { to: '/todos', label: t('tabs.todos'), icon: <TodoIcon size={ICON} width={STROKE} />, on: <TodoFilled size={ICON} /> },
+    { to: '/notes', label: t('tabs.notes'), icon: <NoteIcon size={ICON} width={STROKE} />, on: <NoteFilled size={ICON} /> },
+    { to: '/messages', label: t('tabs.messages'), icon: <MessagesIcon size={ICON} width={STROKE} />, on: <MessagesFilled size={ICON} /> },
   ]
+  const index = tabs.findIndex((tab) => tab.to === pathname)
+  // Every screen draws its own menu, so the new one starts where the last one was and slides over.
+  const [shown, setShown] = useState(lastTab >= 0 && index >= 0 ? lastTab : index)
+  const barRef = useRef<HTMLElement>(null)
+  const pillRef = useRef<HTMLSpanElement>(null)
+  useLayoutEffect(() => {
+    const from = lastTab
+    lastTab = index
+    if (index < 0 || from === index) return
+    const frame = requestAnimationFrame(() => setShown(index))
+    if (from >= 0 && !reducedMotion()) {
+      // The whole bar gives a soft, springy bounce, and the highlight stretches as it slides.
+      barRef.current?.animate(
+        [{ transform: 'scale(1)' }, { transform: 'scale(1.04, 1.06)', offset: 0.3 }, { transform: 'scale(.985, .98)', offset: 0.62 }, { transform: 'scale(1.004)', offset: 0.84 }, { transform: 'scale(1)' }],
+        { duration: 560, easing: 'ease-out' },
+      )
+      pillRef.current?.animate([{ transform: 'scaleX(1)' }, { transform: 'scale(1.28, .9)', offset: 0.35 }, { transform: 'scaleX(1)' }], { duration: 480, easing: 'ease-out' })
+    }
+    return () => cancelAnimationFrame(frame)
+  }, [index])
   return (
-    <nav className="tabbar">
-      {tabs.map((tab) => (
-        <NavLink key={tab.to} to={tab.to} end className={({ isActive }) => `tab${isActive ? ' on' : ''}`}>
-          {({ isActive }) => (
-            <>
-              <span className="tab-icon">
-                {tab.icon}
-                {isActive && <InkCircle />}
-                {tab.to === '/messages' && unread > 0 && <span className="tab-badge">{unread > 99 ? '99+' : unread}</span>}
-              </span>
-              <span>{tab.label}</span>
-            </>
-          )}
+    <nav className="tabbar" ref={barRef}>
+      {shown >= 0 && (
+        <span className="tab-pill" style={{ '--i': shown } as React.CSSProperties} aria-hidden>
+          <span ref={pillRef} />
+        </span>
+      )}
+      {tabs.map((tab, i) => (
+        <NavLink key={tab.to} to={tab.to} end className={`tab${i === index ? ' on' : ''}`}>
+          <span className="tab-icon">
+            {i === index ? tab.on : tab.icon}
+            {tab.to === '/messages' && unread > 0 && <span className="tab-badge">{unread > 99 ? '99+' : unread}</span>}
+          </span>
+          <span>{tab.label}</span>
         </NavLink>
       ))}
     </nav>

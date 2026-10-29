@@ -15,7 +15,9 @@ a { color: inherit; text-decoration: none }
 :root {
   --top: max(env(safe-area-inset-top, 0px), 12px);
   --bottom: env(safe-area-inset-bottom, 0px);
-  --tabbar: calc(64px + max(var(--bottom), 20px));
+  /* The floating menu: how far it sits above the bottom edge, and the room it takes with that. */
+  --tabbar-gap: calc(max(var(--bottom), 30px) - 12px);
+  --tabbar: calc(62px + var(--tabbar-gap));
   /* Height of the on-screen keyboard, set from src/lib/keyboard.ts. */
   --kb: 0px;
   --ease-out: cubic-bezier(.22, 1, .36, 1);
@@ -52,7 +54,6 @@ html[data-nav="back"] .screen > .scroll { animation: sheet-in-left .35s cubic-be
 /* Screens with the round + button: room under the last thing on the page (the button's height plus a gap),
    so everything can scroll up above the button and nothing stays hidden under it. */
 .has-fab.with-tabbar .scroll { padding-bottom: calc(var(--tabbar) + 128px) }
-.tabbar { height: var(--tabbar) }
 
 .row { display: flex; align-items: center }
 .grow { flex: 1; min-width: 0 }
@@ -198,6 +199,9 @@ textarea.input { height: auto; min-height: 40px; padding: 9px 16px; resize: none
 .add-bar.open .stk.round { transform: rotate(-4deg) }
 .add-bar.open .stk.round svg { transform: rotate(90deg) }
 .add-bar .stk.round:active { translate: 0 2px }
+/* The floating buttons give a springy bounce when tapped, like WhatsApp's: in quickly, back with a little overshoot. */
+.fab, .add-bar .stk.round { transition: transform .45s var(--kinetic, ease), box-shadow .3s ease, scale .45s cubic-bezier(.34, 1.56, .64, 1) }
+.fab:active, .add-bar .stk.round:active { scale: .86; transition-duration: .45s, .3s, .1s }
 
 /* Bottom sheets */
 .sheet-back { position: fixed; inset: 0; background: rgba(30, 26, 48, .35); z-index: 50; display: flex; align-items: flex-end; justify-content: center; animation: fade .15s ease-out;
