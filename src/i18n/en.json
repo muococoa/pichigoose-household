@@ -294,14 +294,14 @@
     "theme": "Theme",
     "appColor": "App color",
     "themes": {
-      "pichigoose": "Pink",
-      "blue": "Blue",
-      "green": "Green",
-      "orange": "Orange",
-      "purple": "Purple",
-      "yellow": "Yellow",
-      "brown": "Brown",
-      "black": "Black"
+      "pichigoose": "Pichigoose",
+      "blue": "Cloud",
+      "green": "Pickle",
+      "orange": "Goldfish",
+      "purple": "Marshmallow",
+      "yellow": "Lemon",
+      "brown": "Toast",
+      "black": "Onigiri"
     }
   },
   "invite": {

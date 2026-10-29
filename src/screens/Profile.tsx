@@ -376,7 +376,11 @@ export function SettingsScreen() {
             {t('settings.theme')}
           </Hand>
           <div style={{ marginTop: 8 }}>
-            <span className="body">{t('settings.appColor')}</span>
+            <span className="body">
+              {t('settings.appColor')}
+              {/* The chosen theme's name, after one of the characters. */}
+              <span className="cap" style={{ fontSize: 14, marginLeft: 8 }}>{t(`settings.themes.${profile?.theme ?? 'pichigoose'}`)}</span>
+            </span>
             {/* Eight colors on one line. */}
             <div role="radiogroup" aria-label={t('settings.appColor')} className="row" style={{ justifyContent: 'space-between', gap: 6, marginTop: 10 }}>
               {THEMES.map((th) => {

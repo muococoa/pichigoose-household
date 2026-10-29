@@ -299,14 +299,14 @@
     "theme": "Tema",
     "appColor": "Boja aplikacije",
     "themes": {
-      "pichigoose": "Roze",
-      "blue": "Plava",
-      "green": "Zelena",
-      "orange": "Narandžasta",
-      "purple": "Ljubičasta",
-      "yellow": "Žuta",
-      "brown": "Braon",
-      "black": "Crna"
+      "pichigoose": "Pichigoose",
+      "blue": "Oblačić",
+      "green": "Krastavčić",
+      "orange": "Zlatna ribica",
+      "purple": "Maršmelou",
+      "yellow": "Limun",
+      "brown": "Tost",
+      "black": "Onigiri"
     }
   },
   "invite": {

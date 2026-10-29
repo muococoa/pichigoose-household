@@ -7,7 +7,9 @@ import { useLocation, useNavigate } from 'react-router-dom'
  */
 export function useBack(to = '/') {
   const navigate = useNavigate()
-  return () => navigate(to, { state: { back: true } })
+  // Replaces this page instead of adding one, so the browser's own history doesn't pile up: in Safari, swiping
+  // back on Home then has nothing inside the app to go back to (Nora, 29 Oct).
+  return () => navigate(to, { state: { back: true }, replace: true })
 }
 
 /**

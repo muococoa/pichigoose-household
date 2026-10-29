@@ -87,7 +87,7 @@ function useSwipeBack(phone: boolean) {
     !phone || path === '/' || browserOwnsLeftEdge()
       ? null
       : () => {
-          if (['/shopping', '/todos', '/notes'].includes(path) || location.key === 'default') navigate('/', { state: { back: true } })
+          if (['/shopping', '/todos', '/notes'].includes(path) || location.key === 'default') navigate('/', { state: { back: true }, replace: true })
           else navigate(-1)
         }
   useEdgeSwipe('left', action)
@@ -156,7 +156,10 @@ export function TabBar() {
   return (
     <nav className="tabbar" ref={barRef}>
       {tabs.map((tab, i) => (
-        <NavLink key={tab.to} to={tab.to} end className={`tab${i === index ? ' on' : ''}`}>
+        // Moving between tabs replaces the page instead of adding one, so the browser's history stays flat (in
+        // Safari, swiping back on Home then has nothing inside the app to go back to). Messages adds one, so going
+        // back from it returns to whatever you were doing.
+        <NavLink key={tab.to} to={tab.to} end replace={tab.to !== '/messages'} className={`tab${i === index ? ' on' : ''}`}>
           <span className="tab-icon">
             {i === index ? tab.on : tab.icon}
             {/* The chosen tab: a hand-drawn ink circle around its icon, drawn on quickly. */}
