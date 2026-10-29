@@ -34,14 +34,6 @@ export const ShareIcon = (p: P) => (
     <path d="M6 13v8h14v-8" />
   </Svg>
 )
-/** A trash can, for the danger zone. */
-export const TrashIcon = (p: P) => (
-  <Svg size={18} width={2.2} {...p}>
-    <path d="M5 7h16M10.5 7V4.5h5V7" />
-    <path d="M7 7l1.2 14.5h9.6L19 7" />
-    <path d="M11 11.5v6M15 11.5v6" />
-  </Svg>
-)
 /** A broom mid-sweep, for the pantry's deep clean: a long handle, a head that curves as it pushes, a puff of dust. */
 export const BroomIcon = (p: P) => (
   <Svg size={24} width={1.8} {...p}>

@@ -410,7 +410,8 @@
       "menu": "Obriši domaćinstvo",
       "title": "Obrisati {{name}}?",
       "text": "Domaćinstvo i sve u njemu, uključujući ćaskanje, nestaće za sve.",
-      "button": "Obriši domaćinstvo"
+      "button": "Obriši domaćinstvo",
+      "typeName": "Upiši {{name}} da potvrdiš"
     }
   }
 }

@@ -403,7 +403,8 @@
       "menu": "Delete household",
       "title": "Delete {{name}}?",
       "text": "The household and everything in it, chat included, will be gone for everyone.",
-      "button": "Delete household"
+      "button": "Delete household",
+      "typeName": "Type {{name}} to confirm"
     }
   }
 }

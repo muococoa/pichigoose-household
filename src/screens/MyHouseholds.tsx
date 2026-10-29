@@ -6,7 +6,7 @@ import { db } from '../data/store'
 import { setCurrentHousehold, useHousehold, type Household } from '../data/hooks'
 import { Avatar } from '../components/Avatar'
 import { Hand, Menu, Sheet } from '../components/Scrapbook'
-import { DotsIcon, SmallCheck, TrashIcon } from '../components/Icons'
+import { DotsIcon, SmallCheck } from '../components/Icons'
 import { DeleteHouseholdSheet } from './HouseholdClean'
 import { copyText, joinLink } from '../lib/share'
 import { InviteSheet } from './Invite'
@@ -196,8 +196,10 @@ export function MyHouseholds({ open, onClose, page }: { open: boolean; onClose: 
                       },
                     },
                     { label: t('households.copyAddress'), onClick: () => copyText(joinLink(h), t('common.copied')) },
-                            { label: t('households.leave'), onClick: () => setLeaving(h), danger: true },
-                    { label: t('household.delete.menu'), onClick: () => setDeleting(h), danger: true, zone: true, icon: <TrashIcon /> },
+                            // The danger zone: whoever created the household deletes it (and can't leave); everyone else can leave.
+                    h.created_by === me
+                      ? { label: t('household.delete.menu'), onClick: () => setDeleting(h), danger: true, zone: true }
+                      : { label: t('households.leave'), onClick: () => setLeaving(h), danger: true, zone: true },
                           ]}
                         >
                           <DotsIcon />
@@ -272,8 +274,10 @@ export function MyHouseholds({ open, onClose, page }: { open: boolean; onClose: 
                       },
                     },
                     { label: t('households.copyAddress'), onClick: () => copyText(joinLink(h), t('common.copied')) },
-                    { label: t('households.leave'), onClick: () => setLeaving(h), danger: true },
-                    { label: t('household.delete.menu'), onClick: () => setDeleting(h), danger: true, zone: true, icon: <TrashIcon /> },
+                    // The danger zone: whoever created the household deletes it (and can't leave); everyone else can leave.
+                    h.created_by === me
+                      ? { label: t('household.delete.menu'), onClick: () => setDeleting(h), danger: true, zone: true }
+                      : { label: t('households.leave'), onClick: () => setLeaving(h), danger: true, zone: true },
                   ]}
                 >
                   <DotsIcon />

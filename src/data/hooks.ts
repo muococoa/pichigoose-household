@@ -13,7 +13,7 @@ export type Profile = Row & {
   track_money: boolean
 }
 
-export type Household = Row & { name: string; address: string; secret: string; kind: 'home' | 'event'; created_at: string }
+export type Household = Row & { name: string; address: string; secret: string; kind: 'home' | 'event'; created_by?: string | null; created_at: string }
 
 export type Section = 'news' | 'shopping' | 'pantry' | 'bathroom' | 'todos' | 'money' | 'notes'
 export type LayoutEntry = { section: Section; visible: boolean }
