@@ -37,7 +37,7 @@ R = 20  # circle radius, on a 40 x 40 grid
 
 # Per character, per extra: size (times the computed size), nudge (in eye distances), turn (degrees).
 TWEAKS = {
-    'frog': {'glasses': {'size': 0.66, 'nudge': (0, 0.18)}, 'bowtie': {'nudge': (0, -0.2)}, 'partyhat': {'sink': 0.05}, 'witchhat': {'sink': 0.12}, 'bow': {'nudge': (0.32, -0.7), 'size': 0.78}, 'flower': {'nudge': (-0.35, -0.75), 'size': 0.85}},
+    'frog': {'glasses': {'size': 0.66, 'nudge': (-0.08, 0.08), 'turn': 2}, 'bowtie': {'nudge': (0, -0.2)}, 'partyhat': {'sink': 0.05}, 'witchhat': {'sink': 0.12}, 'bow': {'nudge': (0.32, -0.7), 'size': 0.78}, 'flower': {'nudge': (-0.35, -0.75), 'size': 0.85}},
     'lemon': {'bow': {'nudge': (0.35, -0.35)}},
     'plant': {'partyhat': {'size': 0.9, 'top': 'highest'}, 'witchhat': {'size': 0.9, 'top': 'highest'}, 'bowtie': {'nudge': (0, -0.35)}},
     'carrot': {'partyhat': {'top_frac': 0.33}, 'witchhat': {'top_frac': 0.33}},
