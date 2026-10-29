@@ -304,8 +304,8 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 .chat-time { flex: none; font-size: 12px; font-weight: 600; color: #857A8C }
 .chat-time.unread { color: #6A4F9C; font-weight: 800 }
 .chat-preview { flex: 1; min-width: 0; font-size: 14px; line-height: 20px; font-weight: 600; color: #63586B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
-.unread-badge { flex: none; min-width: 21px; height: 21px; padding: 0 6px; border-radius: 11px; background: #8466B8; color: #FFFFFF; font-size: 12px; font-weight: 800; display: grid; place-items: center }
-.tab-badge { position: absolute; top: -6px; right: -10px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: #8466B8; color: #FFFFFF; font-size: 11px; line-height: 18px; font-weight: 800; text-align: center; box-shadow: 0 0 0 2px #FFFDF8 }
+.unread-badge { flex: none; min-width: 21px; height: 21px; padding: 0 6px; border-radius: 11px; background: var(--hero); color: #FFFFFF; font-size: 12px; font-weight: 800; display: grid; place-items: center }
+.tab-badge { position: absolute; top: -6px; right: -10px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--hero); color: #FFFFFF; font-size: 11px; line-height: 18px; font-weight: 800; text-align: center; box-shadow: 0 0 0 2px #FFFDF8 }
 
 .conversation { display: flex; flex-direction: column }
 /* On a phone the chat fills the screen and the header stays at the top while the keyboard opens; only

@@ -4,14 +4,24 @@
 @media (min-width: 1024px) {
   #root { max-width: none }
 
-  /* The frame: lilac desk, the sidebar sheet on the left, the notebook page on the right. */
-  .desk { --top: 32px; --bottom: 0px; --tabbar: 0px; display: flex; height: 100dvh; background: var(--desk); overflow: hidden }
+  /* The frame (Nora, 29 Oct): one big notebook page on the desk, with the sidebar's own white sheet inside it on the
+     left, and a washi tape across the sidebar's top holding both. */
+  .desk { --top: 32px; --bottom: 0px; --tabbar: 0px; position: relative; display: flex; height: 100dvh; padding: 18px; background: var(--desk); overflow: hidden }
+  .desk:not(.solo)::before {
+    content: ""; position: absolute; inset: 18px; border-radius: var(--paper-radius); pointer-events: none;
+    background: #FFFDF8 url("../../assets/paper-white.png") 0 0 / 512px 512px; box-shadow: 3px 4px 0 rgba(30, 26, 48, .13);
+    background-image: url("../../assets/paper-white.png"), repeating-linear-gradient(#FFFDF8 0 35px, #E6DFE3 35px 36px);
+    background-size: 512px 512px, auto; background-position: 0 0, 0 10px;
+  }
+  /* Inside the big page, 14 px from its edges; its corners are the page's minus that gap, so they run parallel. */
   .side {
-    width: 264px; flex: none; position: relative; margin: 18px 0 18px 18px; border-radius: var(--paper-radius); box-sizing: border-box;
+    width: 264px; flex: none; position: relative; margin: 14px 0 14px 14px; border-radius: calc(var(--paper-radius) - 14px); box-sizing: border-box;
     display: flex; flex-direction: column;
     background-color: #FFFFFF; background-image: url("../../assets/paper-white.png"); background-size: 512px 512px; box-shadow: 2px 3px 0 rgba(30, 26, 48, .13); z-index: 2;
   }
   .side .tape { position: absolute }
+  /* The tape holding the papers takes the theme's colors, like on the phone. */
+  .side .tape.tdots { background: radial-gradient(circle, color-mix(in srgb, var(--hero) 55%, transparent) 2.5px, transparent 3px) 0 0/11px 11px, color-mix(in srgb, var(--theme-note) 88%, transparent) }
   /* Everything else in the sidebar scrolls if the window is short. */
   .side-inner { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 22px; padding: 30px 20px 22px; overflow-y: auto; overflow-x: hidden }
   .hhbox { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 4px 4px 0; text-align: left }
@@ -22,16 +32,11 @@
   .nav .tab-icon { position: relative; display: flex }
   .nav .tab-circle { position: absolute; left: 50%; top: 50%; width: 44px; height: 36px; margin: -18px 0 0 -22px; overflow: visible; pointer-events: none; filter: url(#dry-ink) }
 
-  .desk > .screen.page {
-    flex: 1; min-width: 0; height: auto; min-height: 0; margin: 18px 18px 18px -6px; border-radius: var(--paper-radius); position: relative; z-index: 1;
-    box-shadow: 3px 4px 0 rgba(30, 26, 48, .13);
-  }
-  /* Wider ruling (every 36 px) and the margin line further in, at 64 px. */
-  /* The page's paper stays still; only the content scrolls over it. Wider ruling (every 36 px). */
-  .desk > .screen.page {
-    background-image: url("../../assets/paper-white.png"), repeating-linear-gradient(#FFFDF8 0 35px, #E6DFE3 35px 36px);
-    background-size: 512px 512px, auto;
-    background-position: 0 0, 0 10px;
+  /* The content sits on the big page (its paper is drawn by .desk::before, wider ruling every 36 px, staying still
+     while the content scrolls over it); the margin line is further in, at 64 px. */
+  .desk:not(.solo) > .screen.page {
+    flex: 1; min-width: 0; height: auto; min-height: 0; margin: 0; border-radius: 0 var(--paper-radius) var(--paper-radius) 0; position: relative; z-index: 1;
+    background: none; box-shadow: none;
   }
   .desk > .screen > .margin { left: 64px }
   /* Content starts right of the margin: 100 px in, 48 px from the right. Screens bring 40 / 22 px of their own. */
@@ -84,7 +89,7 @@
 
 @media (min-width: 1024px) {
   /* Outside a household: one sheet on the desk, content in a centered column. */
-  .desk.solo > .screen.page { margin: 18px }
+  .desk.solo > .screen.page { flex: 1; min-width: 0; height: auto; min-height: 0; margin: 0; border-radius: var(--paper-radius); position: relative; box-shadow: 3px 4px 0 rgba(30, 26, 48, .13) }
   .solo-content { max-width: 560px; margin: 0 auto; padding: 24px 0 0 }
   .solo-content.wide { max-width: 1060px; padding: 24px 48px 32px }
   .desk.solo .margin { display: none }
