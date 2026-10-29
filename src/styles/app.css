@@ -457,14 +457,16 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 @keyframes page-from-right { from { transform: translateX(36px); opacity: 0 } }
 @keyframes page-from-left { from { transform: translateX(-36px); opacity: 0 } }
 @media (prefers-reduced-motion: reduce) { .slide-next, .slide-prev { animation: none } }
-/* A sticky flag, like the ones stuck to a notebook's edge (Nora, 29 Oct): a note in the theme's color whose right end
-   is an arrow in the theme color itself. The Settings note to change your character. */
-.flag-note { position: relative; background: var(--theme-note); margin-right: 24px }
-.flag-end {
-  position: absolute; top: 0; bottom: 0; left: 100%; width: 24px; pointer-events: none;
-  filter: drop-shadow(2px 3px 0 rgba(30, 26, 48, .13));
+/* A sticky flag, like the ones stuck to a notebook's edge (Nora, 29 Oct): the note itself is cut into an arrow at its
+   right end, and that end is a boomerang-shaped band in the theme color. The Settings note to change your character. */
+.flag-note { position: relative; isolation: isolate; padding: 14px 58px 14px 16px; filter: drop-shadow(2px 3px 0 rgba(30, 26, 48, .13)) }
+.flag-note > * { position: relative; z-index: 1 }
+.flag-note > .flag-bg, .flag-note > .flag-tip { position: absolute; top: 0; bottom: 0; z-index: 0; pointer-events: none }
+.flag-bg {
+  left: 0; right: 0; background: url("../../assets/note-fresh.png") 0 0 / 512px 512px, var(--theme-note); background-blend-mode: multiply;
+  clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 50%, calc(100% - 22px) 100%, 0 100%);
 }
-.flag-end::before { content: ""; position: absolute; inset: 0; background: var(--hero); clip-path: polygon(0 0, 100% 50%, 0 100%) }
+.flag-tip { right: 0; width: 46px; background: var(--hero); clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 50%, calc(100% - 22px) 100%, 0 100%, 22px 50%) }
 .day-stamp { display: flex; justify-content: center; margin: 18px 0 4px }
 .say-hi { text-align: center; color: #63586B; font-size: 15px; font-weight: 600; margin: 48px 0 }
 /* One typing bar for every place you type a short text (Nora, 29 Oct): chat, comments and Shopping's add field. A strip

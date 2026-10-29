@@ -348,7 +348,10 @@ export function SettingsScreen() {
           </Hand>
         </div>
 
-        <Link to="/profile" className="note flag-note row" style={{ gap: 14, transform: 'rotate(-.6deg)', padding: '14px 16px' }}>
+        <Link to="/profile" className="flag-note row" style={{ gap: 14, transform: 'rotate(-.6deg)' }}>
+          {/* The note, cut into an arrow, and its boomerang-shaped end in the theme color. */}
+          <span className="flag-bg" aria-hidden />
+          <span className="flag-tip" aria-hidden />
           <Avatar avatar={profile?.avatar} size={56} />
           <span className="grow">
             <span style={{ display: 'block', fontSize: 18, fontWeight: 800, color: '#1E1A30' }}>{profile?.display_name}</span>
@@ -356,8 +359,6 @@ export function SettingsScreen() {
               {t('settings.changeCharacter')}
             </span>
           </span>
-          {/* The flag's arrow end, in the theme color. */}
-          <span className="flag-end" aria-hidden />
         </Link>
 
         <section>
