@@ -37,7 +37,7 @@ R = 20  # circle radius, on a 40 x 40 grid
 
 # Per character, per extra: size (times the computed size), nudge (in eye distances), turn (degrees).
 TWEAKS = {
-    'frog': {'glasses': {'size': 0.686, 'nudge': (-0.04, 0.08), 'turn': 2}, 'bowtie': {'nudge': (0, -0.2)}, 'partyhat': {'sink': 0.05}, 'witchhat': {'sink': 0.12}, 'bow': {'nudge': (0.32, -0.7), 'size': 0.78}, 'flower': {'nudge': (-0.35, -0.75), 'size': 0.85}},
+    'frog': {'glasses': {'size': 0.686, 'nudge': (-0.04, 0.08), 'turn': 2}, 'bowtie': {'nudge': (0, -0.2)}, 'partyhat': {'sink': 0.05}, 'witchhat': {'sink': 0.12}, 'bow': {'nudge': (0.42, -0.42), 'size': 0.72}, 'flower': {'nudge': (-0.45, -0.4), 'size': 0.8}},
     'lemon': {'bow': {'nudge': (0.35, -0.35)}},
     'plant': {'partyhat': {'size': 0.9, 'top': 'highest'}, 'witchhat': {'size': 0.9, 'top': 'highest'}, 'bowtie': {'nudge': (0, -0.35)}},
     'carrot': {'partyhat': {'top_frac': 0.33}, 'witchhat': {'top_frac': 0.33}},
@@ -112,7 +112,7 @@ def measure(name):
     yy, xx = np.mgrid[0:h, 0:w]
     m = alpha / 255
     centroid = ((xx * m).sum() / m.sum(), (yy * m).sum() / m.sum())
-    return {'w': w, 'h': h, 'alpha': alpha, 'eye': (ex, ey), 'd': d, 'tilt': tilt, 'up': up, 'mouth': mouth, 'top': top, 'centroid': centroid, 'mass': m.sum()}
+    return {'line': line_thickness(a), 'w': w, 'h': h, 'alpha': alpha, 'eye': (ex, ey), 'd': d, 'tilt': tilt, 'up': up, 'mouth': mouth, 'top': top, 'centroid': centroid, 'mass': m.sum()}
 
 
 def extra_info(key):
@@ -142,7 +142,39 @@ def extra_info(key):
     return info
 
 
+# Pichi's avatar: her 720 px painting shown 120 units wide, with lines about 7.2 px thick, so her
+# line art is 1.2 units thick in the circle. Every character is zoomed so its lines match (Nora).
+LINE = 7.21 * 120 / 720 * 0.75
+
+
+def line_thickness(alpha_rgba):
+    lum = alpha_rgba[..., :3] @ [0.299, 0.587, 0.114]
+    dark = (alpha_rgba[..., 3] > 200) & (lum < 90)
+    dt = nd.distance_transform_edt(dark)
+    ridge = (dt == nd.maximum_filter(dt, size=3)) & (dt >= 1)
+    return 2 * float(np.median(dt[ridge]))
+
+
+# Characters that need their signature part in view: zoom (times the line-weight zoom) and where the
+# face goes (x, y in circle units), so the leaves, the handle, the filling or the noodles still show.
+FRAMES = {
+    'plant': {'zoom': 0.6, 'y': 28},
+    'mug': {'zoom': 0.8, 'x': 17, 'y': 23},
+    'sushi': {'zoom': 0.82, 'y': 26},
+    'ramen': {'zoom': 0.82, 'y': 26.5},
+}
+
+
 def char_frame(name, me):
+    """Zoomed so the line art matches Pichi's, with the face (eyes and mouth) centered in the circle."""
+    f = FRAMES.get(name, {})
+    s = LINE / me['line'] * f.get('zoom', 1)
+    fx = (me['eye'][0] + me['mouth'][0]) / 2
+    fy = (me['eye'][1] + me['mouth'][1]) / 2
+    return s, f.get('x', 20) - fx * s, f.get('y', 20.5) - fy * s
+
+
+def char_frame_old(name, me):
     """Scale (circle units per drawing pixel) and offset, optically centered."""
     if name in PORTRAITS:
         p = PORTRAITS[name]
@@ -281,9 +313,7 @@ def main():
         entry = {'x': round(box[0], 2), 'y': round(box[1], 2), 'w': round(box[2], 2), 'h': round(box[3], 2), 'extras': {}}
         for key in EXTRAS:
             e = place_extra(name, key, me, frame, extras[key])
-            if key in ('partyhat', 'witchhat') and name not in BUSTS and name not in PORTRAITS:
-                e['fit'] = fit_hat(box, e)
-            elif key in ('partyhat', 'witchhat'):
+            if key in ('partyhat', 'witchhat'):
                 e['fit'] = fit_hat_portrait(e)
             entry['extras'][key] = e
         layout[name] = entry
