@@ -456,7 +456,7 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 /* Comments: the bar sits in its place under the comments, and floats up above the keyboard while you type in it. */
 .typing-slot { min-height: 50px }
 @media (pointer: coarse) {
-  .typing-slot:focus-within .typing-bar { position: fixed; z-index: 60; left: calc(var(--edge) + 14px); right: calc(var(--edge) + 14px); bottom: calc(var(--kb) + 8px); animation: typing-up .25s var(--ease-out) }
+  .typing-slot .typing-bar.typing { position: fixed; z-index: 60; left: calc(var(--edge) + 14px); right: calc(var(--edge) + 14px); bottom: calc(var(--kb) + 8px); animation: typing-up .25s var(--ease-out) }
 }
 @keyframes typing-up { from { opacity: .4; transform: translateY(12px) } }
 /* Round send button in the theme color: quiet while the field is empty, lit up once you type. */

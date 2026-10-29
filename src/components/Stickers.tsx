@@ -59,9 +59,14 @@ export function StickerButton({ onSend }: { onSend: (name: string) => void }) {
         aria-label={t('stickers.title')}
         title={t('stickers.title')}
         aria-expanded={open}
-        // Keeps the keyboard where it is.
-        onPointerDown={(e) => e.preventDefault()}
-        onClick={() => setOpen((o) => !o)}
+        // Opens the moment your finger touches it, and keeps the keyboard where it is.
+        onPointerDown={(e) => {
+          e.preventDefault()
+          setOpen((o) => !o)
+        }}
+        onClick={(e) => {
+          if (e.detail === 0) setOpen((o) => !o)
+        }}
       >
         <svg viewBox="0 0 26 26" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
           {/* A sticker with its corner peeling up, and a little smile. */}
@@ -80,7 +85,12 @@ export function StickerButton({ onSend }: { onSend: (name: string) => void }) {
               aria-label={t(`stickers.names.${s}`)}
               title={t(`stickers.names.${s}`)}
               onPointerDown={(e) => e.preventDefault()}
-              onClick={() => {
+              onPointerUp={() => {
+                onSend(`${pack}/${s}`)
+                setOpen(false)
+              }}
+              onClick={(e) => {
+                if (e.detail !== 0) return
                 onSend(`${pack}/${s}`)
                 setOpen(false)
               }}

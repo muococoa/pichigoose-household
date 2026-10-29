@@ -15,7 +15,7 @@ import { SortableContext, arrayMove, horizontalListSortingStrategy, useSortable 
 import { CSS } from '@dnd-kit/utilities'
 import { useDesktop } from '../lib/desktop'
 import { useKept } from '../lib/kept'
-import { TypingBar } from '../components/TypingBar'
+import { TypingBar, justSent } from '../components/TypingBar'
 import { useSlideDirection, useSwipeBetween, useTapeBounce } from '../components/Slide'
 import { PersonLink } from './Person'
 import { CommentCount, Comments, useCommentCounts } from '../components/Comments'
@@ -263,7 +263,8 @@ export function ShoppingScreen() {
           tabIndex={adding ? -1 : undefined}
           onPointerDown={(e) => e.preventDefault()}
           onClick={() => {
-            if (adding) return
+            // Not the tap that just sent an item (the + sits right under Send).
+            if (adding || justSent()) return
             // Focus right away, inside the tap, so the phone opens the keyboard; the bar slides out a moment later,
             // once the field is back in place, so the two moves don't collide.
             focusField(inputRef.current)

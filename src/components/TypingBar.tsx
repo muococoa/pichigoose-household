@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, type FormEvent, type KeyboardEvent, type ReactNode } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SendIcon } from './Icons'
 import { StickerButton } from './Stickers'
@@ -9,6 +9,10 @@ import { StickerButton } from './Stickers'
 // here fixes all of them.
 
 const touchScreen = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches
+
+/** When something was last sent: the same tap mustn't also press whatever sits under the bar once it's gone. */
+let sentAt = 0
+export const justSent = () => Date.now() - sentAt < 600
 
 type Props = {
   value: string
@@ -32,6 +36,10 @@ type Props = {
 export function TypingBar({ value, onChange, onSend, placeholder, onSticker, multiline, above, fieldRef, className = '', onBlur, closed }: Props) {
   const { t } = useTranslation()
   const own = useRef<HTMLTextAreaElement & HTMLInputElement>(null)
+  // While you're typing (and for a moment after the field lets go, so a tap on Send still lands on it).
+  const [typing, setTyping] = useState(false)
+  const settle = useRef<number | undefined>(undefined)
+  useEffect(() => () => window.clearTimeout(settle.current), [])
   const setRef = (el: (HTMLTextAreaElement & HTMLInputElement) | null) => {
     own.current = el
     if (fieldRef) fieldRef.current = el
@@ -49,6 +57,7 @@ export function TypingBar({ value, onChange, onSend, placeholder, onSticker, mul
     e?.preventDefault()
     const text = value.trim()
     if (!text) return
+    sentAt = Date.now()
     onSend(text)
     // Sending closes the keyboard.
     own.current?.blur()
@@ -70,10 +79,17 @@ export function TypingBar({ value, onChange, onSend, placeholder, onSticker, mul
     value,
     tabIndex: closed ? -1 : undefined,
     'aria-hidden': closed || undefined,
-    onBlur,
+    onFocus: () => {
+      window.clearTimeout(settle.current)
+      setTyping(true)
+    },
+    onBlur: () => {
+      settle.current = window.setTimeout(() => setTyping(false), 250)
+      onBlur?.()
+    },
   }
   return (
-    <form className={`typing-bar${above ? ' quoting' : ''} ${className}`} onSubmit={send}>
+    <form className={`typing-bar${above ? ' quoting' : ''}${typing ? ' typing' : ''} ${className}`} onSubmit={send}>
       {above}
       {multiline ? (
         <textarea {...field} rows={1} onChange={(e) => onChange(e.target.value)} onKeyDown={key} />
@@ -88,7 +104,23 @@ export function TypingBar({ value, onChange, onSend, placeholder, onSticker, mul
           }}
         />
       )}
-      <button type="submit" className="send-btn" aria-label={t('messages.send')} disabled={!value.trim()} tabIndex={closed ? -1 : undefined} onPointerDown={(e) => e.preventDefault()}>
+      {/* Sends the moment your finger touches it, before the keyboard or the bar can move (otherwise the field let
+          go first, the bar settled, and the tap missed). Enter and the keyboard's Send key go through the form. */}
+      <button
+        type="button"
+        className="send-btn"
+        aria-label={t('messages.send')}
+        disabled={!value.trim()}
+        tabIndex={closed ? -1 : undefined}
+        onPointerDown={(e) => {
+          e.preventDefault()
+          send()
+        }}
+        onClick={(e) => {
+          // A click without a pointer (a keyboard's Enter or Space on the button).
+          if (e.detail === 0) send()
+        }}
+      >
         <SendIcon />
       </button>
     </form>
