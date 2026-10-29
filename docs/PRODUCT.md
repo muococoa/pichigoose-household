@@ -165,3 +165,21 @@ Each phase ends with Nora testing it on her phone.
 ## Ideas parked for later [Nora, 29 Oct]
 - ~~**The "Looks like" picker**~~ built 29 Oct: one row of recommended drawings plus "All", which opens a drawer (Recommended, a thin line, then every drawing).
 
+
+### Trophies, recaps and rewards [Danko and Nora, 29 Oct]
+Later, after the bugs are fixed and the app is in production. Plan it first, then build and test it locally; nothing goes to main until it's approved.
+
+- **Trophies for the chores people really do:** most dishes washed, laundry washed, laundry dried, grocery runs, and so on. Each trophy gets a unique, funny name, ideally rhyming (like "Magic Dishwasher"), and a little drawing in our scrapbook style.
+- **Ranks inside one trophy:** gold, silver and bronze for the same chore, so the person who came second still gets something. Trophies can level up over time (Discord's Nitro badges are the reference).
+- **Monthly recap:** each month, a ranked list of who did what, like "employee of the month". It's most fun in bigger households.
+- **Year in the home:** at the end of the year, a recap of every month and every trophy, to look back on. Old trophies stay in a case on your profile (nonogram.com's badge collection is the reference).
+- **Points and rewards for children:** in households with kids, a to-do can be worth points, and points can be swapped for rewards the parents set up.
+
+Open questions for when we plan it:
+1. How does the app know a to-do is "dishes" or "laundry"? A fixed list of chore types to pick from, tags you make yourself, or guessing from the title?
+2. Can someone opt out of rankings, and how does it feel in a household of two (always first or last)?
+3. Children: do they get their own accounts and phones, or do parents tick things off for them? Who approves points, and who adds the rewards?
+4. Where do trophies live: on the profile, in the hub, a Home note, or all three?
+5. What to name each trophy (Nora writes these).
+
+What it builds on: to-dos already record who finished them and when (`done_by`, `done_at`), so past months can be counted. It will need a chore type on to-dos, a table for trophies won each month, and for children, points and rewards tables. Ask before changing the database.
