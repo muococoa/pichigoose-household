@@ -152,9 +152,10 @@ export const CONTAINERS_FOR: Record<Place, Container[]> = {
 /** The gel pen color for how full something is: green when there's plenty, orange when it's going,
  *  the theme color when it's running low. */
 export function gelColor(level: number, lowAt: number) {
-  if (level <= lowAt) return 'var(--hero)'
-  if (level <= 50) return '#F2A03D'
-  return '#6E9152'
+  // Colors from Nora's own drawings: the frog's green, the goldfish's orange, the bow's coral.
+  if (level <= lowAt) return '#F4827A'
+  if (level <= 50) return '#FA9A55'
+  return '#8DAA5C'
 }
 
 /** Where the inside of a container starts and ends, as a share of its height (for dragging the level). */
@@ -202,16 +203,30 @@ export function ContainerDrawing({ kind, level, lowAt, height = 76, title }: { k
         <clipPath id={`in-${id}`}>
           <path d={s.inside} />
         </clipPath>
-        {/* Gel pen going back and forth, a little slanted, like coloring something in by hand. */}
-        <pattern id={`gel-${id}`} width="64" height="4.6" patternUnits="userSpaceOnUse" patternTransform="rotate(-9)">
-          <path d="M-4 3.6L2 .8L8 3.6L14 .8L20 3.6L26 .8L32 3.6L38 .8L44 3.6L50 .8L56 3.6L62 .8L68 3.6" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" opacity=".82" />
-        </pattern>
+        {/* Colored pencil, like Nora's drawings: solid color with fine paper grain showing through in
+            slanted strokes. The grain is noise, stretched along the stroke direction. */}
+        <clipPath id={`lvl-${id}`}>
+          <rect x="0" y={y} width="64" height={84 - y} />
+        </clipPath>
+        <filter id={`pencil-${id}`} x="0" y="0" width="1" height="1" colorInterpolationFilters="sRGB">
+          <feTurbulence type="fractalNoise" baseFrequency="1.6 .28" numOctaves="3" seed="7" result="grain" />
+          <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.2 1.9" result="grainMask" />
+          {/* Big soft patches, lighter and darker, like a watercolor wash under the pencil. */}
+          <feTurbulence type="fractalNoise" baseFrequency=".05" numOctaves="2" seed="3" result="wash" />
+          <feColorMatrix in="wash" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1.6 .05" result="washMask" />
+          <feComposite in="grainMask" in2="washMask" operator="arithmetic" k1="1" result="mask" />
+          <feComposite in="SourceGraphic" in2="mask" operator="in" />
+        </filter>
       </defs>
       {level > 0 && (
         <g clipPath={`url(#in-${id})`}>
-          <rect x="0" y={y} width="64" height={84 - y} fill={`url(#gel-${id})`} />
-          {/* The top of what's left, drawn a little wobbly. */}
-          <path d={`M4 ${y + 0.8}Q18 ${y - 0.8} 32 ${y + 0.6}T60 ${y + 0.2}`} fill="none" stroke={color} strokeWidth="2.6" strokeLinecap="round" />
+          {/* A soft wash first, then the pencil on top of it, laid down at a slant. */}
+          <rect x="0" y={y} width="64" height={84 - y} fill={color} opacity=".55" />
+          <g clipPath={`url(#lvl-${id})`}>
+            <g transform="rotate(-28 32 50)">
+              <rect x="-50" y="-40" width="170" height="170" fill={color} filter={`url(#pencil-${id})`} />
+            </g>
+          </g>
         </g>
       )}
       {/* A little shine on the glass. */}
@@ -227,11 +242,11 @@ export function ContainerDrawing({ kind, level, lowAt, height = 76, title }: { k
 export function Shelf({ height, children }: { height: number; children: ReactNode }) {
   return (
     <div className="shelf" style={{ ['--thing' as string]: `${height}px` }}>
-      {/* The board, drawn with a pen: a wobbly top edge, a thinner bottom edge and two brackets. */}
+      {/* The board: a straight top edge for things to stand on, and a looser pen line under it. */}
       <svg className="shelf-board" viewBox="0 0 300 16" preserveAspectRatio="none" aria-hidden>
-        <path d="M2 3.5Q60 2 120 3.6T240 3T298 3.8" fill="none" stroke="#2E2638" strokeWidth="2.4" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-        <path d="M4 9.5Q80 10.4 150 9.6T296 9.8" fill="none" stroke="#2E2638" strokeWidth="1.5" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-        <path d="M2 3.5V9.5M298 3.8V9.8" fill="none" stroke="#2E2638" strokeWidth="1.5" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+        <path d="M2 2H298" fill="none" stroke="#2E2638" strokeWidth="2.4" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+        <path d="M4 10Q40 7.5 80 10.2T160 9.6T240 10.4T296 9.4" fill="none" stroke="#2E2638" strokeWidth="1.6" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+        <path d="M2 2V9.6M298 2V9.4" fill="none" stroke="#2E2638" strokeWidth="1.6" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
       </svg>
       <div className="shelf-row">{children}</div>
     </div>

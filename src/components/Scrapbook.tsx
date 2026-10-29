@@ -211,7 +211,19 @@ export function PichiStamp({ width = 58, height = 70, rotate = -5 }: { width?: n
   return (
     <div className="postage" style={{ transform: `rotate(${rotate}deg)` }}>
       <div className="in">
-        <img src={pichi} alt="Pichi" style={{ width, height, objectFit: 'cover' }} />
+        {/* Her head and scarf, zoomed in from the painting, so you see her face, not her whole body. */}
+        <div
+          role="img"
+          aria-label="Pichi"
+          style={{
+            width,
+            height,
+            backgroundImage: `url(${pichi})`,
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: `${width * 1.6}px auto`,
+            backgroundPosition: `${width * 0.5 - width * 1.6 * 0.57}px ${-height * 0.02}px`,
+          }}
+        />
       </div>
     </div>
   )

@@ -346,7 +346,8 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
    The pantry: drawn shelves with jars, bottles and boxes standing on them, a paper label under each.
    --------------------------------------------------------------------------- */
 .shelf { position: relative; margin-bottom: 18px }
-.shelf-board { position: absolute; left: -6px; right: -6px; top: calc(var(--thing) - 3px); width: calc(100% + 12px); height: 14px; pointer-events: none }
+/* The drawings end 4/84 above their own bottom; the board's top edge sits exactly on their bottom line. */
+.shelf-board { position: absolute; left: -6px; right: -6px; top: calc(var(--thing) * 80 / 84 - 1px); width: calc(100% + 12px); height: 14px; pointer-events: none }
 .shelf-row { display: flex; gap: 8px; align-items: flex-start }
 .shelf-thing { display: flex; flex: none; flex-direction: column; align-items: center; min-width: 0; background: none; border: 0; padding: 0; color: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent }
 .shelf-thing .thing { height: var(--thing); display: flex; align-items: flex-end; justify-content: center; transition: transform .25s var(--ease-out) }
