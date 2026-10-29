@@ -221,6 +221,40 @@ textarea.input { height: auto; min-height: 40px; padding: 8px 15px; resize: none
 .add-bar.open .add-fab { opacity: 0; transform: rotate(86deg) scale(.5); pointer-events: none }
 /* The round + button floats above the menu like Meta's button in WhatsApp (Nora, 29 Oct): smaller, its right
    edge lined up with the menu's, a little above it. */
+/* The one toggle (components/Toggle.tsx): a round pill, a round thumb that springs across and squashes as it lands.
+   Concentric: the thumb's radius is the pill's minus its 3px padding, both fully round. Border like the inputs. */
+.toggle {
+  --pad: 3px; --w: 46px;
+  position: relative; display: inline-grid; grid-template-columns: repeat(var(--n), var(--w)); flex: none;
+  padding: var(--pad); border-radius: 999px; background: #FFFFFF;
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--hero) 24%, #FFFFFF);
+}
+.toggle button {
+  position: relative; z-index: 1; height: 34px; padding: 0; border-radius: 999px; text-align: center; display: grid; place-items: center;
+  font-weight: 800; font-size: 14px; color: #463D50; transition: color .3s ease, scale .2s ease;
+}
+.toggle button[aria-checked="true"] { color: #FFFFFF }
+.toggle button:active { scale: .92 }
+.toggle-thumb {
+  position: absolute; top: var(--pad); left: var(--pad); width: var(--w); height: 34px; border-radius: 999px;
+  background: var(--hero-dark);
+  translate: calc(var(--at) * var(--w)) 0;
+  transition: translate .5s cubic-bezier(.34, 1.56, .64, 1), background .3s ease;
+}
+.toggle-thumb.s0 { animation: thumb-squash-0 .5s cubic-bezier(.34, 1.56, .64, 1) }
+.toggle-thumb.s1 { animation: thumb-squash-1 .5s cubic-bezier(.34, 1.56, .64, 1) }
+@keyframes thumb-squash-0 { 0% { scale: 1 } 30% { scale: 1.18 .82 } 60% { scale: .94 1.06 } 100% { scale: 1 } }
+@keyframes thumb-squash-1 { 0% { scale: 1 } 30% { scale: 1.18 .82 } 60% { scale: .94 1.06 } 100% { scale: 1 } }
+@media (prefers-reduced-motion: reduce) { .toggle-thumb { transition: none; animation: none } }
+
+/* Changing the theme (lib/themeDrop.ts): a drop of the new color falls, ripples spread, then the color floods in. */
+.theme-drop { position: fixed; inset: 0; z-index: 9999; pointer-events: none; view-transition-name: theme-drop }
+.theme-drop i { position: absolute; display: block; border-radius: 50% }
+::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal }
+::view-transition-old(theme-drop) { display: none }
+::view-transition-new(theme-drop) { animation: none }
+::view-transition-group(theme-drop) { z-index: 2 }
+
 /* Desktop-only pieces (the desktop sheet turns them back on). */
 .desktop-only:not(.desk *) { display: none }
 .stk.round.fab { position: fixed; right: calc(var(--edge) + 14px); bottom: calc(var(--tabbar) + 12px); z-index: 6; width: 50px; height: 50px }

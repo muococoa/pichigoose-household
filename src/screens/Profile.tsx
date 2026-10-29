@@ -11,7 +11,8 @@ import { Hand } from '../components/Scrapbook'
 import { BackIcon } from '../components/Icons'
 import { LangSwitch } from '../components/LangSwitch'
 import { useDesktop } from '../lib/desktop'
-import { THEMES, applyTheme } from '../lib/theme'
+import { THEMES } from '../lib/theme'
+import { dropTheme } from '../lib/themeDrop'
 import { useBack, useBackInApp } from '../lib/back'
 
 type Step = 'character' | 'color' | 'extra'
@@ -393,9 +394,9 @@ export function SettingsScreen() {
                     aria-checked={on}
                     aria-label={t(`settings.themes.${th.id}`)}
                     title={t(`settings.themes.${th.id}`)}
-                    onClick={() => {
-                      applyTheme(th.id)
-                      db.update('profiles', me, { theme: th.id })
+                    onClick={(e) => {
+                      if (on) return
+                      dropTheme(th.id, e.currentTarget, () => db.update('profiles', me, { theme: th.id }))
                     }}
                     style={{
                       width: 30,
@@ -403,6 +404,7 @@ export function SettingsScreen() {
                       flex: 'none',
                       borderRadius: '50%',
                       background: th.hex,
+                      transition: 'box-shadow .35s ease',
                       boxShadow: on ? '0 0 0 3px #FFFFFF, 0 0 0 5px #1E1A30' : '0 0 0 2px #FFFFFF, 1px 2px 2px 1px rgba(30,26,48,.15)',
                     }}
                   />
