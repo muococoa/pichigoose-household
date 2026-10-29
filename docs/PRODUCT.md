@@ -169,7 +169,7 @@ Each phase ends with Nora testing it on her phone.
 ### Trophies, recaps and rewards [Danko and Nora, 29 Oct]
 Later, after the bugs are fixed and the app is in production. Plan it first, then build and test it locally; nothing goes to main until it's approved.
 
-- **Trophies for the chores people really do:** most dishes washed, laundry washed, laundry dried, grocery runs, and so on. Each trophy gets a unique, funny name, ideally rhyming (like "Magic Dishwasher"), and a little drawing in our scrapbook style.
+- **Trophies for the chores people really do:** most dishes washed, laundry washed, laundry dried, grocery runs, and so on. Each trophy gets a unique, funny, easy-to-remember name (no need to rhyme), and a little drawing in our scrapbook style.
 - **Ranks inside one trophy:** gold, silver and bronze for the same chore, so the person who came second still gets something. Trophies can level up over time (Discord's Nitro badges are the reference).
 - **Monthly recap:** each month, a ranked list of who did what, like "employee of the month". It's most fun in bigger households.
 - **Year in the home:** at the end of the year, a recap of every month and every trophy, to look back on. Old trophies stay in a case on your profile (nonogram.com's badge collection is the reference).
@@ -181,7 +181,7 @@ Decided (Danko and Nora, 29 Oct):
 - **Children:** they get their own accounts. Children without a phone (a parent ticks for them) is shelved for later.
 - **Points:** the app gives them automatically when a to-do is done. No approving.
 - **Where trophies live:** on the profile. Only the big ones go in the "Our home" hub, like "number one dishwasher three months in a row", not every monthly win.
-- **Names:** placeholders for now. Claude suggests, Nora improves. Funny, easy to remember, ideally rhyming.
+- **Names:** placeholders for now. Claude suggests, Nora improves. Funny and easy to remember; they don't have to rhyme.
 
 Still open:
 1. **Chore types.** Claude's recommendation: a short fixed list (dishes, laundry, hanging laundry, ironing, groceries, trash, cleaning, cooking, plants), and Pichi guesses the type from the to-do's title in English and Serbian ("sudovi", "veš", "prodavnica"...). You can change her guess, or leave a to-do without a type.
@@ -192,15 +192,15 @@ To brainstorm before building (Danko's and Nora's thoughts, 29 Oct):
 - **What are points for?** Glory only, or something real? One idea: coupons you give to people in your household ("breakfast in bed", "one chore skipped"). Needs thinking.
 - **Money in trophies** ("who spent the most on groceries"): careful. Money is personal and hidden when someone turns money tracking off, so it probably never belongs in trophies.
 
-Placeholder trophy names (Claude's, for Nora to improve):
-- Dishes: **Dish Whiz** · three months in a row: **Captain Clean Plate**
-- Laundry: **Sock Whisperer** · three months: **Spin Cycle Legend**
-- Hanging laundry: **Peg Legend**
-- Ironing: **Wrinkle Wrangler**
-- Groceries: **Cart Smart** · three months: **Aisle Style Icon**
-- Trash: **Trash Panda**
-- Cleaning: **Dust Buster** · mopping: **Mop Top**
-- Cooking: **Pan Fan**
-- Plants: **Leaf Chief**
+Placeholder trophy names (Claude's, for Nora to improve; no rhymes, just warm, funny and easy to remember):
+- Dishes: **Keeper of the Sink** · three months in a row: **Sink Royalty**
+- Laundry: **Laundry Wizard** · three months: **Grand Laundry Wizard**
+- Hanging laundry: **Master of Pegs**
+- Ironing: **Smooth Operator**
+- Groceries: **Fridge Filler** · three months: **Hero of the Fridge**
+- Trash: **Bin Hero**
+- Cleaning: **Dust Slayer**
+- Cooking: **Head Chef**
+- Plants: **Plant Parent**
 
 What it builds on: to-dos already record who finished them and when (`done_by`, `done_at`), so past months can be counted. It will need a chore type on to-dos, a table for trophies won each month, and for children, points and rewards tables. Ask before changing the database.
