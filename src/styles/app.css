@@ -286,7 +286,8 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
    Messages, like WhatsApp: a list of chats, then speech bubbles. Yours on the right in the theme color,
    theirs on the left in white, with a little curled tail on the last bubble of each run.
    --------------------------------------------------------------------------- */
-.group-avatar { display: inline-grid; place-items: center; flex: none; border-radius: 50%; background: #D6C8E6; color: #1E1A30; box-shadow: 0 0 0 2px #FFFFFF, 1px 2px 2px 1px rgba(30, 26, 48, .15) }
+/* The household's house avatar takes the theme's pale tint, like the desk. */
+.group-avatar { display: inline-grid; place-items: center; flex: none; border-radius: 50%; background: var(--desk); color: #1E1A30; box-shadow: 0 0 0 2px #FFFFFF, 1px 2px 2px 1px rgba(30, 26, 48, .15) }
 .chat-list { display: flex; flex-direction: column; gap: 2px }
 .chat-row { display: flex; gap: 12px; align-items: center; padding: 10px 10px; margin: 0 -10px; border-radius: 12px 16px 14px 12px; transition: background .15s }
 .chat-row:active, .chat-row.on { background: rgba(255, 255, 255, .85); box-shadow: 0 0 0 1px rgba(30, 26, 48, .06), 1px 2px 0 rgba(30, 26, 48, .06) }
