@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
@@ -35,6 +35,7 @@ export function PersonScreen() {
   const notes = useNotes(hid)
   const comments = useComments(hid)
 
+  const [showStats, setShowStats] = useState(false)
   // What they've done in this household, counted from what's on the lists.
   const count = <T,>(rows: T[], test: (r: T) => boolean) => rows.filter(test).length
   const stats = [
@@ -75,19 +76,26 @@ export function PersonScreen() {
                 {t('person.message')}
               </Link>
             )}
-            <div className="person-stats">
-              {stats.map((x, i) => (
-                <div key={x.key} className={`note ${x.note}`} style={{ transform: `rotate(${[-1.5, 1.2, 1, -1, -0.8, 1.4][i]}deg)` }}>
-                  <Hand size={40} lineHeight={42}>
-                    {String(x.n)}
-                  </Hand>
-                  <div className="cap" style={{ fontSize: 13, fontWeight: 700, marginTop: 2 }}>
-                    {t(`person.${x.key}`)}
-                  </div>
-                </div>
-              ))}
-            </div>
             <WishList ownerId={person.id} ownerName={person.display_name} />
+            {/* The numbers are parked under a button at the bottom for now (Nora, 29 Oct): interesting once in a while,
+                not every day. The wish list comes first. */}
+            <button type="button" className="stk sec sm" aria-expanded={showStats} style={{ marginTop: 34, transform: 'rotate(-1deg)' }} onClick={() => setShowStats((v) => !v)}>
+              {t('person.data')}
+            </button>
+            {showStats && (
+              <div className="person-stats">
+                {stats.map((x, i) => (
+                  <div key={x.key} className={`note ${x.note}`} style={{ transform: `rotate(${[-1.5, 1.2, 1, -1, -0.8, 1.4][i]}deg)` }}>
+                    <Hand size={40} lineHeight={42}>
+                      {String(x.n)}
+                    </Hand>
+                    <div className="cap" style={{ fontSize: 13, fontWeight: 700, marginTop: 2 }}>
+                      {t(`person.${x.key}`)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </>
         )}
       </div>
