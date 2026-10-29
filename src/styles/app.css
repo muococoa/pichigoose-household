@@ -428,6 +428,15 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 .composer-quote b { display: block; font-weight: 800; font-size: 12px; line-height: 16px; color: #6A4F9C }
 .composer-quote-text { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
 .composer-quote button { flex: none; display: flex; padding: 6px; color: #857A8C; border-radius: 50% }
+/* Lists and rooms: the soft highlight slides to the chosen washi tab (springy, like the menu's), and the page
+   slides in from the side you're going to. */
+.tab-slide { position: absolute; left: 0; top: 0; z-index: 0; pointer-events: none; transition: transform .5s cubic-bezier(.34, 1.3, .5, 1), width .5s cubic-bezier(.34, 1.3, .5, 1), height .3s ease }
+.tab-slide span { display: block; width: 100%; height: 100%; border-radius: 14px; background: color-mix(in srgb, var(--hero) 13%, rgba(255, 255, 255, .5)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--hero) 10%, transparent) }
+.slide-next { animation: page-from-right .38s cubic-bezier(.16, 1, .3, 1) }
+.slide-prev { animation: page-from-left .38s cubic-bezier(.16, 1, .3, 1) }
+@keyframes page-from-right { from { transform: translateX(36px); opacity: 0 } }
+@keyframes page-from-left { from { transform: translateX(-36px); opacity: 0 } }
+@media (prefers-reduced-motion: reduce) { .tab-slide { transition: none } .slide-next, .slide-prev { animation: none } }
 .day-stamp { display: flex; justify-content: center; margin: 18px 0 4px }
 .say-hi { text-align: center; color: #63586B; font-size: 15px; font-weight: 600; margin: 48px 0 }
 .composer {

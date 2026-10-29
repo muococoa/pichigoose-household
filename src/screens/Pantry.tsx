@@ -11,6 +11,7 @@ import { BackIcon, BroomIcon, PlusIcon } from '../components/Icons'
 import { ContainerDrawing, containersFor, guessContainer, insideSpan } from '../components/Containers'
 import { GroupDrawing, ShelfRows, groupKey, groupThings, useShelfWidth, type Group } from '../components/Shelves'
 import { useDesktop } from '../lib/desktop'
+import { TabHighlight, useSlideDirection, useSwipeBetween } from '../components/Slide'
 import { Chip } from './Todos'
 import { useBack } from '../lib/back'
 import { autoFocusField } from '../lib/keyboard'
@@ -137,6 +138,14 @@ export function PantryScreen() {
   )
   const height = desktop ? 96 : 80
   const pickRoom = (id: string) => setParams({ room: id }, { replace: true })
+  // Swipe the page left or right for the next or previous room (phone).
+  const roomsRow = useRef<HTMLDivElement>(null)
+  const roomIndex = room ? rooms.rows.findIndex((r) => r.id === room.id) : -1
+  const slide = useSlideDirection(roomIndex)
+  useSwipeBetween(
+    desktop || roomIndex <= 0 ? null : () => pickRoom(rooms.rows[roomIndex - 1].id),
+    desktop || roomIndex < 0 || roomIndex >= rooms.rows.length - 1 ? null : () => pickRoom(rooms.rows[roomIndex + 1].id),
+  )
 
   function saveRoom() {
     if (!roomEdit || !hid || !roomEdit.name.trim()) return
@@ -179,7 +188,8 @@ export function PantryScreen() {
           )}
         </div>
         {/* The rooms as washi-tape tabs, like the shopping lists. Tap the open one to rename it. */}
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', rowGap: 12 }}>
+        <div ref={roomsRow} style={{ position: 'relative', display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', rowGap: 12 }}>
+          <TabHighlight row={roomsRow} current={room?.id ?? null} />
           {rooms.rows.map((r, i) => {
             const on = r.id === room?.id
             return (
@@ -217,7 +227,7 @@ export function PantryScreen() {
         </div>
       </div>
 
-      <div ref={ref} style={{ padding: desktop ? '30px 22px 32px 40px' : '26px 26px 0 44px', maxWidth: desktop ? 900 : undefined }}>
+      <div ref={ref} key={room?.id} className={slide} style={{ padding: desktop ? '30px 22px 32px 40px' : '26px 26px 0 44px', maxWidth: desktop ? 900 : undefined }}>
         {/* Each storage spot in the room: its handwritten name, then its own shelves. */}
         {roomSpots.map((spot) => {
           const here = groupThings(things.filter((p) => where(p) === spot.id))

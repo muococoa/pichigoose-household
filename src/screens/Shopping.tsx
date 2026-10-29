@@ -14,6 +14,7 @@ import { DndContext, MouseSensor, TouchSensor, closestCenter, useSensor, useSens
 import { SortableContext, arrayMove, horizontalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useDesktop } from '../lib/desktop'
+import { TabHighlight, useSlideDirection, useSwipeBetween } from '../components/Slide'
 import { PersonLink } from './Person'
 import { CommentCount, Comments, useCommentCounts } from '../components/Comments'
 import { groupKey, groupLow } from '../components/Shelves'
@@ -90,6 +91,18 @@ export function ShoppingScreen() {
     return groupLow(pantry.rows.filter((p) => groupKey(p) === groupKey(thing)))
   }
   const commentsOn = useCommentCounts()
+
+  // Swipe the page left or right for the next or previous list (phone).
+  const tabsRow = useRef<HTMLDivElement>(null)
+  const listIndex = list ? sortedLists.indexOf(list) : -1
+  const slide = useSlideDirection(listIndex)
+  const goTo = (i: number) => {
+    const l = sortedLists[i]
+    if (!l) return
+    setPicked(l.id)
+    if (hid) saveList(hid, l.id)
+  }
+  useSwipeBetween(desktop || listIndex <= 0 ? null : () => goTo(listIndex - 1), desktop || listIndex < 0 || listIndex >= sortedLists.length - 1 ? null : () => goTo(listIndex + 1))
 
   function pick(l: List) {
     if (list?.id === l.id) {
@@ -265,7 +278,8 @@ export function ShoppingScreen() {
             <ShareIcon />
           </button>
         </div>
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', rowGap: 12 }}>
+        <div ref={tabsRow} style={{ position: 'relative', display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', rowGap: 12 }}>
+          <TabHighlight row={tabsRow} current={list?.id ?? null} />
           <ListTabs lists={sortedLists} current={list?.id ?? null} onPick={pick} onReorder={reorderLists} />
           <button
             type="button"
@@ -317,7 +331,7 @@ export function ShoppingScreen() {
           </div>
         </div>
       ) : (
-      <div style={{ padding: '26px 22px 0 40px' }}>
+      <div key={list?.id} className={slide} style={{ padding: '26px 22px 0 40px' }}>
         {toBuy.map((x) => row(x, false))}
         {items.loaded && !toBuy.length && (
           <EmptyState pose="stand-left" color="#F8E6A8" zoom={0.95}>
