@@ -170,14 +170,14 @@ Each phase ends with Nora testing it on her phone.
 Later, after the bugs are fixed and the app is in production. Plan it first, then build and test it locally; nothing goes to main until it's approved.
 
 - **Trophies for the chores people really do:** most dishes washed, laundry washed, laundry dried, grocery runs, and so on. Each trophy gets a unique, funny, easy-to-remember name (no need to rhyme), and a little drawing in our scrapbook style.
-- **Ranks inside one trophy:** gold, silver and bronze for the same chore, so the person who came second still gets something. Trophies can level up over time (Discord's Nitro badges are the reference).
+- **One trophy per chore (Nora, 29 Oct):** no gold, silver or bronze. Each month the person who did the most of a chore gets its trophy.
 - **Monthly recap:** each month, a ranked list of who did what, like "employee of the month". It's most fun in bigger households.
 - **Year in the home:** at the end of the year, a recap of every month and every trophy, to look back on. Old trophies stay in a case on your profile (nonogram.com's badge collection is the reference).
 - **Points and rewards for children:** in households with kids, a to-do can be worth points, and points can be swapped for rewards the parents set up.
 
 Decided (Danko and Nora, 29 Oct):
 - **Rankings:** no opting out per person; these are people who love each other. A household can turn trophies off altogether, in its settings.
-- **Two people:** simpler, with no gold and silver. Just "who did the most dishes this month", "who did the most grocery shopping this month", and so on.
+- **Two people:** works the same way, since there's one trophy per chore anyway: "who did the most dishes this month", "who did the most grocery shopping this month", and so on.
 - **Children:** they get their own accounts. Children without a phone (a parent ticks for them) is shelved for later.
 - **Points:** the app gives them automatically when a to-do is done. No approving.
 - **Where trophies live:** on the profile. Only the big ones go in the "Our home" hub, like "number one dishwasher three months in a row", not every monthly win.
@@ -187,7 +187,7 @@ Still open:
 1. **Chore types.** Claude's recommendation: a short fixed list (dishes, laundry, hanging laundry, ironing, groceries, trash, cleaning, cooking, plants), and Pichi guesses the type from the to-do's title in English and Serbian ("sudovi", "veš", "prodavnica"...). You can change her guess, or leave a to-do without a type.
 
 To brainstorm before building (Danko's and Nora's thoughts, 29 Oct):
-- **Photo proof (Danko):** take a photo to show you did a chore, as another layer of trust. Nora's worry: proof feels like a competitive game (gamers, MOBA ranked play), not a family. Claude's suggestion: never required. A photo is an optional "look what I did" moment, not evidence.
+- **Photo proof (Danko):** take a photo to show you did a chore. Decided: required in God mode only, where the household chose the full competition. Everywhere else there are no photos as proof.
 - **Is it too competitive?** Most homes (parents and children) aren't. It must stay optional. The example to design for: a 17-year-old talks her hesitant dad into the app for planning, and it mustn't turn into grinding and scorekeeping. Claude's suggestion: trophies are **off by default**, and a household turns them on deliberately in its settings. Maybe two levels: **Gentle** (a warm monthly "thank you" recap with no ranks) and **Playful** (trophies and ranks).
 - **What are points for?** Glory only, or something real? One idea: coupons you give to people in your household ("breakfast in bed", "one chore skipped"). Needs thinking.
 - **Money in trophies** ("who spent the most on groceries"): careful. Money is personal and hidden when someone turns money tracking off, so it probably never belongs in trophies.
@@ -196,10 +196,12 @@ To brainstorm before building (Danko's and Nora's thoughts, 29 Oct):
   0. **Off** (the default)
   1. **Tutorial:** tiny icons with little labels next to people's names, no numbers.
   2. **Casual:** a warm monthly recap, "who did the most dishes this month", no ranks.
-  3. **Normal:** trophies with gold, silver and bronze, a monthly ranking, the yearly recap.
+  3. **Normal:** one trophy per chore each month, a monthly ranking, the yearly recap.
   4. **Hard:** plus streaks, levels, points and coupons.
-  5. **God mode:** everything, League of Legends style: live leaderboard, rivalries, seasons, optional photos.
+  5. **God mode:** everything, League of Legends style: live leaderboard, rivalries ("GG, well played"), seasons, and photos as proof (required here, and only here).
   Level names are placeholders. Open question: who sets the level? Claude's suggestion: everyone picks their own comfort level and the household plays at the **lowest** one, so the hesitant dad is never pulled into God mode.
+
+Badge art needed (15 pieces, prompt drafted 29 Oct): 9 chore emblems (dishes, laundry, hanging laundry, ironing, groceries, trash, cleaning, cooking, plants), one trophy frame the emblem sits in, a big rosette (number one three months in a row), a year trophy, a 7-day and a 30-day streak, and a rivalry badge (two crossed wooden spoons). No text in the art, so names stay translatable. No geese: Pichi is only ever Nora's painting.
 
 Placeholder trophy names (Claude's, for Nora to improve; no rhymes, just warm, funny and easy to remember):
 - Dishes: **Keeper of the Sink** · three months in a row: **Sink Royalty**
