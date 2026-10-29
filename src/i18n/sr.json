@@ -302,7 +302,11 @@
       "pichigoose": "Roze",
       "blue": "Plava",
       "green": "Zelena",
-      "orange": "Narandžasta"
+      "orange": "Narandžasta",
+      "purple": "Ljubičasta",
+      "yellow": "Žuta",
+      "brown": "Braon",
+      "black": "Crna"
     }
   },
   "invite": {

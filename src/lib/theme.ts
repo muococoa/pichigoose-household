@@ -8,6 +8,10 @@ export const THEMES = [
   { id: 'blue', hex: '#3B6FA0', desk: '#D2DEEA' },
   { id: 'green', hex: '#5E8A45', desk: '#D6E1C8' },
   { id: 'orange', hex: '#D0643B', desk: '#F2DACB' },
+  { id: 'purple', hex: '#8A4FA3', desk: '#E6D7EC' },
+  { id: 'yellow', hex: '#B27B12', desk: '#F5EAC6' },
+  { id: 'brown', hex: '#8B5E3C', desk: '#EADCCB' },
+  { id: 'black', hex: '#3A3540', desk: '#E3E0E2' },
 ] as const
 
 const KEY = 'pichigoose.theme'

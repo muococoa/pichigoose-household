@@ -297,7 +297,11 @@
       "pichigoose": "Pink",
       "blue": "Blue",
       "green": "Green",
-      "orange": "Orange"
+      "orange": "Orange",
+      "purple": "Purple",
+      "yellow": "Yellow",
+      "brown": "Brown",
+      "black": "Black"
     }
   },
   "invite": {

@@ -88,7 +88,7 @@ These stay **clean on purpose,** so anything you tap or type into reads right aw
 - **Icons:** simple line icons, 26 px, 2 px stroke, round caps.
 - **Tab bar:** floating [Nora]: a strip of our paper with rounded ends, 62 px tall, 14 px in from the sides and a little above the bottom edge, with a soft shadow; the lists scroll behind it. Icons are 34 px outlines with 2 px lines over 10 px labels; the chosen tab's icon is filled with ink (details cut out) and gets the hand-drawn ink circle. The bar bounces softly when you arrive from another tab. The round + button (50 px) floats above it on the right.
 - **Typing bar:** one for every place you type a short text [Nora]: chat, comments and Shopping's add field. The same paper strip with the field, stickers where they fit and the round send button, floating 8 px above the keyboard while you type. Sending closes the keyboard.
-- **Phone frame** [Nora]: the app is one sheet of paper on the desk, like on a computer. The desk is a pale tint of the theme (pale blush `#EFD3D8` for Pichigoose's pink, `#D2DEEA` blue, `#D6E1C8` green, `#F2DACB` orange), on desktop too, and the phone's own bars take it. It shows behind the status bar and in an 8 px frame around the paper (4 px under 375 px), rounded paper corners with a soft shadow, and a pink dotted washi tape holding the paper at the top left. While the keyboard is open the paper gets shorter so its rounded bottom sits just above the keyboard, the menu steps away, and the typing bar sits at the paper's foot. The chat's header floats as a paper strip at the top, like the menu and the typing bar.
+- **Phone frame** [Nora]: the app is one sheet of paper on the desk, like on a computer. The desk is a pale tint of the theme (pale blush `#EFD3D8` for Pichigoose's pink, `#D2DEEA` blue, `#D6E1C8` green, `#F2DACB` orange, `#E6D7EC` purple, `#F5EAC6` yellow, `#EADCCB` brown, `#E3E0E2` black), on desktop too, and the phone's own bars take it. It shows behind the status bar and in an 8 px frame around the paper (4 px under 375 px), rounded paper corners with a soft shadow, and a pink dotted washi tape holding the paper at the top left. While the keyboard is open the paper gets shorter so its rounded bottom sits just above the keyboard, the menu steps away, and the typing bar sits at the paper's foot. The chat's header floats as a paper strip at the top, like the menu and the typing bar.
 - **Inputs:** slim and fully round, like the message field [Nora]: 40 px tall, white, a 1.5 px lilac edge (`#E2D8EC`) that turns the theme color while typing, and placeholder text in `ink.faint`.
 
 ## 11. Motion
@@ -106,7 +106,7 @@ These stay **clean on purpose,** so anything you tap or type into reads right aw
 ## 13. Not yet (don't build)
 
 - Dark mode, which will be dark paper.
-- Themes: done as a theme color in Settings (Pink, Blue, Green, Orange), saved per person in `profiles.theme`. The hero color, its dark, the margin line and the active tab follow it; errors stay pink-red and violet stays the people color in every theme.
+- Themes: done as a theme color in Settings (Pink, Blue, Green, Orange, Purple, Yellow, Brown, Black), saved per person in `profiles.theme`. The hero color, its dark, the margin line and the active tab follow it; errors stay pink-red and violet stays the people color in every theme.
 - Sticky-note colors per person.
 - The pressed state for stickers.
 - Doodles in the margin.

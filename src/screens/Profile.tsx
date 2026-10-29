@@ -375,9 +375,10 @@ export function SettingsScreen() {
           <Hand size={30} lineHeight={32}>
             {t('settings.theme')}
           </Hand>
-          <div className="row" style={{ justifyContent: 'space-between', marginTop: 8, gap: 12, flexWrap: 'wrap' }}>
+          <div style={{ marginTop: 8 }}>
             <span className="body">{t('settings.appColor')}</span>
-            <div role="radiogroup" aria-label={t('settings.appColor')} className="row" style={{ gap: 12 }}>
+            {/* Eight colors on one line. */}
+            <div role="radiogroup" aria-label={t('settings.appColor')} className="row" style={{ justifyContent: 'space-between', gap: 6, marginTop: 10 }}>
               {THEMES.map((th) => {
                 const on = (profile?.theme ?? 'pichigoose') === th.id
                 return (
@@ -393,8 +394,9 @@ export function SettingsScreen() {
                       db.update('profiles', me, { theme: th.id })
                     }}
                     style={{
-                      width: 38,
-                      height: 38,
+                      width: 30,
+                      height: 30,
+                      flex: 'none',
                       borderRadius: '50%',
                       background: th.hex,
                       boxShadow: on ? '0 0 0 3px #FFFFFF, 0 0 0 5px #1E1A30' : '0 0 0 2px #FFFFFF, 1px 2px 2px 1px rgba(30,26,48,.15)',
