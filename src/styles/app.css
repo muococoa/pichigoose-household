@@ -399,8 +399,11 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 /* Stickers: the small button next to Send opens a tray of your pack above the field; a tap sends one.
    A sticker in the chat has no bubble, like WhatsApp: it sits right on the paper, with the time under it. */
 .sticker-box { display: flex; flex: none; align-self: center }
-.sticker-btn { display: grid; place-items: center; width: 40px; height: 40px; margin: 0 -4px; color: #857A8C; border-radius: 50%; transition: color .15s, transform .2s var(--ease-out) }
-.sticker-btn.on { color: var(--hero) }
+/* A round button the same size as Send, in a soft tint of the theme with the icon in the theme color, so the two
+   sit together as a pair next to the field. */
+.sticker-btn { display: grid; place-items: center; width: 40px; height: 40px; color: var(--hero); background: color-mix(in srgb, var(--hero) 13%, #FFFFFF); border-radius: 50%; transition: background .15s, transform .2s var(--ease-out) }
+.sticker-btn svg { width: 24px; height: 24px }
+.sticker-btn.on { background: color-mix(in srgb, var(--hero) 24%, #FFFFFF) }
 .sticker-btn:active { transform: scale(.92) }
 .sticker-tray {
   position: absolute; left: 0; right: 0; bottom: calc(100% + 8px); z-index: 5; display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; padding: 10px;

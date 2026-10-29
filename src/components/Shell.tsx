@@ -142,19 +142,16 @@ export function TabBar() {
   ]
   const index = tabs.findIndex((tab) => tab.to === pathname)
   const barRef = useRef<HTMLElement>(null)
-  // Every screen draws its own menu. When you've come from another tab, the bar gives a soft, springy
-  // bounce once the new page has landed (bouncing while the page still slides in felt like a tug sideways).
+  // Every screen draws its own menu. When you've come from another tab, the bar bounces right as you tap,
+  // together with the ink circle (it used to wait for the page to land, which felt late).
   useLayoutEffect(() => {
     const from = lastTab
     lastTab = index
     if (index < 0 || from < 0 || from === index || reducedMotion()) return
-    const timer = window.setTimeout(() => {
-      barRef.current?.animate(
-        [{ transform: 'scale(1)' }, { transform: 'scale(1.03, 1.05)', offset: 0.3 }, { transform: 'scale(.99, .985)', offset: 0.62 }, { transform: 'scale(1)' }],
-        { duration: 480, easing: 'ease-out' },
-      )
-    }, 220)
-    return () => window.clearTimeout(timer)
+    barRef.current?.animate(
+      [{ transform: 'scale(1)' }, { transform: 'scale(1.03, 1.05)', offset: 0.3 }, { transform: 'scale(.99, .985)', offset: 0.62 }, { transform: 'scale(1)' }],
+      { duration: 480, easing: 'ease-out' },
+    )
   }, [index])
   return (
     <nav className="tabbar" ref={barRef}>
