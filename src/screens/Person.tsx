@@ -6,7 +6,7 @@ import { useComments, useHousehold, useItemsIn, useLists, useNotes, useProfiles,
 import { Screen } from '../components/Shell'
 import { Avatar } from '../components/Avatar'
 import { Hand } from '../components/Scrapbook'
-import { BackIcon, MessagesIcon, PencilIcon } from '../components/Icons'
+import { BackIcon, MessagesIcon } from '../components/Icons'
 import { useBackInApp } from '../lib/back'
 
 /** Wraps an avatar so tapping it opens that person's profile. */
@@ -55,18 +55,6 @@ export function PersonScreen() {
           <button type="button" aria-label={t('common.back')} onClick={back} style={{ display: 'flex', color: '#1E1A30' }}>
             <BackIcon />
           </button>
-          <span style={{ flex: 1 }} />
-          {/* Your own profile: change your character, or go to Settings. */}
-          {id === me && (
-            <div className="row" style={{ gap: 10 }}>
-              <Link to="/settings" className="stk sec sm" style={{ transform: 'rotate(-2deg)' }}>
-                {t('settings.title')}
-              </Link>
-              <Link to="/profile" className="stk sec sm" aria-label={t('settings.changeCharacter')} title={t('settings.changeCharacter')} style={{ width: 38, padding: 0, transform: 'rotate(3deg)' }}>
-                <PencilIcon />
-              </Link>
-            </div>
-          )}
         </div>
         {person && (
           <>
