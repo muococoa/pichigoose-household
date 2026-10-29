@@ -8,7 +8,7 @@ import { setPantryLevel } from '../data/actions'
 import { Floating, Screen } from '../components/Shell'
 import { EmptyState, Hand, Sheet, showUndo } from '../components/Scrapbook'
 import { BackIcon, PlusIcon } from '../components/Icons'
-import { CONTAINERS, ContainerDrawing, Shelf, guessContainer, insideSpan } from '../components/Containers'
+import { CONTAINERS_FOR, ContainerDrawing, Shelf, guessContainer, insideSpan } from '../components/Containers'
 import { useDesktop } from '../lib/desktop'
 import { Chip } from './Todos'
 import { useBack } from '../lib/back'
@@ -337,7 +337,7 @@ function ThingSheet({ id, onClose }: { id: string | null; onClose: () => void })
 
           <div>
             <span className="label">{t('pantry.looksLike')}</span>
-            <ContainerPicker value={p.container} level={p.level} lowAt={p.low_at} onPick={(container) => save({ container })} />
+            <ContainerPicker place={p.place} value={p.container} level={p.level} lowAt={p.low_at} onPick={(container) => save({ container })} />
           </div>
 
           <div>
@@ -388,11 +388,13 @@ function ThingSheet({ id, onClose }: { id: string | null; onClose: () => void })
   )
 }
 
-function ContainerPicker({ value, level, lowAt, onPick }: { value: Container; level: number; lowAt: number; onPick: (c: Container) => void }) {
+function ContainerPicker({ place, value, level, lowAt, onPick }: { place: Place; value: Container; level: number; lowAt: number; onPick: (c: Container) => void }) {
+  // Only what makes sense in this place, plus whatever this thing already is.
+  const choices = CONTAINERS_FOR[place].includes(value) ? CONTAINERS_FOR[place] : [value, ...CONTAINERS_FOR[place]]
   const { t } = useTranslation()
   return (
     <div className="thing-pick">
-      {CONTAINERS.map((c) => (
+      {choices.map((c) => (
         <button key={c} type="button" aria-pressed={c === value} onClick={() => onPick(c)}>
           <ContainerDrawing kind={c} level={level} lowAt={lowAt} height={44} />
           {t(`pantry.containers.${c}`)}
@@ -417,7 +419,8 @@ function AddThingSheet({ open, place, onClose, onAdd }: { open: boolean; place: 
   }, [open])
 
   // Until someone picks one, the drawing follows the name: "oil" is a bottle, "rice" a bag.
-  const container = picked ?? guessContainer(name) ?? (place === 'bathroom' ? 'pump' : 'jar')
+  const guess = guessContainer(name)
+  const container = picked ?? (guess && CONTAINERS_FOR[place].includes(guess) ? guess : place === 'bathroom' ? 'pump' : 'jar')
 
   function add(e: FormEvent) {
     e.preventDefault()
@@ -437,7 +440,7 @@ function AddThingSheet({ open, place, onClose, onAdd }: { open: boolean; place: 
         </div>
         <div>
           <span className="label">{t('pantry.looksLike')}</span>
-          <ContainerPicker value={container} level={level} lowAt={20} onPick={setPicked} />
+          <ContainerPicker place={place} value={container} level={level} lowAt={20} onPick={setPicked} />
         </div>
         <div>
           <span className="label">{t('pantry.howFull')}</span>

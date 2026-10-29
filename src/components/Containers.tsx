@@ -1,5 +1,5 @@
 import { useId, type ReactNode } from 'react'
-import type { Container } from '../data/hooks'
+import type { Container, Place } from '../data/hooks'
 
 /*
  * The things on the pantry shelves, drawn in ink: jars, bottles, boxes, bags and so on.
@@ -86,6 +86,12 @@ const SHAPES: Record<Container, Shape> = {
 }
 
 export const CONTAINERS = Object.keys(SHAPES) as Container[]
+
+/** What makes sense where (Nora): no pumps, sprays or tubes in the kitchen; no jars, cans or cartons in the bathroom. */
+export const CONTAINERS_FOR: Record<Place, Container[]> = {
+  pantry: ['jar', 'bottle', 'box', 'bag', 'can', 'carton'],
+  bathroom: ['bottle', 'box', 'bag', 'tube', 'pump', 'spray'],
+}
 
 /** The gel pen color for how full something is: green when there's plenty, orange when it's going,
  *  the theme color when it's running low. */
