@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Screen } from '../components/Shell'
 import { Hand, PoseStamp, Tape } from '../components/Scrapbook'
@@ -15,6 +16,14 @@ const PARTS = [
 export function PichiScreen() {
   const { t } = useTranslation()
   const back = useBackInApp()
+  // Its own name in the browser tab and in search results.
+  useEffect(() => {
+    const before = document.title
+    document.title = t('pichi.pageTitle')
+    return () => {
+      document.title = before
+    }
+  }, [t])
   return (
     <Screen>
       <div style={{ padding: 'calc(var(--top) + 8px) 22px 28px 40px', maxWidth: 640 }}>

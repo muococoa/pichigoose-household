@@ -212,7 +212,11 @@ export function AuthScreen({ mode }: { mode: Mode }) {
         </div>
         <div className="screen scr page">
           <div className="scroll scr" style={{ display: 'flex', flexDirection: 'column' }}>
-            <div className="row" style={{ justifyContent: 'flex-end', padding: '24px 28px 0' }}>
+            <div className="row" style={{ justifyContent: 'space-between', padding: '24px 28px 0' }}>
+              {/* The public page about Pichi and the app, so people (and search engines) can read what Pichigoose is. */}
+              <Link to="/about" className="cap" style={{ fontSize: 14, fontWeight: 700 }}>
+                {t('pichi.whoTitle')}
+              </Link>
               <LangSwitch />
             </div>
             <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 40px 60px' }}>
@@ -233,7 +237,10 @@ export function AuthScreen({ mode }: { mode: Mode }) {
   return (
     <Screen>
       <div className="pad top" style={{ display: 'flex', flexDirection: 'column', minHeight: '100%', paddingBottom: 32 }}>
-        <div className="row" style={{ justifyContent: 'flex-end' }}>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <Link to="/about" className="cap" style={{ fontSize: 14, fontWeight: 700 }}>
+            {t('pichi.whoTitle')}
+          </Link>
           <LangSwitch />
         </div>
 

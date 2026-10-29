@@ -138,6 +138,8 @@ export default function App() {
           <Route path="/messages" element={<Inside><MessagesScreen /></Inside>} />
           <Route path="/messages/:chat" element={<Inside><ChatScreen /></Inside>} />
           <Route path="/notes/:id" element={<Inside><NoteScreen /></Inside>} />
+          {/* Pichi's page is public at /about, signed in or not. */}
+          <Route path="/about" element={<PichiScreen />} />
           <Route path="/pichi" element={<Inside><PichiScreen /></Inside>} />
           <Route path="/projects" element={<Inside><ProjectsScreen /></Inside>} />
           <Route path="/projects/:id" element={<Inside><ProjectScreen /></Inside>} />

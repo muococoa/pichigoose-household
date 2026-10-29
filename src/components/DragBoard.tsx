@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { DndContext, DragOverlay, PointerSensor, KeyboardSensor, closestCenter, useSensor, useSensors, type DragEndEvent, type DragStartEvent } from '@dnd-kit/core'
 import { SortableContext, arrayMove, rectSortingStrategy, sortableKeyboardCoordinates, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -51,7 +51,8 @@ export function DragBoard<K extends string>({ items, onReorder, dropLabel }: { i
   return (
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={start} onDragEnd={end} onDragCancel={() => { setActive(null); lastDrop.current = Date.now() }}>
       <SortableContext items={order} strategy={rectSortingStrategy}>
-        {/* As many columns as fit, at least 280 px each: three on a big screen, fewer in a narrow window. */}
+        {/* As many columns as fit, three on a big screen. Like iPhone widgets (Nora, 29 Oct): each note slides up
+            under the one above it, so there are no gaps; the grid's rows are 1 px and each note spans its own height. */}
         <div className="board-grid">
           {order.map((key) => (
             <Slot key={key} id={key} wide={wideOf.get(key)} dropLabel={dropLabel} justDropped={() => Date.now() - lastDrop.current < 400}>
@@ -68,8 +69,23 @@ export function DragBoard<K extends string>({ items, onReorder, dropLabel }: { i
   )
 }
 
+// The space between notes, up and down (the same as across, in desktop.css .board-grid).
+const GAP = 30
+
 function Slot({ id, wide, dropLabel, justDropped, children }: { id: string; wide?: boolean; dropLabel: string; justDropped: () => boolean; children: ReactNode }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
+  // How many 1 px rows this note takes: its height plus the gap under it. Follows the note as it grows or shrinks.
+  const inner = useRef<HTMLDivElement>(null)
+  const [rows, setRows] = useState<number>()
+  useLayoutEffect(() => {
+    const el = inner.current
+    if (!el) return
+    const measure = () => setRows(Math.ceil(el.getBoundingClientRect().height) + GAP)
+    measure()
+    const watch = new ResizeObserver(measure)
+    watch.observe(el)
+    return () => watch.disconnect()
+  }, [])
   return (
     <div
       ref={setNodeRef}
@@ -82,10 +98,10 @@ function Slot({ id, wide, dropLabel, justDropped, children }: { id: string; wide
           e.preventDefault()
         }
       }}
-      style={{ transform: CSS.Translate.toString(transform), transition, position: 'relative' }}
+      style={{ transform: CSS.Translate.toString(transform), transition, position: 'relative', gridRowEnd: rows ? `span ${rows}` : undefined }}
     >
       {/* Keeps its size while the note is being carried, and shows where it will land. */}
-      <div style={{ visibility: isDragging ? 'hidden' : undefined }}>{children}</div>
+      <div ref={inner} style={{ visibility: isDragging ? 'hidden' : undefined }}>{children}</div>
       {isDragging && (
         <div className="drop-here" aria-hidden>
           <Hand size={26} lineHeight={28} color="#857A8C">
