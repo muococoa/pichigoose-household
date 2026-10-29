@@ -169,7 +169,7 @@ export function NotesScreen() {
           const n = newNote(hid, me)
           navigate(`/notes/${n.id}`)
         }}
-        style={{ position: 'fixed', right: 'max(20px, calc(50vw - 195px))', bottom: 'calc(var(--tabbar) + 20px)', zIndex: 6, transform: 'rotate(-4deg)' }}
+        style={{ transform: 'rotate(-4deg)' }}
       >
         <PlusIcon />
       </button>

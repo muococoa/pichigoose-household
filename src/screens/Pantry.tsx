@@ -273,7 +273,7 @@ export function PantryScreen() {
             className="stk prim round fab"
             aria-label={t('pantry.add')}
             onClick={() => setAdding(roomSpots[0].id)}
-            style={{ position: 'fixed', right: 'max(20px, calc(50vw - 195px))', bottom: 'calc(var(--tabbar) + 20px)', zIndex: 6, transform: 'rotate(-4deg)' }}
+            style={{ transform: 'rotate(-4deg)' }}
           >
             <PlusIcon />
           </button>

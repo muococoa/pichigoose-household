@@ -165,40 +165,45 @@ textarea.input { height: auto; min-height: 40px; padding: 9px 16px; resize: none
 .av-fade { display: flex; transition: opacity .55s ease-out }
 .av-fade.done { opacity: .6 }
 
-/* The add bar on Shopping. Kinetic ease-out: fast start, long soft landing. */
+/* The add bar on Shopping. Kinetic ease-out: fast start, long soft landing.
+   Everything floats (Nora, 29 Oct): no paper strip behind it. Closed, the + is the floating button; tapped, the
+   field slides out from behind it and the button shrinks to the field's height beside it. */
 .add-bar {
   --kinetic: cubic-bezier(.16, 1, .3, 1);
   position: fixed; left: 0; right: 0; max-width: 430px; margin: 0 auto; z-index: 6;
-  /* Sits on the tab bar, or right on top of the keyboard when it's open. */
-  /* Its paper reaches all the way down, behind the keyboard; only the field lifts above it. */
+  /* Sits above the menu, or right on top of the keyboard when it's open. */
   bottom: max(0px, calc(var(--tabbar) - var(--kb)));
-  padding: 14px 20px calc(14px + var(--kb)); display: flex; gap: 12px; align-items: flex-start;
+  /* Lined up with the floating menu's edges. */
+  padding: 14px 14px calc(14px + var(--kb)); display: flex; gap: 12px; align-items: flex-start;
   pointer-events: none;
 }
-.add-bar::before {
-  content: ""; position: absolute; inset: 0; background: #FFFDF8; box-shadow: 0 -6px 14px rgba(30, 26, 48, .08);
-  opacity: 0; transform: translateY(10px); transition: opacity .25s ease, transform .3s ease;
-}
 .add-bar .input {
-  position: relative; flex: 1; opacity: 0; clip-path: inset(0 0 0 100% round 22px);
-  transform: translateX(14px); transition: opacity .2s ease, clip-path .25s ease, transform .25s ease;
+  position: relative; flex: 1; opacity: 0; clip-path: inset(0 0 0 calc(100% - 40px) round 22px);
+  /* Starts tucked under the button (its width plus the gap), as small as the button. */
+  transform: translateX(52px); transition: opacity .15s ease .1s, clip-path .3s ease, transform .3s ease;
+  box-shadow: inset 0 0 0 1.5px #E2D8EC, 0 6px 16px -8px rgba(30, 26, 48, .3);
 }
+.add-bar .input:focus { box-shadow: inset 0 0 0 1.5px var(--hero), 0 6px 16px -8px rgba(30, 26, 48, .3) }
 .add-bar .stk.round {
-  position: relative; width: 54px; height: 54px; margin-top: -1px; pointer-events: auto;
-  /* Closed: the big floating sticker, a little higher, plus turned a quarter. */
-  transform: translate(-4px, -10px) scale(1.15) rotate(-4deg);
+  position: relative; z-index: 1; width: 40px; height: 40px; pointer-events: auto;
+  /* Closed: the floating + button, the same size and spot as on the other pages. */
+  transform: translate(-5px, -3px) scale(1.25) rotate(-4deg);
   transition: transform .45s var(--kinetic), box-shadow .3s ease;
 }
-.add-bar .stk.round svg { transition: transform .5s var(--kinetic) }
+.add-bar .stk.round svg { width: 20px; height: 20px; transition: transform .5s var(--kinetic) }
 .add-bar.open { pointer-events: auto }
-.add-bar.open::before { opacity: 1; transform: none; transition: opacity .3s ease, transform .45s var(--kinetic) }
 .add-bar.open .input {
   opacity: 1; clip-path: inset(0 0 0 0 round 22px); transform: none;
-  transition: opacity .25s ease .05s, clip-path .55s var(--kinetic) .05s, transform .55s var(--kinetic) .05s;
+  transition: opacity .12s ease, clip-path .6s var(--kinetic) .02s, transform .6s var(--kinetic) .02s;
 }
+/* Open: the field's height, beside it. */
 .add-bar.open .stk.round { transform: rotate(-4deg) }
 .add-bar.open .stk.round svg { transform: rotate(90deg) }
 .add-bar .stk.round:active { translate: 0 2px }
+/* The round + button floats above the menu like Meta's button in WhatsApp (Nora, 29 Oct): smaller, its right
+   edge lined up with the menu's, a little above it. */
+.stk.round.fab { position: fixed; right: max(14px, calc(50vw - 201px)); bottom: calc(var(--tabbar) + 12px); z-index: 6; width: 50px; height: 50px }
+.fab svg { width: 24px; height: 24px }
 /* The floating buttons give a springy bounce when tapped, like WhatsApp's: in quickly, back with a little overshoot. */
 .fab, .add-bar .stk.round { transition: transform .45s var(--kinetic, ease), box-shadow .3s ease, scale .45s cubic-bezier(.34, 1.56, .64, 1) }
 .fab:active, .add-bar .stk.round:active { scale: .86; transition-duration: .45s, .3s, .1s }
