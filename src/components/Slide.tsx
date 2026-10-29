@@ -6,49 +6,25 @@ import { useEffect, useRef, useState, type RefObject } from 'react'
 
 const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-/** The soft highlight behind the chosen tab in `row` (the tab with aria-pressed="true"). */
-export function TabHighlight({ row, current }: { row: RefObject<HTMLElement | null>; current: string | null }) {
-  const [box, setBox] = useState<{ x: number; y: number; w: number; h: number } | null>(null)
-  const inner = useRef<HTMLSpanElement>(null)
+/** The washi tape you land on gives a springy bounce, like the bottom menu (Nora, 29 Oct). */
+export function useTapeBounce(row: RefObject<HTMLElement | null>, current: string | null) {
   const first = useRef(true)
-
-  // After the page is in place (the row's ref is set only once its children, this one included, are done).
-  useEffect(() => {
-    const el = row.current
-    if (!el) return
-    const measure = () => {
-      const tab = el.querySelector<HTMLElement>('[aria-pressed="true"]')
-      if (!tab) return setBox(null)
-      const r = el.getBoundingClientRect()
-      const t = tab.getBoundingClientRect()
-      setBox({ x: t.left - r.left - 7, y: t.top - r.top - 5, w: t.width + 14, h: t.height + 10 })
-    }
-    measure()
-    const watch = new ResizeObserver(measure)
-    watch.observe(el)
-    return () => watch.disconnect()
-  }, [row, current])
-
-  // A springy stretch as it moves, like the menu's highlight.
   useEffect(() => {
     if (first.current) {
       first.current = false
       return
     }
     if (reducedMotion()) return
-    inner.current?.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.18, .9)', offset: 0.35 }, { transform: 'scale(1)' }], { duration: 460, easing: 'ease-out' })
-  }, [current])
-
-  if (!box) return null
-  return (
-    <span className="tab-slide" style={{ transform: `translate(${box.x}px, ${box.y}px)`, width: box.w, height: box.h }} aria-hidden>
-      <span ref={inner} />
-    </span>
-  )
+    const tape = row.current?.querySelector<HTMLElement>('[aria-pressed="true"]')
+    tape?.animate(
+      [{ scale: '1' }, { scale: '1.14 1.12', offset: 0.3 }, { scale: '.95 .96', offset: 0.62 }, { scale: '1.02', offset: 0.84 }, { scale: '1' }],
+      { duration: 560, easing: 'ease-out' },
+    )
+  }, [row, current])
 }
 
-/** Swipe the page left (next) or right (previous). Not from the very edges (those go back and to Messages),
- *  and not on fields, the menu, the add bar or a pop-up. */
+/** Swipe the page left (next) or right (previous), anywhere but the left edge (that one goes back), and not on
+ *  fields, the menu, the add bar or a pop-up. */
 export function useSwipeBetween(onPrev: (() => void) | null, onNext: (() => void) | null) {
   const latest = useRef({ onPrev, onNext })
   latest.current = { onPrev, onNext }
@@ -60,7 +36,6 @@ export function useSwipeBetween(onPrev: (() => void) | null, onNext: (() => void
       const ok =
         e.touches.length === 1 &&
         t.clientX > 40 &&
-        t.clientX < window.innerWidth - 28 &&
         !target.closest('input, textarea, .add-bar, .tabbar, .sheet-back, [data-noswipe]')
       start = ok ? { x: t.clientX, y: t.clientY } : null
     }

@@ -15,7 +15,7 @@ import { SortableContext, arrayMove, horizontalListSortingStrategy, useSortable 
 import { CSS } from '@dnd-kit/utilities'
 import { useDesktop } from '../lib/desktop'
 import { useKept } from '../lib/kept'
-import { TabHighlight, useSlideDirection, useSwipeBetween } from '../components/Slide'
+import { useSlideDirection, useSwipeBetween, useTapeBounce } from '../components/Slide'
 import { PersonLink } from './Person'
 import { CommentCount, Comments, useCommentCounts } from '../components/Comments'
 import { groupKey, groupLow } from '../components/Shelves'
@@ -99,6 +99,7 @@ export function ShoppingScreen() {
   const tabsRow = useRef<HTMLDivElement>(null)
   const listIndex = list ? sortedLists.indexOf(list) : -1
   const slide = useSlideDirection(listIndex)
+  useTapeBounce(tabsRow, list?.id ?? null)
   const goTo = (i: number) => {
     const l = sortedLists[i]
     if (!l) return
@@ -282,7 +283,6 @@ export function ShoppingScreen() {
           </button>
         </div>
         <div ref={tabsRow} style={{ position: 'relative', display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', rowGap: 12 }}>
-          <TabHighlight row={tabsRow} current={list?.id ?? null} />
           <ListTabs lists={sortedLists} current={list?.id ?? null} onPick={pick} onReorder={reorderLists} />
           <button
             type="button"

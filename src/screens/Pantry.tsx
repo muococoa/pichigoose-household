@@ -12,7 +12,7 @@ import { ContainerDrawing, containersFor, guessContainer, insideSpan } from '../
 import { GroupDrawing, ShelfRows, groupKey, groupThings, useShelfWidth, type Group } from '../components/Shelves'
 import { useDesktop } from '../lib/desktop'
 import { forget, useKept } from '../lib/kept'
-import { TabHighlight, useSlideDirection, useSwipeBetween } from '../components/Slide'
+import { useSlideDirection, useSwipeBetween, useTapeBounce } from '../components/Slide'
 import { Chip } from './Todos'
 import { useBack } from '../lib/back'
 import { autoFocusField } from '../lib/keyboard'
@@ -144,6 +144,7 @@ export function PantryScreen() {
   const roomsRow = useRef<HTMLDivElement>(null)
   const roomIndex = room ? rooms.rows.findIndex((r) => r.id === room.id) : -1
   const slide = useSlideDirection(roomIndex)
+  useTapeBounce(roomsRow, room?.id ?? null)
   useSwipeBetween(
     desktop || roomIndex <= 0 ? null : () => pickRoom(rooms.rows[roomIndex - 1].id),
     desktop || roomIndex < 0 || roomIndex >= rooms.rows.length - 1 ? null : () => pickRoom(rooms.rows[roomIndex + 1].id),
@@ -191,7 +192,6 @@ export function PantryScreen() {
         </div>
         {/* The rooms as washi-tape tabs, like the shopping lists. Tap the open one to rename it. */}
         <div ref={roomsRow} style={{ position: 'relative', display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', rowGap: 12 }}>
-          <TabHighlight row={roomsRow} current={room?.id ?? null} />
           {rooms.rows.map((r, i) => {
             const on = r.id === room?.id
             return (

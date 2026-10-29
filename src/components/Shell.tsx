@@ -145,9 +145,6 @@ export function TabBar() {
   const [shown, setShown] = useState(lastTab >= 0 && index >= 0 ? lastTab : index)
   const barRef = useRef<HTMLElement>(null)
   const pillRef = useRef<HTMLSpanElement>(null)
-  // Swiping in from the right edge opens Messages, like Instagram's direct messages.
-  const navigate = useNavigate()
-  useEdgeSwipe('right', () => navigate('/messages'))
   useLayoutEffect(() => {
     const from = lastTab
     lastTab = index

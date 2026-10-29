@@ -35,6 +35,7 @@ import { CommentCount, useCommentCounts } from '../components/Comments'
 import { db } from '../data/store'
 import { ShelfRows, groupLow, groupThings, useShelfWidth, type Group } from '../components/Shelves'
 import { spotOf } from './Pantry'
+import { useSwipeBetween } from '../components/Slide'
 
 // Desktop: the small notes inside the notes section, each a little tilted and held with a paper clip on the left edge
 // (the bottom right corner is for the comment bubble).
@@ -121,6 +122,9 @@ export function HomeScreen() {
   const notes = useNotes(hid)
   const pantry = usePantry(hid)
   const desktop = useDesktop()
+  // Only on Home: swipe from right to left to open Messages, like Instagram's direct messages.
+  const toMessages = useNavigate()
+  useSwipeBetween(null, desktop ? null : () => toMessages('/messages'))
   const [switching, setSwitching] = useState(false)
   // Desktop: a note opened from the board, in the side panel.
   const [openNote, setOpenNote] = useState<string | null>(null)
