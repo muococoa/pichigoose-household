@@ -160,6 +160,7 @@ A short conversation under a shopping item, to-do or note [Nora]. Flat, like a c
 | author_id | uuid, references profiles | must be the person writing it |
 | body | text | up to 2000 characters; empty only when there is a sticker |
 | sticker | text, nullable | one of Nora's stickers, like `onigiri/love` [Nora]. The drawings live in the app |
+| reply_to | uuid, nullable, references comments | the comment this one answers [Nora]; shown indented under it. Cleared if that comment is deleted |
 | created_at | timestamptz | |
 
 Everyone in the household can read and write comments; people can delete only their own. Live updates on.
@@ -225,6 +226,7 @@ Chat, like WhatsApp [Nora]: each household has one group chat for everyone, and 
 | to_user | uuid, nullable | empty: the household's group chat. Set: a private message to that person (who must be in the household) |
 | body | text | up to 4000 characters; empty only when there is a sticker |
 | sticker | text, nullable | one of Nora's stickers, like `ramen/kiss` [Nora] |
+| reply_to | uuid, nullable, references messages | the message this one answers [Nora]; quoted at the top of the reply. Cleared if that message is deleted |
 | created_at | timestamptz | |
 
 Group messages: everyone in the household reads them. Private ones: only the two people. You can delete your own. Live updates on.

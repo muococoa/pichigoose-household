@@ -10,7 +10,8 @@ import { useChats, useMarkRead, type Chat } from '../data/chats'
 import { Screen } from '../components/Shell'
 import { Avatar } from '../components/Avatar'
 import { Stamp, STAMP_COLORS } from '../components/Scrapbook'
-import { BackIcon, HomeIcon, SendIcon } from '../components/Icons'
+import { BackIcon, CloseIcon, HomeIcon, ReplyIcon, SendIcon } from '../components/Icons'
+import { useKept } from '../lib/kept'
 import { useDesktop } from '../lib/desktop'
 import { PersonLink } from './Person'
 import { useBackInApp } from '../lib/back'
@@ -64,12 +65,15 @@ function Ticks({ read }: { read: boolean }) {
 }
 
 /** Speech bubbles grouped into runs: the same person, the same day, a few minutes apart. */
-function Bubbles({ messages, group, readByAll }: { messages: Message[]; group: boolean; readByAll: (m: Message) => boolean }) {
+function Bubbles({ messages, group, readByAll, onReply }: { messages: Message[]; group: boolean; readByAll: (m: Message) => boolean; onReply: (m: Message) => void }) {
   const me = useMe()
   const { people } = useHousehold()
   const { time, day } = useTimeLabels()
   const person = (id: string | null): Profile | undefined => people.find((p) => p.id === id)
   const heartsOn = useHeartsOn()
+  const byId = new Map(messages.map((m) => [m.id, m]))
+  const { t } = useTranslation()
+  const quoteName = (q?: Message) => (!q ? '' : q.author_id === me ? t('messages.you') : (person(q.author_id)?.display_name ?? t('common.someone')))
   return (
     <>
       {messages.map((m, i) => {
@@ -91,7 +95,20 @@ function Bubbles({ messages, group, readByAll }: { messages: Message[]; group: b
                 </Stamp>
               </div>
             )}
-            <Bubble m={m} mine={mine} first={first} lastOfRun={lastOfRun} group={group} who={who} time={time(m.created_at)} read={mine && readByAll(m)} hearts={heartsOn({ message_id: m.id })} />
+            <Bubble
+              m={m}
+              mine={mine}
+              first={first}
+              lastOfRun={lastOfRun}
+              group={group}
+              who={who}
+              time={time(m.created_at)}
+              read={mine && readByAll(m)}
+              hearts={heartsOn({ message_id: m.id })}
+              quote={m.reply_to ? byId.get(m.reply_to) : undefined}
+              quoteName={quoteName(m.reply_to ? byId.get(m.reply_to) : undefined)}
+              onReply={() => onReply(m)}
+            />
           </div>
         )
       })}
@@ -100,18 +117,25 @@ function Bubbles({ messages, group, readByAll }: { messages: Message[]; group: b
 }
 
 /** One speech bubble. Double-tap it, or tap the small heart beside it, to heart it. Who hearted it
- *  shows on a little tag hanging under the bubble, like Instagram. */
-function Bubble({ m, mine, first, lastOfRun, group, who, time, read, hearts }: { m: Message; mine: boolean; first: boolean; lastOfRun: boolean; group: boolean; who?: Profile; time: string; read: boolean; hearts: Heart[] }) {
+ *  shows on a little tag hanging under the bubble, like Instagram. Swipe it to the right to reply, like
+ *  WhatsApp (on a computer: the reply arrow that shows when you point at it). */
+function Bubble({ m, mine, first, lastOfRun, group, who, time, read, hearts, quote, quoteName, onReply }: { m: Message; mine: boolean; first: boolean; lastOfRun: boolean; group: boolean; who?: Profile; time: string; read: boolean; hearts: Heart[]; quote?: Message; quoteName: string; onReply: () => void }) {
+  const { t } = useTranslation()
   const { add } = useHeartActions()
   const target = { message_id: m.id }
   const tap = useDoubleTap(() => add(target, hearts))
+  const swipe = useSwipeToReply(onReply)
   return (
-    <div className={`msg${mine ? ' mine' : ''}${first ? ' first' : ''}${lastOfRun ? ' last' : ''}${hearts.length ? ' hearted' : ''}`}>
+    <div id={`msg-${m.id}`} className={`msg${mine ? ' mine' : ''}${first ? ' first' : ''}${lastOfRun ? ' last' : ''}${hearts.length ? ' hearted' : ''}`} {...swipe.handlers}>
+      <span className="reply-hint" style={{ opacity: Math.min(1, swipe.shift / 48), transform: `scale(${0.6 + Math.min(1, swipe.shift / 48) * 0.4})` }} aria-hidden>
+        <ReplyIcon />
+      </span>
       {/* Like WhatsApp: in the group chat, the avatar sits at the bottom of each run, by the bubble's tail. */}
       {group && !mine && <span className="msg-avatar">{lastOfRun && who ? <PersonLink id={who.id}><Avatar avatar={who.avatar} size={34} /></PersonLink> : null}</span>}
-      <div className="bubble-wrap">
+      <div className="bubble-wrap" style={swipe.shift ? { transform: `translateX(${swipe.shift}px)`, transition: 'none' } : undefined}>
         <div className={`bubble${m.sticker ? ' sticker' : ''}`} onClick={tap.onClick}>
           {group && !mine && first && <div className="bubble-name">{who?.display_name}</div>}
+          {quote && <Quote m={quote} name={quoteName} />}
           {m.sticker ? <StickerImage name={m.sticker} size={128} /> : <span className="bubble-text">{m.body}</span>}
           <span className="bubble-time">
             {time}
@@ -122,9 +146,73 @@ function Bubble({ m, mine, first, lastOfRun, group, who, time, read, hearts }: {
         </div>
         <HeartedBy hearts={hearts} className="under-bubble" />
       </div>
-      <HeartButton target={target} hearts={hearts} size={16} />
+      <span className="msg-actions">
+        <button type="button" className="reply-btn" aria-label={t('replies.reply')} title={t('replies.reply')} onClick={onReply}>
+          <ReplyIcon size={16} />
+        </button>
+        <HeartButton target={target} hearts={hearts} size={16} />
+      </span>
     </div>
   )
+}
+
+/** The message a reply answers, quoted at the top of the bubble. Tap it to jump to the message. */
+function Quote({ m, name }: { m: Message; name: string }) {
+  return (
+    <button
+      type="button"
+      className="bubble-quote"
+      onClick={(e) => {
+        e.stopPropagation()
+        const el = document.getElementById(`msg-${m.id}`)
+        if (!el) return
+        el.scrollIntoView({ block: 'center', behavior: 'smooth' })
+        el.classList.remove('flash')
+        void el.offsetWidth
+        el.classList.add('flash')
+      }}
+    >
+      <b>{name}</b>
+      {m.sticker ? <StickerImage name={m.sticker} size={36} /> : <span>{m.body}</span>}
+    </button>
+  )
+}
+
+/** Swipe a bubble to the right to reply: it follows the finger a little, the reply arrow appears, and past
+ *  the line it's a reply. Vertical scrolling and the left-edge back swipe stay as they are. */
+function useSwipeToReply(onReply: () => void) {
+  const [shift, setShift] = useState(0)
+  const drag = useRef<{ x: number; y: number; on: boolean } | null>(null)
+  const handlers = {
+    onTouchStart(e: React.TouchEvent) {
+      const t = e.touches[0]
+      drag.current = e.touches.length === 1 && t.clientX > 40 ? { x: t.clientX, y: t.clientY, on: false } : null
+    },
+    onTouchMove(e: React.TouchEvent) {
+      const d = drag.current
+      if (!d) return
+      const t = e.touches[0]
+      const dx = t.clientX - d.x
+      const dy = Math.abs(t.clientY - d.y)
+      if (!d.on) {
+        if (dy > 10 && dy > Math.abs(dx)) drag.current = null
+        else if (dx > 10 && dx > dy * 1.5) d.on = true
+        return
+      }
+      // Follows the finger, slower the further it goes, like a rubber band.
+      setShift(Math.max(0, Math.min(72, dx * 0.55)))
+    },
+    onTouchEnd() {
+      const d = drag.current
+      drag.current = null
+      if (d?.on && shift >= 44) {
+        navigator.vibrate?.(8)
+        onReply()
+      }
+      setShift(0)
+    },
+  }
+  return { shift, handlers: { ...handlers, onTouchCancel: handlers.onTouchEnd } }
 }
 
 /** One chat: the bubbles, with the writing field pinned under them. */
@@ -135,7 +223,11 @@ function Conversation({ chatKey, header, back }: { chatKey: string; header?: boo
   const { household, name, people } = useHousehold()
   const chats = useChats()
   const chat = chats.find((c) => c.key === chatKey)
-  const [text, setText] = useState('')
+  const { household: hh } = useHousehold()
+  const keep = `chat:${hh?.id}:${chatKey}`
+  const [text, setText] = useKept(`${keep}:text`, '')
+  // The message you're answering, by its id.
+  const [replyTo, setReplyTo] = useKept<string | null>(`${keep}:reply`, null)
   const endRef = useRef<HTMLDivElement>(null)
   const fieldRef = useRef<HTMLTextAreaElement>(null)
   const count = chat?.messages.length ?? 0
@@ -177,25 +269,33 @@ function Conversation({ chatKey, header, back }: { chatKey: string; header?: boo
     el.style.height = `${Math.min(el.scrollHeight, 128)}px`
   }, [text])
 
-  useEffect(() => setText(''), [chatKey])
 
   if (!chat || !household) return null
   const group = chat.key === 'household'
   const title = chatName(chat, name(household))
   const members = people.map((p) => (p.id === me ? t('messages.you') : p.display_name)).join(', ')
+  const replying = replyTo ? chat.messages.find((m) => m.id === replyTo) : undefined
+  const replyingWho = replying ? people.find((p) => p.id === replying.author_id) : undefined
 
   function send(e?: FormEvent) {
     e?.preventDefault()
     const body = text.trim()
     if (!body || !household) return
-    db.insert('messages', { household_id: household.id, author_id: me, to_user: group ? null : chatKey, body, sticker: null, created_at: new Date().toISOString() })
+    db.insert('messages', { household_id: household.id, author_id: me, to_user: group ? null : chatKey, body, sticker: null, reply_to: replying ? replyTo : null, created_at: new Date().toISOString() })
     setText('')
+    setReplyTo(null)
     fieldRef.current?.focus()
   }
 
   function sendSticker(sticker: string) {
     if (!household) return
-    db.insert('messages', { household_id: household.id, author_id: me, to_user: group ? null : chatKey, body: '', sticker, created_at: new Date().toISOString() })
+    db.insert('messages', { household_id: household.id, author_id: me, to_user: group ? null : chatKey, body: '', sticker, reply_to: replying ? replyTo : null, created_at: new Date().toISOString() })
+    setReplyTo(null)
+  }
+
+  function reply(m: Message) {
+    setReplyTo(m.id)
+    fieldRef.current?.focus()
   }
 
   function key(e: KeyboardEvent<HTMLTextAreaElement>) {
@@ -231,13 +331,24 @@ function Conversation({ chatKey, header, back }: { chatKey: string; header?: boo
       )}
       <div className="bubbles">
         {chat.messages.length ? (
-          <Bubbles messages={chat.messages} group={group} readByAll={chat.readByAll} />
+          <Bubbles messages={chat.messages} group={group} readByAll={chat.readByAll} onReply={reply} />
         ) : (
           <p className="say-hi">{group ? t('messages.sayHiAll') : t('messages.sayHi', { name: title })}</p>
         )}
         <div ref={endRef} />
       </div>
-      <form className="composer" onSubmit={send}>
+      <form className={`composer${replying ? ' replying' : ''}`} onSubmit={send}>
+        {replying && (
+          <div className="composer-quote">
+            <span style={{ flex: 1, minWidth: 0 }}>
+              <b>{replying.author_id === me ? t('replies.replyingToSelf') : t('replies.replyingTo', { name: replyingWho?.display_name ?? t('common.someone') })}</b>
+              {replying.sticker ? <StickerImage name={replying.sticker} size={32} /> : <span className="composer-quote-text">{replying.body}</span>}
+            </span>
+            <button type="button" aria-label={t('common.cancel')} onPointerDown={(e) => e.preventDefault()} onClick={() => setReplyTo(null)}>
+              <CloseIcon size={18} />
+            </button>
+          </div>
+        )}
         <textarea
           ref={fieldRef}
           className="input"

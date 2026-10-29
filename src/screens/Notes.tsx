@@ -268,6 +268,13 @@ function NoteEditor({ panel, noteId, onClose }: { panel?: boolean; noteId?: stri
   }
 
   const author = people.find((p) => p.id === note?.created_by)
+  // The note's ... menu. Only whoever wrote a note can delete it (or anyone, once its writer has left the app).
+  const moreItems = note
+    ? [
+        ...(households.length > 1 ? [{ label: t('notes.move'), onClick: () => setMoving(true) }] : []),
+        ...(note.created_by === me || !note.created_by ? [{ label: t('notes.deleteNote'), onClick: () => setConfirmDelete(true), danger: true }] : []),
+      ]
+    : []
   const editor = people.find((p) => p.id === note?.updated_by)
 
   return (
@@ -292,13 +299,10 @@ function NoteEditor({ panel, noteId, onClose }: { panel?: boolean; noteId?: stri
               {note.pinned ? t('notes.isPinned') : t('notes.pin')}
             </button>
           )}
-          {note && (
+          {note && moreItems.length > 0 && (
             <Menu
               label={t('common.more')}
-              items={[
-                ...(households.length > 1 ? [{ label: t('notes.move'), onClick: () => setMoving(true) }] : []),
-                { label: t('notes.deleteNote'), onClick: () => setConfirmDelete(true), danger: true },
-              ]}
+              items={moreItems}
             >
               <DotsIcon />
             </Menu>

@@ -103,6 +103,8 @@ export type Comment = Row & {
   body: string
   /** One of Nora's stickers, like "onigiri/love", instead of text. */
   sticker?: string | null
+  /** The comment this one answers, if it's a reply. */
+  reply_to?: string | null
   created_at: string
 }
 
@@ -113,6 +115,8 @@ export type Message = Row & {
   body: string
   /** One of Nora's stickers, like "onigiri/love", instead of text. */
   sticker?: string | null
+  /** The message this one answers, if it's a reply. */
+  reply_to?: string | null
   created_at: string
 }
 

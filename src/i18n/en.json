@@ -488,5 +488,10 @@
       "sleepy": "Sleepy",
       "party": "Party"
     }
+  },
+  "replies": {
+    "reply": "Reply",
+    "replyingTo": "Replying to {{name}}",
+    "replyingToSelf": "Replying to yourself"
   }
 }

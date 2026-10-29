@@ -496,5 +496,10 @@
       "sleepy": "Spavanje",
       "party": "Žurka"
     }
+  },
+  "replies": {
+    "reply": "Odgovori",
+    "replyingTo": "Odgovor za: {{name}}",
+    "replyingToSelf": "Odgovor sebi"
   }
 }
