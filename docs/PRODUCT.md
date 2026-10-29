@@ -175,11 +175,26 @@ Later, after the bugs are fixed and the app is in production. Plan it first, the
 - **Year in the home:** at the end of the year, a recap of every month and every trophy, to look back on. Old trophies stay in a case on your profile (nonogram.com's badge collection is the reference).
 - **Points and rewards for children:** in households with kids, a to-do can be worth points, and points can be swapped for rewards the parents set up.
 
-Open questions for when we plan it:
-1. How does the app know a to-do is "dishes" or "laundry"? A fixed list of chore types to pick from, tags you make yourself, or guessing from the title?
-2. Can someone opt out of rankings, and how does it feel in a household of two (always first or last)?
-3. Children: do they get their own accounts and phones, or do parents tick things off for them? Who approves points, and who adds the rewards?
-4. Where do trophies live: on the profile, in the hub, a Home note, or all three?
-5. What to name each trophy (Nora writes these).
+Decided (Danko and Nora, 29 Oct):
+- **Rankings:** no opting out per person; these are people who love each other. A household can turn trophies off altogether, in its settings.
+- **Two people:** simpler, with no gold and silver. Just "who did the most dishes this month", "who did the most grocery shopping this month", and so on.
+- **Children:** they get their own accounts. Children without a phone (a parent ticks for them) is shelved for later.
+- **Points:** the app gives them automatically when a to-do is done. No approving.
+- **Where trophies live:** on the profile. Only the big ones go in the "Our home" hub, like "number one dishwasher three months in a row", not every monthly win.
+- **Names:** placeholders for now. Claude suggests, Nora improves. Funny, easy to remember, ideally rhyming.
+
+Still open:
+1. **Chore types.** Claude's recommendation: a short fixed list (dishes, laundry, hanging laundry, ironing, groceries, trash, cleaning, cooking, plants), and Pichi guesses the type from the to-do's title in English and Serbian ("sudovi", "veš", "prodavnica"...). You can change her guess, or leave a to-do without a type.
+
+Placeholder trophy names (Claude's, for Nora to improve):
+- Dishes: **Dish Whiz** · three months in a row: **Captain Clean Plate**
+- Laundry: **Sock Whisperer** · three months: **Spin Cycle Legend**
+- Hanging laundry: **Peg Legend**
+- Ironing: **Wrinkle Wrangler**
+- Groceries: **Cart Smart** · three months: **Aisle Style Icon**
+- Trash: **Trash Panda**
+- Cleaning: **Dust Buster** · mopping: **Mop Top**
+- Cooking: **Pan Fan**
+- Plants: **Leaf Chief**
 
 What it builds on: to-dos already record who finished them and when (`done_by`, `done_at`), so past months can be counted. It will need a chore type on to-dos, a table for trophies won each month, and for children, points and rewards tables. Ask before changing the database.
