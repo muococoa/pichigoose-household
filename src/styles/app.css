@@ -531,7 +531,10 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 .shelf-pct { font: 600 11px/14px Nunito, sans-serif; color: #857A8C; margin-top: 3px }
 .shelf-pct.low { color: var(--hero-dark); font-weight: 800 }
 .thing-pick { display: grid; grid-template-columns: repeat(auto-fill, minmax(58px, 1fr)); gap: 6px }
-.thing-pick button { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 2px 6px; border-radius: 10px 12px 10px 14px; font-size: 12px; font-weight: 700; color: #63586B }
+.thing-pick button { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 2px 6px; border-radius: 16px; font-size: 12px; font-weight: 700; color: #63586B }
+/* One ring only: the chosen one already has its theme-colored edge, so the keyboard ring doesn't add a second. */
+.thing-pick button:focus-visible { outline: 2px solid color-mix(in srgb, var(--hero) 45%, #FFFFFF); outline-offset: 0 }
+.thing-pick button[aria-pressed="true"]:focus-visible { outline: none }
 .thing-pick button[aria-pressed="true"] { background: #FFFFFF; color: #1E1A30; box-shadow: 0 0 0 2px var(--hero), 1px 2px 0 rgba(30, 26, 48, .1) }
 .chips { display: flex; flex-wrap: wrap; gap: 8px }
 .level-drag { touch-action: none; cursor: ns-resize; display: flex; justify-content: center; user-select: none; -webkit-user-select: none }

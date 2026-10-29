@@ -161,3 +161,7 @@ Each phase ends with Nora testing it on her phone.
 - Themes: which colors, and does Pichi's scarf change too?
 - Joining: is the name you give a household only yours, or shared with everyone?
 - Money in version 2: personal budgeting, and how a household shares money (share everything, or track who pays).
+
+## Ideas parked for later [Nora, 29 Oct]
+- **The "Looks like" picker** will grow as more containers are drawn. Instead of an endless grid, show the chosen one with "Looks like: Jar ›" and open a big drawer to pick from, or a one-row carousel. Decide when there are more containers.
+
