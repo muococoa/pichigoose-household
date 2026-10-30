@@ -9,7 +9,8 @@ import { ArchiveLink } from '../components/Archive'
 import { Floating, Screen } from '../components/Shell'
 import { Avatar, NobodyAvatar } from '../components/Avatar'
 import { Check, DeleteLink, Hand, NewTag, Struck, Tick, useArrivals, EmptyState, Sheet, Stamp, STAMP_COLORS, showUndo, tilt } from '../components/Scrapbook'
-import { ChevronDown, PlusIcon } from '../components/Icons'
+import { ChevronDown, PlusIcon, TrashIcon } from '../components/Icons'
+import { SwipeRow } from '../components/SwipeRow'
 import { MyHouseholds } from './MyHouseholds'
 import { SimilarTodo } from './SimilarTodo'
 import { findSimilar, type Similar } from '../lib/similar'
@@ -254,6 +255,18 @@ export function TodosScreen() {
               return (
                 <Tick key={x.id} checked={done} onCommit={() => toggleTodo(x, me)}>
                   {(on, toggle) => (
+                    // Swipe left for Delete, like WhatsApp (Nora, 30 Oct). Undo stays possible for a few seconds.
+                    <SwipeRow
+                      right={[
+                        {
+                          key: 'delete',
+                          label: t('common.delete'),
+                          icon: <TrashIcon />,
+                          color: 'var(--error-dark)',
+                          onClick: () => showUndo(t('todos.deleted'), t('common.undo'), db.removeWithUndo('todos', x.id)),
+                        },
+                      ]}
+                    >
                     <div className={`ln${on ? ' row-done' : ''}${detail(x) ? ' top' : ''}`} style={{ minHeight: 64, ['--title-top' as string]: '8px' }}>
                       <Check checked={on} onToggle={toggle} label={x.title} rotate={tilt(x.id)} />
                       <button type="button" onClick={() => setEditing(x)} style={{ flex: 1, minWidth: 0, fontSize: 17, padding: '8px 0' }}>
@@ -266,6 +279,7 @@ export function TodosScreen() {
                         {who ? <PersonLink id={who.id}><Avatar avatar={who.avatar} label={who.display_name} /></PersonLink> : <NobodyAvatar />}
                       </span>
                     </div>
+                    </SwipeRow>
                   )}
                 </Tick>
               )

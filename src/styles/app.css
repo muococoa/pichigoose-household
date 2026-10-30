@@ -685,3 +685,9 @@ html[data-kb="open"] body.adding .with-tabbar > .scroll {
           mask: var(--doodle) 50% 0 / 120px auto no-repeat, linear-gradient(#000 62%, transparent 98%); mask-composite: intersect;
 }
 .pencil-goose { display: block; aspect-ratio: 292 / 600; margin: 0 auto; background: #63586B; opacity: .5; -webkit-mask: var(--doodle) center / contain no-repeat; mask: var(--doodle) center / contain no-repeat }
+
+/* Swipe a row for its buttons (components/SwipeRow.tsx, Nora, 30 Oct): rounded, in the paper's style. */
+.swipe-row { position: relative; touch-action: pan-y }
+.swipe-front { position: relative; transition: transform .32s var(--ease-out) }
+.swipe-actions { position: absolute; top: 0; bottom: 0; display: flex; overflow: hidden; padding: 7px 0; transition: width .32s var(--ease-out) }
+.swipe-btn { flex: 1 1 0; min-width: 0; margin: 0 3px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; border-radius: 14px; color: #FFFFFF; font-size: 13px; line-height: 16px; font-weight: 800; overflow: hidden; white-space: nowrap }
