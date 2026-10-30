@@ -11,6 +11,8 @@ import { Avatar, NobodyAvatar } from '../components/Avatar'
 import { Check, Hand, Struck, Tick, useArrivals, EmptyState, Sheet, Stamp, STAMP_COLORS, showUndo, tilt } from '../components/Scrapbook'
 import { ChevronDown, PlusIcon, TrashIcon } from '../components/Icons'
 import { MyHouseholds } from './MyHouseholds'
+import { SimilarTodo } from './SimilarTodo'
+import { findSimilar, type Similar } from '../lib/similar'
 import { useDesktop } from '../lib/desktop'
 import { forget, useKept } from '../lib/kept'
 import { PersonLink } from './Person'
@@ -40,6 +42,22 @@ function groupOf(todo: Todo): Group {
 }
 
 /** Small chip stickers for picking one option. */
+/** Bring a done to-do back for today instead of adding a copy (Nora, 30 Oct). It comes back as a fresh to-do with
+ *  the same title and person, so the old one stays in "Done earlier" and still counts for trophies. */
+export function bringTodoBack(from: Todo, repeat: Todo['repeat'], householdId: string, me: string, due: string | null, assignee: string | null = from.assignee_id) {
+  db.insert('todos', {
+    title: from.title,
+    assignee_id: assignee,
+    due_date: due,
+    repeat,
+    household_id: householdId,
+    created_by: me,
+    created_at: new Date().toISOString(),
+    done_at: null,
+    done_by: null,
+  })
+}
+
 export function Chip({ on, children, onClick }: { on: boolean; children: React.ReactNode; onClick: () => void }) {
   return (
     <button type="button" className={`stk sm ${on ? 'prim' : 'sec'}`} aria-pressed={on} onClick={onClick} style={{ transform: `rotate(${on ? -1.5 : 1}deg)` }}>
@@ -111,9 +129,17 @@ export function TodosScreen() {
   const person = (id: string | null) => people.find((p) => p.id === id)
   const commentsOn = useCommentCounts()
 
+  const [quickSimilar, setQuickSimilar] = useState<Similar | null>(null)
   function quickAdd(e: FormEvent) {
     e.preventDefault()
     if (!quick.trim() || !hid) return
+    const found = findSimilar(quick, todos.rows)
+    if (found) setQuickSimilar(found)
+    else quickInsert()
+  }
+  function quickInsert() {
+    if (!quick.trim() || !hid) return
+    setQuickSimilar(null)
     db.insert('todos', {
       title: quick.trim(),
       assignee_id: me,
@@ -279,6 +305,16 @@ export function TodosScreen() {
       </Floating>
 
       <MyHouseholds open={switching} onClose={() => setSwitching(false)} />
+      <SimilarTodo
+        similar={quickSimilar}
+        onClose={() => setQuickSimilar(null)}
+        onAddAnyway={quickInsert}
+        onBringBack={(from, repeatAs) => {
+          if (hid) bringTodoBack(from, repeatAs, hid, me, toDateString(new Date()), me)
+          setQuickSimilar(null)
+          setQuick('')
+        }}
+      />
       {editing && hid && <TodoSheet key={editing === 'new' ? 'new' : editing.id} todo={editing === 'new' ? null : editing} householdId={hid} people={people} onClose={() => { forget('todo:'); setEditing(null) }} />}
     </Screen>
   )
@@ -322,9 +358,10 @@ export function TodoSheet({ todo, householdId, people, onClose }: { todo: Todo |
     onClose()
   }
 
-  function add(e: FormEvent) {
-    e.preventDefault()
-    if (todo || !title.trim()) return
+  // Before a copy lands on the list, Pichi checks for the same to-do (Nora, 30 Oct).
+  const all = useTodos(householdId)
+  const [similar, setSimilar] = useState<Similar | null>(null)
+  function insert() {
     db.insert('todos', {
       ...fields,
       household_id: householdId,
@@ -333,6 +370,19 @@ export function TodoSheet({ todo, householdId, people, onClose }: { todo: Todo |
       done_at: null,
       done_by: null,
     })
+    setSimilar(null)
+    onClose()
+  }
+  function add(e: FormEvent) {
+    e.preventDefault()
+    if (todo || !title.trim()) return
+    const found = findSimilar(title, all.rows)
+    if (found) setSimilar(found)
+    else insert()
+  }
+  function bringBack(from: Todo, repeatAs: Todo['repeat']) {
+    bringTodoBack(from, repeatAs, householdId, me, fields.due_date, fields.assignee_id)
+    setSimilar(null)
     onClose()
   }
 
@@ -345,6 +395,7 @@ export function TodoSheet({ todo, householdId, people, onClose }: { todo: Todo |
   }
 
   return (
+    <>
     <Sheet
       open
       onClose={close}
@@ -455,5 +506,7 @@ export function TodoSheet({ todo, householdId, people, onClose }: { todo: Todo |
         </div>
       )}
     </Sheet>
+    <SimilarTodo similar={similar} onClose={() => setSimilar(null)} onAddAnyway={insert} onBringBack={bringBack} />
+    </>
   )
 }

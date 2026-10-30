@@ -593,5 +593,16 @@
     "yesterday": "Yesterday",
     "again": "Again",
     "added": "Added"
+  },
+  "similar": {
+    "title": "Haven't we done this before?",
+    "text": "This looks like something you do often. Bring it back instead of adding a new one?",
+    "alreadyTitle": "Already on the list!",
+    "alreadyText": "“{{title}}” is already waiting on your list.",
+    "doneWhen": "done {{when}}",
+    "bringBack": "Bring back",
+    "repeat": "Make it repeat",
+    "keep": "Okay",
+    "addAnyway": "Add as new anyway"
   }
 }

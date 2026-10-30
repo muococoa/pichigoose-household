@@ -56,6 +56,11 @@
     -webkit-mask-size: 170px auto, auto; mask-size: 170px auto, auto;
   }
 
+  /* Pichi says: bottom centre of the window, a bit bigger. */
+  .says { left: 0; right: 0; bottom: 40px; max-width: 560px }
+  .says-pichi { width: 150px }
+  .says-bubble { margin-bottom: 80px }
+
   /* Phone-only pieces. */
   .fab, .phone-only { display: none !important }
   /* Rows on the Home notes: a step under the note's title, close to the empty-note text. */

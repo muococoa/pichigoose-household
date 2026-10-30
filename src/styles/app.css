@@ -263,6 +263,30 @@ textarea.input { height: auto; min-height: 40px; padding: 8px 15px; resize: none
 .hub-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 6px }
 .hub-tiles .note { position: relative; display: flex; align-items: flex-end; min-height: 74px; padding: 18px 12px 14px; text-align: left }
 
+/* Pichi says (components/PichiSays.tsx): Pichi in color at the bottom with a paper speech bubble, like a game. */
+.says-back { position: fixed; inset: 0; z-index: 80; background: rgba(30, 26, 48, .18); animation: says-fade .2s ease }
+.says {
+  position: absolute; left: calc(var(--edge) + 6px); right: calc(var(--edge) + 14px); bottom: calc(var(--kb, 0px) + var(--frame) + var(--tabbar-gap));
+  display: flex; align-items: flex-end; gap: 0; max-width: 520px; margin: 0 auto;
+}
+.says-pichi { flex: none; width: 124px; height: auto; margin-right: -6px; filter: drop-shadow(2px 4px 0 rgba(30, 26, 48, .12)); animation: says-hop .55s cubic-bezier(.34, 1.56, .64, 1) both; transform-origin: 50% 100% }
+.says-bubble {
+  position: relative; flex: 1; min-width: 0; margin-bottom: 64px; margin-left: -10px; padding: 16px 18px 14px;
+  background: #FFFEFC url("../../assets/paper-white.png") 0 0 / 256px 256px; border-radius: 24px;
+  box-shadow: 0 0 0 1.5px rgba(30, 26, 48, .1), 3px 5px 0 rgba(30, 26, 48, .12);
+  max-height: calc(100dvh - var(--kb, 0px) - 160px); overflow-y: auto;
+  transform-origin: 0% 100%; animation: says-pop .5s .12s cubic-bezier(.34, 1.56, .64, 1) both;
+}
+/* The bubble's tail, pointing down at Pichi's beak. */
+.says-bubble::after {
+  content: ''; position: absolute; left: -16px; bottom: 6px; width: 26px; height: 22px; background: #FFFEFC;
+  clip-path: polygon(0 100%, 100% 0, 100% 70%);
+}
+@keyframes says-fade { from { opacity: 0 } }
+@keyframes says-hop { 0% { transform: translateY(120%) } 70% { transform: translateY(-6%) scale(1.04, .96) } 100% { transform: none } }
+@keyframes says-pop { 0% { transform: scale(.2); opacity: 0 } 60% { opacity: 1 } 100% { transform: none } }
+@media (prefers-reduced-motion: reduce) { .says-pichi, .says-bubble, .says-back { animation: none } }
+
 /* Desktop-only pieces (the desktop sheet turns them back on). */
 .desktop-only:not(.desk *) { display: none }
 .stk.round.fab { position: fixed; right: calc(var(--edge) + 14px); bottom: calc(var(--tabbar) + 12px); z-index: 6; width: 50px; height: 50px }

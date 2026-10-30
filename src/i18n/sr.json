@@ -602,5 +602,16 @@
     "yesterday": "Juče",
     "again": "Opet",
     "added": "Dodato"
+  },
+  "similar": {
+    "title": "Zar ovo nismo već radili?",
+    "text": "Ovo izgleda kao nešto što radiš često. Da ga vratimo umesto da dodaš novi?",
+    "alreadyTitle": "Već je na listi!",
+    "alreadyText": "„{{title}}” već čeka na tvojoj listi.",
+    "doneWhen": "urađeno {{when}}",
+    "bringBack": "Vrati",
+    "repeat": "Neka se ponavlja",
+    "keep": "Važi",
+    "addAnyway": "Ipak dodaj kao novi"
   }
 }
