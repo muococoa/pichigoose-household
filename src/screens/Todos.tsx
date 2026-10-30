@@ -5,6 +5,7 @@ import { useMe } from '../auth'
 import { db } from '../data/store'
 import { useHousehold, useProjects, useTodos, type Profile, type Todo } from '../data/hooks'
 import { recentlyDone, toggleTodo } from '../data/actions'
+import { ArchiveLink } from '../components/Archive'
 import { Floating, Screen } from '../components/Shell'
 import { Avatar, NobodyAvatar } from '../components/Avatar'
 import { Check, Hand, Struck, Tick, useArrivals, EmptyState, Sheet, Stamp, STAMP_COLORS, showUndo, tilt } from '../components/Scrapbook'
@@ -234,6 +235,27 @@ export function TodosScreen() {
           </section>
           )
         })}
+        {/* Done before today: archived, one tap away, with "Again" for the things you do over and over (Nora, 30 Oct). */}
+        <ArchiveLink
+          title={t('archive.todosTitle')}
+          people={people}
+          rows={todos.rows.filter((x) => x.done_at && !recentlyDone(x) && !x.project_id).map((x) => ({ id: x.id, name: x.title, at: x.done_at as string, by: x.done_by }))}
+          onAgain={(r) => {
+            const was = todos.rows.find((x) => x.id === r.id)
+            if (!hid || !was) return
+            db.insert('todos', {
+              title: was.title,
+              assignee_id: was.assignee_id,
+              due_date: toDateString(new Date()),
+              repeat: null,
+              household_id: hid,
+              created_by: me,
+              created_at: new Date().toISOString(),
+              done_at: null,
+              done_by: null,
+            })
+          }}
+        />
         {todos.loaded && !groups.length && (
           // Pichi honks: nothing to do!
           <EmptyState pose="honk" color="#F2C1C4" zoom={1.05} rotate={3}>

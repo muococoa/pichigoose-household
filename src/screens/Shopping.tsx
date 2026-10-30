@@ -5,6 +5,7 @@ import { useMe } from '../auth'
 import { db } from '../data/store'
 import { useHousehold, useItems, useLists, useProjects, usePantry, type Item, type List } from '../data/hooks'
 import { recentlyBought, toggleItem } from '../data/actions'
+import { ArchiveLink } from '../components/Archive'
 import { Floating, Screen } from '../components/Shell'
 import { Avatar } from '../components/Avatar'
 import { Check, Hand, PichiAvatar, PoseStamp, Struck, Tick, useArrivals, EmptyState, Sheet, Stamp, STAMP_COLORS, showToast, showUndo, tilt, type TapeKind } from '../components/Scrapbook'
@@ -412,6 +413,16 @@ export function ShoppingScreen() {
                 {bought.map((x) => row(x, true))}
               </>
             )}
+            <ArchiveLink
+              title={t('archive.shoppingTitle')}
+              people={people}
+              rows={items.rows.filter((x) => x.checked_at && !recentlyBought(x)).map((x) => ({ id: x.id, name: x.name, at: x.checked_at as string, by: x.checked_by }))}
+              onAgain={(r) => {
+                const was = items.rows.find((x) => x.id === r.id)
+                if (!list || !was) return
+                db.insert('list_items', { list_id: list.id, name: was.name, note: null, category: was.category ?? null, added_by: me, created_at: new Date().toISOString(), checked_at: null, checked_by: null, position: 0 })
+              }}
+            />
           </div>
         </div>
       ) : (
@@ -431,6 +442,17 @@ export function ShoppingScreen() {
             {bought.map((x) => row(x, true))}
           </>
         )}
+        {/* Bought before today: archived, with "Buy again" (Nora, 30 Oct). */}
+        <ArchiveLink
+          title={t('archive.shoppingTitle')}
+          people={people}
+          rows={items.rows.filter((x) => x.checked_at && !recentlyBought(x)).map((x) => ({ id: x.id, name: x.name, at: x.checked_at as string, by: x.checked_by }))}
+          onAgain={(r) => {
+            const was = items.rows.find((x) => x.id === r.id)
+            if (!list || !was) return
+            db.insert('list_items', { list_id: list.id, name: was.name, note: null, category: was.category ?? null, added_by: me, created_at: new Date().toISOString(), checked_at: null, checked_by: null, position: 0 })
+          }}
+        />
       </div>
       )}
 

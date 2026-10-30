@@ -591,5 +591,15 @@
   },
   "hub": {
     "inThisHome": "U ovom domu"
+  },
+  "archive": {
+    "open_one": "Ranije urađeno · {{count}}",
+    "open_few": "Ranije urađeno · {{count}}",
+    "open_other": "Ranije urađeno · {{count}}",
+    "todosTitle": "Ranije urađeno",
+    "shoppingTitle": "Ranije kupljeno",
+    "yesterday": "Juče",
+    "again": "Opet",
+    "added": "Dodato"
   }
 }

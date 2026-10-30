@@ -583,5 +583,14 @@
   },
   "hub": {
     "inThisHome": "In this home"
+  },
+  "archive": {
+    "open_one": "Done earlier · {{count}}",
+    "open_other": "Done earlier · {{count}}",
+    "todosTitle": "Done earlier",
+    "shoppingTitle": "Bought earlier",
+    "yesterday": "Yesterday",
+    "again": "Again",
+    "added": "Added"
   }
 }

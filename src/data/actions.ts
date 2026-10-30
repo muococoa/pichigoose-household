@@ -76,16 +76,16 @@ export function toggleTodo(todo: Todo, me: string) {
   }
 }
 
-const DAY = 24 * 60 * 60 * 1000
+// Bought items and done to-dos stay on the list for the rest of the day they were ticked, then move to the archive
+// ("Done earlier") at midnight (Nora, 30 Oct). They used to stay a full 24 hours, so last night's were still there.
+const sameDay = (iso: string, now: number) => new Date(iso).toDateString() === new Date(now).toDateString()
 
-/** Bought items stay visible for a day so people can undo, then disappear. */
 export function recentlyBought(item: Item, now = Date.now()) {
-  return Boolean(item.checked_at) && now - new Date(item.checked_at as string).getTime() < DAY
+  return Boolean(item.checked_at) && sameDay(item.checked_at as string, now)
 }
 
-/** Done to-dos stay visible for a day too. */
 export function recentlyDone(todo: Todo, now = Date.now()) {
-  return Boolean(todo.done_at) && now - new Date(todo.done_at as string).getTime() < DAY
+  return Boolean(todo.done_at) && sameDay(todo.done_at as string, now)
 }
 
 export function byPositionThenAge(a: Item, b: Item) {
