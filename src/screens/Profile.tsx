@@ -8,7 +8,7 @@ import { useMyProfile, type Avatar as AvatarData } from '../data/hooks'
 import { Screen } from '../components/Shell'
 import { ACCESSORIES, Avatar, CHARACTERS, COLORS, COLOR_HEX } from '../components/Avatar'
 import { Hand } from '../components/Scrapbook'
-import { BackIcon } from '../components/Icons'
+import { BackIcon, PencilIcon } from '../components/Icons'
 import { LangSwitch } from '../components/LangSwitch'
 import { useDesktop } from '../lib/desktop'
 import { THEMES } from '../lib/theme'
@@ -339,29 +339,24 @@ export function SettingsScreen() {
 
   return (
     <Screen center>
+      {/* Settings looks like your profile (Nora, 30 Oct): your character big, your name, a pink Change character
+          button, and the settings underneath where the wish list would be. */}
       <div style={{ padding: 'calc(var(--top) + 8px) 22px 32px 40px', display: 'flex', flexDirection: 'column', gap: 22 }}>
-        <div className="row" style={{ gap: 6, marginLeft: -10 }}>
-          <button type="button" aria-label={t('common.back')} onClick={back} style={{ display: 'flex', color: '#1E1A30' }}>
-            <BackIcon />
-          </button>
-          <Hand as="h1" style={{ margin: 0 }}>
-            {t('settings.title')}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 14 }}>
+          <div className="row" style={{ alignSelf: 'stretch', marginLeft: -10 }}>
+            <button type="button" aria-label={t('common.back')} onClick={back} style={{ display: 'flex', color: '#1E1A30' }}>
+              <BackIcon />
+            </button>
+          </div>
+          <Avatar whole avatar={profile?.avatar} size={220} label={profile?.display_name} className="" style={{ marginTop: 18, filter: 'drop-shadow(2px 4px 0 rgba(30,26,48,.12))' }} />
+          <Hand as="h1" size={48} lineHeight={52} style={{ margin: '22px 0 0', textAlign: 'center' }}>
+            {profile?.display_name ?? ''}
           </Hand>
+          <Link to="/profile" className="stk prim sm" style={{ marginTop: 18, transform: 'rotate(-1.5deg)' }}>
+            <PencilIcon />
+            {t('settings.changeCharacter')}
+          </Link>
         </div>
-
-        {/* You come here from your profile's gear, so your name opens Change character (Nora, 29 Oct). */}
-        <Link to="/profile" className="flag-note row" style={{ gap: 14, transform: 'rotate(-.6deg)' }}>
-          {/* The note, cut into an arrow, and its boomerang-shaped end in the theme color. */}
-          <span className="flag-bg" aria-hidden />
-          <span className="flag-tip" aria-hidden />
-          <Avatar avatar={profile?.avatar} size={56} />
-          <span className="grow">
-            <span style={{ display: 'block', fontSize: 18, fontWeight: 800, color: '#1E1A30' }}>{profile?.display_name}</span>
-            <span className="cap" style={{ fontSize: 14 }}>
-              {t('settings.changeCharacter')}
-            </span>
-          </span>
-        </Link>
 
         <section>
           <Hand size={30} lineHeight={32}>
