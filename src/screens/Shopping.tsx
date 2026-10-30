@@ -140,8 +140,7 @@ export function ShoppingScreen() {
     db.insert('list_items', {
       list_id: list.id,
       name,
-      note: null,
-      added_by: me,
+        added_by: me,
       created_at: new Date().toISOString(),
       checked_at: null,
       checked_by: null,
@@ -420,7 +419,7 @@ export function ShoppingScreen() {
               onAgain={(r) => {
                 const was = items.rows.find((x) => x.id === r.id)
                 if (!list || !was) return
-                db.insert('list_items', { list_id: list.id, name: was.name, note: null, category: was.category ?? null, added_by: me, created_at: new Date().toISOString(), checked_at: null, checked_by: null, position: 0 })
+                db.insert('list_items', { list_id: list.id, name: was.name, category: was.category ?? null, added_by: me, created_at: new Date().toISOString(), checked_at: null, checked_by: null, position: 0 })
               }}
             />
           </div>
@@ -450,7 +449,7 @@ export function ShoppingScreen() {
           onAgain={(r) => {
             const was = items.rows.find((x) => x.id === r.id)
             if (!list || !was) return
-            db.insert('list_items', { list_id: list.id, name: was.name, note: null, category: was.category ?? null, added_by: me, created_at: new Date().toISOString(), checked_at: null, checked_by: null, position: 0 })
+            db.insert('list_items', { list_id: list.id, name: was.name, category: was.category ?? null, added_by: me, created_at: new Date().toISOString(), checked_at: null, checked_by: null, position: 0 })
           }}
         />
       </div>

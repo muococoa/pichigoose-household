@@ -44,7 +44,6 @@ export type Project = Row & {
 export type Item = Row & {
   list_id: string
   name: string
-  note: string | null
   added_by: string | null
   created_at: string
   checked_by: string | null

@@ -352,7 +352,6 @@ export function ProjectScreen() {
     db.insert('list_items', {
       list_id: list.id,
       name,
-      note: null,
       added_by: me,
       created_at: new Date().toISOString(),
       checked_at: null,

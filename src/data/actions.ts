@@ -42,7 +42,6 @@ export function setPantryLevel(p: PantryItem, level: number, me: string, lists: 
   const row = db.insert('list_items', {
     list_id: list.id,
     name: last.name.trim(),
-    note: null,
     added_by: me,
     created_at: now,
     checked_at: null,
