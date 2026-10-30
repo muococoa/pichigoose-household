@@ -102,7 +102,7 @@ export function Comments({ target }: { target: CommentTarget }) {
       ))}
       {/* The typing bar sits here, and floats up above the keyboard while you type. */}
       <div className="typing-slot" style={{ marginTop: thread.length ? 4 : 0 }}>
-        <TypingBar value={text} onChange={setText} onSend={(body) => send(body)} onSticker={(name) => send('', name)} placeholder={t('comments.placeholder')} />
+        <TypingBar mentionable value={text} onChange={setText} onSend={(body) => send(body)} onSticker={(name) => send('', name)} placeholder={t('comments.placeholder')} />
       </div>
     </section>
   )

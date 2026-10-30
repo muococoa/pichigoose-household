@@ -614,5 +614,12 @@
     "repeat": "Neka se ponavlja",
     "keep": "Važi",
     "addAnyway": "Ipak dodaj kao novi"
+  },
+  "mentions": {
+    "pick": "Označi nekoga",
+    "tagged": "{{name}} te pominje",
+    "on": "u „{{title}}”",
+    "inMessages": "u porukama",
+    "go": "Pogledaj"
   }
 }

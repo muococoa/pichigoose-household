@@ -103,7 +103,14 @@ export function TodosScreen() {
       setEditing('new')
       setParams({}, { replace: true })
     }
-  }, [params, setParams])
+    // "Go check" from a tag on Home opens the to-do it was on.
+    const open = params.get('open')
+    const found = open && todos.rows.find((x) => x.id === open)
+    if (found) {
+      setEditing(found)
+      setParams({}, { replace: true })
+    }
+  }, [params, setParams, todos.rows])
 
   const others = people.filter((p) => p.id !== me)
   const visible = useMemo(() => {

@@ -26,6 +26,7 @@ import { InkChevron, PlusIcon } from '../components/Icons'
 import { MyHouseholds } from './MyHouseholds'
 import { PendingInvites } from './Invite'
 import { AddSheet } from './AddSheet'
+import { MentionBanner } from '../components/MentionBanner'
 import { PersonLink } from './Person'
 import { NotePanel, colorOf } from './Notes'
 import { AskName, madeFromEmail } from './AskName'
@@ -483,6 +484,7 @@ export function HomeScreen() {
         </div>
         <AskName save open={needsName && !askedName} onClose={() => setAskedName(true)} onJoin={() => {}} />
         {openNote && <NotePanel id={openNote} onClose={() => setOpenNote(null)} />}
+        <MentionBanner />
       </Screen>
     )
   }
@@ -542,6 +544,7 @@ export function HomeScreen() {
 
       <MyHouseholds open={switching} onClose={() => setSwitching(false)} />
       <AddSheet open={adding} onClose={() => setAdding(false)} />
+      <MentionBanner />
       <AskName save open={needsName && !askedName} onClose={() => setAskedName(true)} onJoin={() => {}} />
     </Screen>
   )

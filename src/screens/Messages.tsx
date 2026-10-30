@@ -339,6 +339,7 @@ function Conversation({ chatKey, header, back }: { chatKey: string; header?: boo
         <div ref={endRef} />
       </div>
       <TypingBar
+        mentionable
         className="composer"
         multiline
         value={text}

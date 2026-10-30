@@ -605,5 +605,12 @@
     "repeat": "Make it repeat",
     "keep": "Okay",
     "addAnyway": "Add as new anyway"
+  },
+  "mentions": {
+    "pick": "Tag someone",
+    "tagged": "{{name}} tagged you",
+    "on": "on “{{title}}”",
+    "inMessages": "in Messages",
+    "go": "Go check"
   }
 }

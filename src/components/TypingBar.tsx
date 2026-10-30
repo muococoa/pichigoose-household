@@ -2,6 +2,10 @@ import { useEffect, useLayoutEffect, useRef, useState, type FormEvent, type Keyb
 import { useTranslation } from 'react-i18next'
 import { SendIcon } from './Icons'
 import { StickerButton } from './Stickers'
+import { useHousehold } from '../data/hooks'
+import { useMe } from '../auth'
+import { Avatar } from './Avatar'
+import { insertMention, typingMention } from '../lib/mentions'
 
 // One typing bar for every place you type a short text (Nora, 29 Oct): the chat, comments and Shopping's add field.
 // A strip of our paper with the field, stickers (where they fit) and the round send button, floating right above
@@ -31,9 +35,11 @@ type Props = {
   onBlur?: () => void
   /** Hidden from tabbing and screen readers while it's closed (Shopping's add field). */
   closed?: boolean
+  /** Typing @ offers the household's people to tag (comments and the chat). */
+  mentionable?: boolean
 }
 
-export function TypingBar({ value, onChange, onSend, placeholder, onSticker, multiline, above, fieldRef, className = '', onBlur, closed }: Props) {
+export function TypingBar({ value, onChange, onSend, placeholder, onSticker, multiline, above, fieldRef, className = '', onBlur, closed, mentionable }: Props) {
   const { t } = useTranslation()
   const own = useRef<HTMLTextAreaElement & HTMLInputElement>(null)
   // While you're typing (and for a moment after the field lets go, so a tap on Send still lands on it).
@@ -88,8 +94,36 @@ export function TypingBar({ value, onChange, onSend, placeholder, onSticker, mul
       onBlur?.()
     },
   }
+  // Typing @ shows the household's people; tap one to tag them (Nora, 30 Oct). Only where people talk (comments and
+  // the chat), so not in Shopping's add field.
+  const { people } = useHousehold()
+  const me = useMe()
+  const query = mentionable ? typingMention(value) : null
+  const matches = query === null ? [] : people.filter((p) => p.id !== me && p.display_name.toLocaleLowerCase().startsWith(query.toLocaleLowerCase()))
+  const picker = matches.length > 0 && (
+    <div className="mention-picker" role="listbox" aria-label={t('mentions.pick')}>
+      {matches.map((p) => (
+        <button
+          key={p.id}
+          type="button"
+          role="option"
+          aria-selected={false}
+          className="mention-pick"
+          // Picks on touch, before the field could lose the keyboard.
+          onPointerDown={(e) => {
+            e.preventDefault()
+            onChange(insertMention(value, p.display_name))
+          }}
+        >
+          <Avatar avatar={p.avatar} label={p.display_name} size={26} />
+          {p.display_name}
+        </button>
+      ))}
+    </div>
+  )
   return (
-    <form className={`typing-bar${above ? ' quoting' : ''}${typing ? ' typing' : ''} ${className}`} onSubmit={send}>
+    <form className={`typing-bar${above || picker ? ' quoting' : ''}${typing ? ' typing' : ''} ${className}`} onSubmit={send}>
+      {picker}
       {above}
       {multiline ? (
         <textarea {...field} rows={1} onChange={(e) => onChange(e.target.value)} onKeyDown={key} />

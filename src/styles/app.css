@@ -290,6 +290,25 @@ textarea.input { height: auto; min-height: 40px; padding: 8px 15px; resize: none
 /* "new" on a to-do added today. */
 .new-tag { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 999px; background: color-mix(in srgb, var(--hero) 16%, #FFFFFF); color: var(--hero-dark); font-size: 11px; font-weight: 800; letter-spacing: .02em; vertical-align: 2px; text-transform: lowercase }
 
+/* Tagging someone: typing @ shows the household's people above the field. */
+.mention-picker { flex-basis: 100%; display: flex; gap: 8px; flex-wrap: wrap; padding: 2px 2px 6px }
+.mention-pick { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px 4px 4px; border-radius: 999px; background: #FFFFFF; font-weight: 800; font-size: 15px; color: #1E1A30; box-shadow: 0 0 0 2px color-mix(in srgb, var(--hero) 24%, #FFFFFF) }
+.mention-pick:active { scale: .95 }
+/* A tag inside a comment or message. */
+.mention { font-weight: 800; color: var(--hero-dark) }
+.bubble.mine .mention { color: inherit; text-decoration: underline; text-underline-offset: 2px }
+
+/* "Danko tagged you": a paper card that slides down at the top, like a phone notification (desktop: bottom right). */
+.mention-card {
+  position: fixed; z-index: 45; left: calc(var(--edge) + 14px); right: calc(var(--edge) + 14px); top: calc(var(--status, 0px) + var(--frame) + 10px);
+  display: flex; align-items: center; gap: 10px; padding: 10px 10px 10px 12px; border-radius: 22px;
+  background: #FFFEFC url("../../assets/paper-white.png") 0 0 / 256px 256px;
+  box-shadow: 0 0 0 1.5px rgba(30, 26, 48, .08), 3px 5px 0 rgba(30, 26, 48, .12);
+  animation: card-down .55s cubic-bezier(.34, 1.56, .64, 1) both;
+}
+@keyframes card-down { from { transform: translateY(-140%) } }
+@media (prefers-reduced-motion: reduce) { .mention-card { animation: none } }
+
 /* Desktop-only pieces (the desktop sheet turns them back on). */
 .desktop-only:not(.desk *) { display: none }
 .stk.round.fab { position: fixed; right: calc(var(--edge) + 14px); bottom: calc(var(--tabbar) + 12px); z-index: 6; width: 50px; height: 50px }

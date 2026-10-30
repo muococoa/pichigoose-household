@@ -61,6 +61,8 @@
   .says-pichi { width: 150px }
   .says-bubble { margin-bottom: 80px }
 
+  .mention-card { left: auto; top: auto; right: 40px; bottom: 36px; width: 460px; animation-name: says-pop; transform-origin: 100% 100% }
+
   /* Phone-only pieces. */
   .fab, .phone-only { display: none !important }
   /* Rows on the Home notes: a step under the note's title, close to the empty-note text. */
