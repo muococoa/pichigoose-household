@@ -263,6 +263,7 @@ export function TodosScreen() {
                           label: t('common.delete'),
                           icon: <TrashIcon />,
                           color: 'var(--error-dark)',
+                          fill: 'var(--hero)',
                           onClick: () => showUndo(t('todos.deleted'), t('common.undo'), db.removeWithUndo('todos', x.id)),
                         },
                       ]}
