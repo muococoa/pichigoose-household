@@ -405,10 +405,9 @@ export function TodoSheet({ todo, householdId, people, onClose }: { todo: Todo |
 
   function remove() {
     if (!todo) return
-    const { id, ...rest } = todo
-    db.remove('todos', id)
+    const undo = db.removeWithUndo('todos', todo.id)
     onClose()
-    showUndo(t('todos.deleted'), t('common.undo'), () => db.insert('todos', { ...rest, id }))
+    showUndo(t('todos.deleted'), t('common.undo'), undo)
   }
 
   return (

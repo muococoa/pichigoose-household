@@ -194,10 +194,9 @@ export function ShoppingScreen() {
       setEditing(null)
       return
     }
-    const { id, ...rest } = editing
-    db.remove('list_items', id)
+    const undo = db.removeWithUndo('list_items', editing.id)
     setEditing(null)
-    showUndo(t('shopping.itemDeleted'), t('common.undo'), () => db.insert('list_items', { ...rest, id }))
+    showUndo(t('shopping.itemDeleted'), t('common.undo'), undo)
   }
 
   // Lists keep the order people give them (shared by the household). Groceries always stays first.

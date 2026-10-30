@@ -189,10 +189,9 @@ function BuySheet({ item, onClose }: { item: Item; onClose: () => void }) {
     onClose()
   }
   function remove() {
-    const { id, ...rest } = item
-    db.remove('list_items', id)
+    const undo = db.removeWithUndo('list_items', item.id)
     onClose()
-    showUndo(t('shopping.itemDeleted'), t('common.undo'), () => db.insert('list_items', { ...rest, id }))
+    showUndo(t('shopping.itemDeleted'), t('common.undo'), undo)
   }
   return (
     <Sheet

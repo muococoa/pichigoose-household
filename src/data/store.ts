@@ -15,7 +15,7 @@ type Match = Record<string, string>
 type NewOp =
   | { kind: 'insert'; table: string; row: Row }
   | { kind: 'update'; table: string; match: Match; patch: Record<string, unknown>; carry?: Row }
-  | { kind: 'delete'; table: string; match: Match }
+  | { kind: 'delete'; table: string; match: Match; holdUntil?: number }
 type Op = NewOp & { seq: number }
 
 type Result = { data: unknown[] | null; error: unknown }
@@ -181,7 +181,32 @@ export const db = {
   remove(table: string, match: Match | string) {
     mutate({ kind: 'delete', table, match: typeof match === 'string' ? { id: match } : match })
   },
+  /**
+   * Delete with Undo (Nora, 30 Oct): the row disappears right away, but the delete only goes to the server once the
+   * Undo moment has passed. Undo just cancels it, so nothing the database would have deleted along with it is lost:
+   * comments on a to-do (anyone's, not only yours) and their hearts. Returns the undo.
+   */
+  removeWithUndo(table: string, id: string, holdMs = HOLD_MS) {
+    const row = [...defs.values()].filter((d) => d.table === table).map((d) => state.cache[d.key]?.find((r) => r.id === id)).find(Boolean)
+    mutate({ kind: 'delete', table, match: { id }, holdUntil: Date.now() + holdMs })
+    const seq = state.seq
+    return () => {
+      const held = state.outbox.find((op) => op.seq === seq)
+      if (!held) {
+        // Already sent (the app was away longer than the Undo moment): put the row itself back at least.
+        if (row) db.insert(table, { ...row })
+        return
+      }
+      state = { ...state, outbox: state.outbox.filter((op) => op.seq !== seq) }
+      tableVersion[table] = (tableVersion[table] ?? 0) + 1
+      if (row) eachLoaded(table, (def, rows) => (def.belongs(row) && !rows.some((r) => r.id === row.id) ? [...rows, row] : rows))
+      notify()
+    }
+  },
 }
+
+// A little longer than the Undo button shows (5 seconds), so a tap at the last moment still counts.
+const HOLD_MS = 6000
 
 // ---------------------------------------------------------------------------
 // Sending the outbox
@@ -220,6 +245,11 @@ export async function flush() {
   try {
     while (state.outbox.length) {
       const op = state.outbox[0]
+      // A delete waiting out its Undo moment holds the line (changes stay in order), then goes.
+      if (op.kind === 'delete' && op.holdUntil && op.holdUntil > Date.now()) {
+        window.setTimeout(() => void flush(), op.holdUntil - Date.now() + 50)
+        break
+      }
       const result = await send(op)
       if (result === 'retry') break
       state = { ...state, outbox: state.outbox.slice(1) }

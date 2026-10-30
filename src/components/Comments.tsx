@@ -132,10 +132,9 @@ function CommentRow({ c, hearts }: { c: Comment; hearts: Heart[] }) {
       <HeartButton target={target} hearts={hearts} />
       {c.author_id === me && (
         <button type="button" className="comment-delete" aria-label={t('common.delete')} onClick={() => {
-            // Gone right away, with a floating Undo for 5 seconds that puts it back exactly as it was.
-            const { id, ...rest } = c
-            db.remove('comments', id)
-            showUndo(t('comments.deleted'), t('common.undo'), () => db.insert('comments', { ...rest, id }))
+            // Gone right away, with a floating Undo for 5 seconds; it only really goes once that's passed, so Undo keeps
+            // its hearts too.
+            showUndo(t('comments.deleted'), t('common.undo'), db.removeWithUndo('comments', c.id))
           }}>
           <CloseIcon size={16} />
         </button>

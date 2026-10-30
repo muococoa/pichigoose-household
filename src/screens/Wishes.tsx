@@ -133,10 +133,10 @@ function WishSheet({ wish, onClose }: { wish: Wish; onClose: () => void }) {
     onClose()
   }
   function remove() {
-    const { id, ...rest } = wish
-    db.remove('wishes', id)
+    // Held until the Undo moment passes, so a housemate's secret "I'll get this" survives an Undo too.
+    const undo = db.removeWithUndo('wishes', wish.id)
     onClose()
-    showUndo(t('wishes.deleted'), t('common.undo'), () => db.insert('wishes', { ...rest, id }))
+    showUndo(t('wishes.deleted'), t('common.undo'), undo)
   }
   const field = (key: keyof typeof draft, label: string, placeholder?: string, type = 'text') => (
     <div style={{ marginTop: key === 'name' ? 0 : 14 }}>
