@@ -26,7 +26,7 @@ export function useTapeBounce(row: RefObject<HTMLElement | null>, current: strin
 /** Does this row take a swipe this way? Swiping left shows the buttons on its right, and the other way round; an
  *  open row takes both ways (to close it). */
 function rowOwns(row: HTMLElement, dx: number) {
-  const open = row.querySelector<HTMLElement>('.swipe-front')?.style.transform
+  const open = row.querySelector<HTMLElement>('.swipe-track')?.style.transform
   return Boolean(open) || row.hasAttribute(dx < 0 ? 'data-swipe-right' : 'data-swipe-left')
 }
 

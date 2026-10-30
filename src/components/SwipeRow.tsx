@@ -95,36 +95,43 @@ export function SwipeRow({ left = [], right = [], toMargin = true, children }: {
     a.onClick()
   }
 
+  // The row and its buttons ride on one track that slides as a whole, so they always move together and nothing
+  // overlaps on the way back (Nora, 30 Oct). The buttons wait just outside the row and only show while it's moved.
+  const moving = clipped !== null
   return (
-    <div ref={rowRef} className="swipe-row" data-swipe-left={maxL ? '' : undefined} data-swipe-right={maxR ? '' : undefined} style={clipped !== null ? { clipPath: `inset(-40px -40px -40px ${-clipped}px)` } : undefined} {...handlers} onTouchCancel={handlers.onTouchEnd}>
-      {left.length > 0 && (
-        <div className="swipe-actions on-left" style={{ left: 0, width: Math.max(0, x), transition: dragging ? 'none' : undefined }} aria-hidden={x <= 0}>
-          {left.map((a) => (
-            <SwipeButton key={a.key} action={a} onClick={() => run(a)} />
-          ))}
-        </div>
-      )}
-      {right.length > 0 && (
-        <div className="swipe-actions on-right" style={{ right: 0, width: Math.max(0, -x), transition: dragging ? 'none' : undefined }} aria-hidden={x >= 0}>
-          {right.map((a) => (
-            <SwipeButton key={a.key} action={a} onClick={() => run(a)} />
-          ))}
-        </div>
-      )}
+    <div ref={rowRef} className="swipe-row" data-swipe-left={maxL ? '' : undefined} data-swipe-right={maxR ? '' : undefined} style={moving ? { clipPath: `inset(-40px 0 -40px ${-clipped}px)` } : undefined} {...handlers} onTouchCancel={handlers.onTouchEnd}>
       <div
-        className="swipe-front"
+        className="swipe-track"
         style={{ transform: x ? `translateX(${x}px)` : undefined, transition: dragging ? 'none' : undefined }}
-        onTransitionEnd={() => !x && setClipped(null)}
-        // While it's open (or was just dragged), a tap on the row only closes it.
-        onClickCapture={(e) => {
-          if (x || justDragged.current) {
-            e.preventDefault()
-            e.stopPropagation()
-            if (x) settle(0)
-          }
-        }}
+        onTransitionEnd={(e) => e.target === e.currentTarget && !x && setClipped(null)}
       >
-        {children}
+        {left.length > 0 && (
+          <div className="swipe-actions on-left" style={{ width: maxL, visibility: moving ? undefined : 'hidden' }} aria-hidden={x <= 0}>
+            {left.map((a) => (
+              <SwipeButton key={a.key} action={a} onClick={() => run(a)} />
+            ))}
+          </div>
+        )}
+        <div
+          className="swipe-front"
+          // While it's open (or was just dragged), a tap on the row only closes it.
+          onClickCapture={(e) => {
+            if (x || justDragged.current) {
+              e.preventDefault()
+              e.stopPropagation()
+              if (x) settle(0)
+            }
+          }}
+        >
+          {children}
+        </div>
+        {right.length > 0 && (
+          <div className="swipe-actions on-right" style={{ width: maxR, visibility: moving ? undefined : 'hidden' }} aria-hidden={x >= 0}>
+            {right.map((a) => (
+              <SwipeButton key={a.key} action={a} onClick={() => run(a)} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )

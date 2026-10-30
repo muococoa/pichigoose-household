@@ -688,8 +688,11 @@ html[data-kb="open"] body.adding .with-tabbar > .scroll {
 
 /* Swipe a row for its buttons (components/SwipeRow.tsx, Nora, 30 Oct): rounded, in the paper's style. */
 .swipe-row { position: relative; touch-action: pan-y }
-.swipe-front { position: relative; transition: transform .32s var(--ease-out) }
-.swipe-actions { position: absolute; top: 0; bottom: 0; display: flex; overflow: hidden; padding: 7px 0; transition: width .32s var(--ease-out) }
+.swipe-track { position: relative; transition: transform .32s var(--ease-out) }
+.swipe-front { position: relative }
+.swipe-actions { position: absolute; top: 0; bottom: 0; box-sizing: border-box; display: flex; padding: 7px 0 }
+.swipe-actions.on-left { right: 100% }
+.swipe-actions.on-right { left: 100% }
 /* Each button looks like the Today stamp, untilted (Nora, 30 Oct): a thin edge, stamp corners, uppercase, and the
    stamp's worn ink over everything. A little room between it and the row. */
 .swipe-actions.on-left { padding-right: 10px }
