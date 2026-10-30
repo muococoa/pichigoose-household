@@ -8,8 +8,8 @@ import { recentlyBought, toggleItem } from '../data/actions'
 import { ArchiveLink } from '../components/Archive'
 import { Floating, Screen } from '../components/Shell'
 import { Avatar } from '../components/Avatar'
-import { Check, Hand, PichiAvatar, PoseStamp, Struck, Tick, useArrivals, EmptyState, Sheet, Stamp, STAMP_COLORS, showToast, showUndo, tilt, type TapeKind } from '../components/Scrapbook'
-import { BackIcon, PlusIcon, ShareIcon, TrashIcon } from '../components/Icons'
+import { Check, DeleteLink, Hand, PichiAvatar, PoseStamp, Struck, Tick, useArrivals, EmptyState, Sheet, Stamp, STAMP_COLORS, showToast, showUndo, tilt, type TapeKind } from '../components/Scrapbook'
+import { BackIcon, PlusIcon, ShareIcon } from '../components/Icons'
 import { ago } from '../lib/time'
 import { DndContext, MouseSensor, TouchSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, arrayMove, horizontalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
@@ -500,11 +500,6 @@ export function ShoppingScreen() {
         open={Boolean(editing)}
         onClose={closeItem}
         title={t('shopping.editItem')}
-        action={
-          <button type="button" className="sheet-trash" aria-label={t('common.delete')} title={t('common.delete')} onClick={removeItem}>
-            <TrashIcon />
-          </button>
-        }
       >
         <div>
           <label className="label" htmlFor="item-name">
@@ -569,6 +564,7 @@ export function ShoppingScreen() {
         )}
         {editing && (
           <div style={{ marginTop: 18 }}>
+            <DeleteLink label={t('shopping.deleteItem')} onClick={removeItem} />
             <Comments target={{ item_id: editing.id }} />
           </div>
         )}

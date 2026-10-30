@@ -10,8 +10,8 @@ import { useHousehold, useItemsIn, useLists, useProjects, useTodos, type Item, t
 import { toggleItem, toggleTodo } from '../data/actions'
 import { Floating, Screen } from '../components/Shell'
 import { Avatar, NobodyAvatar } from '../components/Avatar'
-import { Check, EmptyState, Hand, Menu, Sheet, showUndo, Stamp, STAMP_COLORS, Struck, Tick, Tape, tilt } from '../components/Scrapbook'
-import { BackIcon, DotsIcon, GripIcon, PlusIcon, TrashIcon } from '../components/Icons'
+import { Check, DeleteLink, EmptyState, Hand, Menu, Sheet, showUndo, Stamp, STAMP_COLORS, Struck, Tick, Tape, tilt } from '../components/Scrapbook'
+import { BackIcon, DotsIcon, GripIcon, PlusIcon } from '../components/Icons'
 import { CommentCount, Comments, useCommentCounts } from '../components/Comments'
 import { TypingBar } from '../components/TypingBar'
 import { autoFocusField } from '../lib/keyboard'
@@ -198,16 +198,12 @@ function BuySheet({ item, onClose }: { item: Item; onClose: () => void }) {
       open
       onClose={close}
       title={t('shopping.editItem')}
-      action={
-        <button type="button" className="sheet-trash" aria-label={t('common.delete')} title={t('common.delete')} onClick={remove}>
-          <TrashIcon />
-        </button>
-      }
     >
       <label className="label" htmlFor="buy-name">
         {t('shopping.itemName')}
       </label>
       <input id="buy-name" className="input" value={name} enterKeyHint="done" onChange={(e) => setName(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.currentTarget as HTMLInputElement).blur()} />
+      <DeleteLink label={t('shopping.deleteItem')} onClick={remove} />
       <div style={{ marginTop: 18 }}>
         <Comments target={{ item_id: item.id }} />
       </div>

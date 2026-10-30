@@ -8,8 +8,8 @@ import { byTodoOrder, isNewTodo, recentlyDone, toggleTodo } from '../data/action
 import { ArchiveLink } from '../components/Archive'
 import { Floating, Screen } from '../components/Shell'
 import { Avatar, NobodyAvatar } from '../components/Avatar'
-import { Check, Hand, NewTag, Struck, Tick, useArrivals, EmptyState, Sheet, Stamp, STAMP_COLORS, showUndo, tilt } from '../components/Scrapbook'
-import { ChevronDown, PlusIcon, TrashIcon } from '../components/Icons'
+import { Check, DeleteLink, Hand, NewTag, Struck, Tick, useArrivals, EmptyState, Sheet, Stamp, STAMP_COLORS, showUndo, tilt } from '../components/Scrapbook'
+import { ChevronDown, PlusIcon } from '../components/Icons'
 import { MyHouseholds } from './MyHouseholds'
 import { SimilarTodo } from './SimilarTodo'
 import { findSimilar, type Similar } from '../lib/similar'
@@ -416,13 +416,6 @@ export function TodoSheet({ todo, householdId, people, onClose }: { todo: Todo |
       open
       onClose={close}
       title={todo ? t('todos.edit') : t('todos.new')}
-      action={
-        todo && (
-          <button type="button" className="sheet-trash" aria-label={t('common.delete')} title={t('common.delete')} onClick={remove}>
-            <TrashIcon />
-          </button>
-        )
-      }
     >
       <form id="todo-form" onSubmit={add} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
         <div>
@@ -510,6 +503,7 @@ export function TodoSheet({ todo, householdId, people, onClose }: { todo: Todo |
       </form>
       {todo ? (
         <div style={{ marginTop: 20 }}>
+          <DeleteLink label={t('todos.delete')} onClick={remove} />
           <Comments target={{ todo_id: todo.id }} />
         </div>
       ) : (

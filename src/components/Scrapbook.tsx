@@ -596,3 +596,15 @@ export function NewTag() {
   const { t } = useTranslation()
   return <span className="new-tag">{t('todos.newTag')}</span>
 }
+
+/**
+ * Delete, out of the way (Nora, 30 Oct): a quiet pink line of text at the end of a pop-up's form, instead of a trash
+ * can next to the title where it was easy to hit when closing. Every pop-up that deletes something uses this.
+ */
+export function DeleteLink({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <button type="button" className="delete-link" onClick={onClick}>
+      {label}
+    </button>
+  )
+}

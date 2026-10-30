@@ -194,7 +194,8 @@
     "category": "Category",
     "addCategory": "+ category",
     "categoryPlaceholder": "Skin care",
-    "otherCategory": "other"
+    "otherCategory": "other",
+    "deleteItem": "Delete item"
   },
   "todos": {
     "title": "To-dos",
@@ -227,7 +228,8 @@
     "repeatMonthly": "Every month",
     "add": "Add to-do",
     "deleted": "To-do deleted",
-    "newTag": "new"
+    "newTag": "new",
+    "delete": "Delete to-do"
   },
   "notes": {
     "title": "Notes",
@@ -581,7 +583,8 @@
     "link": "Link",
     "note": "Note",
     "notePlaceholder": "Size M, the green one",
-    "deleted": "Wish deleted"
+    "deleted": "Wish deleted",
+    "delete": "Delete wish"
   },
   "hub": {
     "inThisHome": "In this home"

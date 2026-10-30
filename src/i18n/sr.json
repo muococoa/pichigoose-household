@@ -199,7 +199,8 @@
     "category": "Kategorija",
     "addCategory": "+ kategorija",
     "categoryPlaceholder": "Nega kože",
-    "otherCategory": "ostalo"
+    "otherCategory": "ostalo",
+    "deleteItem": "Obriši stavku"
   },
   "todos": {
     "title": "Zadaci",
@@ -232,7 +233,8 @@
     "repeatMonthly": "Svakog meseca",
     "add": "Dodaj zadatak",
     "deleted": "Zadatak obrisan",
-    "newTag": "novo"
+    "newTag": "novo",
+    "delete": "Obriši zadatak"
   },
   "notes": {
     "title": "Beleške",
@@ -589,7 +591,8 @@
     "link": "Link",
     "note": "Napomena",
     "notePlaceholder": "Veličina M, zelena",
-    "deleted": "Želja je obrisana"
+    "deleted": "Želja je obrisana",
+    "delete": "Obriši želju"
   },
   "hub": {
     "inThisHome": "U ovom domu"

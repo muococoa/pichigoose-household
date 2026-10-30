@@ -321,6 +321,8 @@ textarea.input { height: auto; min-height: 40px; padding: 8px 15px; resize: none
 /* The trash can in a pop-up's title row (to-dos, shopping items). */
 .sheet-trash { flex: none; display: grid; place-items: center; width: 40px; height: 40px; margin: -2px -8px 0 0; border-radius: 50%; color: var(--error-dark) }
 .sheet-trash:active { background: rgba(168, 51, 90, .1) }
+.delete-link { display: block; margin: 18px 0 0; padding: 8px 0; font-weight: 800; font-size: 15px; color: var(--error-dark) }
+.delete-link:active { opacity: .6 }
 .sheet-back { position: fixed; inset: 0; background: rgba(30, 26, 48, .35); z-index: 50; display: flex; align-items: flex-end; justify-content: center; animation: fade .15s ease-out;
   /* The pop-up's paper reaches the bottom of the screen, behind the keyboard; its content and button sit above it. */
   --bottom: max(env(safe-area-inset-bottom, 0px), var(--kb)) }

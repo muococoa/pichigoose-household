@@ -3,8 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
 import { db } from '../data/store'
 import { useHousehold, useWishClaims, useWishes, type Wish } from '../data/hooks'
-import { Check, Hand, Sheet, Stamp, STAMP_COLORS, Struck, Tick, showUndo, tilt } from '../components/Scrapbook'
-import { TrashIcon } from '../components/Icons'
+import { Check, DeleteLink, Hand, Sheet, Stamp, STAMP_COLORS, Struck, Tick, showUndo, tilt } from '../components/Scrapbook'
 import { TypingBar } from '../components/TypingBar'
 import { Linkify } from '../components/Linkify'
 
@@ -151,16 +150,12 @@ function WishSheet({ wish, onClose }: { wish: Wish; onClose: () => void }) {
       open
       onClose={close}
       title={t('wishes.edit')}
-      action={
-        <button type="button" className="sheet-trash" aria-label={t('common.delete')} title={t('common.delete')} onClick={remove}>
-          <TrashIcon />
-        </button>
-      }
     >
       {field('name', t('wishes.name'))}
       {field('price', t('wishes.price'), t('wishes.pricePlaceholder'))}
       {field('link', t('wishes.link'), 'https://', 'url')}
       {field('note', t('wishes.note'), t('wishes.notePlaceholder'))}
+      <DeleteLink label={t('wishes.delete')} onClick={remove} />
     </Sheet>
   )
 }
