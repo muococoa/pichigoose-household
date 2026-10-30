@@ -68,13 +68,13 @@ export function StickerButton({ onSend }: { onSend: (name: string) => void }) {
           if (e.detail === 0) setOpen((o) => !o)
         }}
       >
-        {/* A round sticker with its corner peeling up, and a little smile (Nora, 29 Oct). The circle is as big as the Send
-            button next to it, drawn at 1:1 so the line is 2 px like the field and the arrow. The face sits in the middle
-            of what's left after the peel, a little up and to the left. */}
-        <svg viewBox="0 0 40 40" width="40" height="40" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        {/* A round sticker with its corner peeling up, and a little smile (Nora, 30 Oct). Drawn 10% smaller than the Send
+            button (36 px), with the line still 2 px on screen (2.22 in the 40-wide box), and the face centered on the
+            circle itself, not on the space the peel leaves. */}
+        <svg viewBox="0 0 40 40" width="36" height="36" fill="none" stroke="currentColor" strokeWidth="2.22" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
           <path d="M38.5 20A18.5 18.5 0 1 0 20 38.5Z" />
           <path d="M20 38.5Q24.9 24.9 38.5 20" />
-          <path d="M13.8 14v1.4M22.2 14v1.4M12.9 20.8c3.1 2.9 8 2.9 10.2 0" />
+          <path d="M15.8 15.4v1.5M24.2 15.4v1.5M14.9 22.3c3.1 2.9 7.1 2.9 10.2 0" />
         </svg>
       </button>
       {open && (
