@@ -245,7 +245,8 @@
     "move": "Move to another household",
     "moveTitle": "Move to...",
     "deleteNote": "Delete note",
-    "deleteText": "Delete this note for everyone?"
+    "deleteText": "Delete this note for everyone?",
+    "new": "New note"
   },
   "profile": {
     "title": "Your character",

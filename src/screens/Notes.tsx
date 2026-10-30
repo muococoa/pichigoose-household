@@ -122,12 +122,19 @@ export function NotesScreen() {
               {t('notes.title')}
             </Hand>
           </div>
+          {/* Desktop: search and "New note" side by side, like "Add to-do" next to its field (Nora, 30 Oct). */}
           {desktop && (
+            <div className="row" style={{ gap: 14 }}>
             <div style={{ position: 'relative', width: 280 }}>
               <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#857A8C', display: 'flex', pointerEvents: 'none' }}>
                 <SearchIcon />
               </span>
               <input className="input" type="search" style={{ paddingLeft: 42 }} placeholder={t('notes.search')} aria-label={t('notes.search')} value={query} onChange={(e) => setQuery(e.target.value)} />
+            </div>
+            <button type="button" className="stk prim" style={{ flex: 'none', transform: 'rotate(1deg)' }} onClick={() => navigate('/notes/new')}>
+              <PlusIcon />
+              {t('notes.new')}
+            </button>
             </div>
           )}
           <button type="button" className="row cap phone-only" onClick={() => setSwitching(true)} style={{ fontSize: 14, fontWeight: 700, gap: 2, minWidth: 0 }}>

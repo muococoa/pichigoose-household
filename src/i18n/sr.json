@@ -250,7 +250,8 @@
     "move": "Premesti u drugo domaćinstvo",
     "moveTitle": "Premesti u...",
     "deleteNote": "Obriši belešku",
-    "deleteText": "Obrisati ovu belešku za sve?"
+    "deleteText": "Obrisati ovu belešku za sve?",
+    "new": "Nova beleška"
   },
   "profile": {
     "title": "Tvoj lik",
