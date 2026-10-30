@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
 import { db } from '../data/store'
-import { setCurrentHousehold, useHousehold, useRooms, type Household } from '../data/hooks'
+import { setCurrentHousehold, useHousehold, useItemsIn, useLists, useNotes, useProjects, useRooms, useTodos, type Household } from '../data/hooks'
 import { Avatar } from '../components/Avatar'
 import { Hand, Menu, Sheet, Tape, type TapeKind } from '../components/Scrapbook'
 import { DotsIcon, PencilIcon, PersonAddIcon, SmallCheck } from '../components/Icons'
@@ -35,13 +35,24 @@ export function MyHouseholds({ open, onClose, page }: { open: boolean; onClose: 
   const [secretFor, setSecretFor] = useState<Household | null>(null)
   const [secretText, setSecretText] = useState('')
 
-  // The hub's top part: this home's people, and tiles for what isn't in the menu (Notes, Projects, the rooms).
+  // The hub's top part: this home's people, and a few numbers about it (Nora, 30 Oct): notes, to-dos still open,
+  // things to buy, shelves and projects still going. Each one opens its screen.
   const here = current ? peopleIn(current.id) : []
-  const rooms = useRooms(current?.id ?? null)
+  const hid = current?.id ?? null
+  const rooms = useRooms(hid)
+  const notes = useNotes(hid)
+  const todos = useTodos(hid)
+  const projects = useProjects(hid)
+  const lists = useLists(hid)
+  // Like Shopping and To-dos, a finished project's things are left out.
+  const going = (projectId?: string | null) => !projectId || projects.rows.some((p) => p.id === projectId && !p.done_at)
+  const items = useItemsIn(lists.rows.filter((l) => going(l.project_id)).map((l) => l.id))
   const tiles = [
-    { to: '/notes', label: t('home.notes') },
-    { to: '/projects', label: t('home.projects') },
-    ...[...rooms.rows].sort((a, b) => a.position - b.position).map((r) => ({ to: `/pantry?room=${r.id}`, label: r.name.toLocaleLowerCase() })),
+    { to: '/notes', count: notes.rows.length, key: 'hub.notes' },
+    { to: '/todos', count: todos.rows.filter((x) => !x.done_at && going(x.project_id)).length, key: 'hub.todos' },
+    { to: '/shopping', count: items.rows.filter((x) => !x.checked_at).length, key: 'hub.toBuy' },
+    { to: '/pantry', count: rooms.rows.length, key: 'hub.shelves' },
+    { to: '/projects', count: projects.rows.filter((p) => !p.done_at).length, key: 'hub.projects' },
   ]
   function go(to: string) {
     onClose()
@@ -260,7 +271,7 @@ export function MyHouseholds({ open, onClose, page }: { open: boolean; onClose: 
               ))}
               <button type="button" className="stk violet sm" style={{ transform: 'rotate(-1.5deg)', marginLeft: 4 }} onClick={() => setInviting(current)}>
                 <PersonAddIcon />
-                {t('home.addSomeone')}
+                {t('hub.addMember')}
               </button>
             </div>
 
@@ -269,9 +280,12 @@ export function MyHouseholds({ open, onClose, page }: { open: boolean; onClose: 
               {tiles.map((x, i) => (
                 <button key={x.to} type="button" className={`note ${TILES[i % TILES.length].note}`} onClick={() => go(x.to)} style={{ transform: `rotate(${[-1.5, 1, -0.5, 1.5, -1, 0.8][i % 6]}deg)` }}>
                   <Tape kind={TILES[i % TILES.length].tape} style={{ top: -8, left: '30%', width: 44, height: 16, transform: 'rotate(-3deg)' }} />
-                  <Hand size={24} lineHeight={26}>
-                    {x.label}
-                  </Hand>
+                  <span>
+                    <Hand size={34} lineHeight={36} style={{ display: 'block' }}>
+                      {String(x.count)}
+                    </Hand>
+                    <span style={{ display: 'block', fontSize: 15, lineHeight: '19px', fontWeight: 700, color: '#1E1A30' }}>{t(x.key, { count: x.count })}</span>
+                  </span>
                 </button>
               ))}
             </div>

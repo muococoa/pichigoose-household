@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { NavLink, useLocation, useNavigate, useNavigationType } from 'react-router-dom'
+import { NavLink, useLocation, useNavigationType } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { BasketFilled, BasketIcon, HomeFilled, HomeIcon, InkCircle, MessagesFilled, MessagesIcon, ProjectFilled, ProjectIcon, TodoFilled, TodoIcon } from './Icons'
 import { DoodleSpot, Stamp, STAMP_COLORS, type DoodlePose } from './Scrapbook'
@@ -10,6 +10,7 @@ import { useUnreadTotal } from '../data/chats'
 import { useBounce } from '../lib/bounce'
 import { browserOwnsLeftEdge, useEdgeSwipe } from '../lib/swipe'
 import { Sidebar } from './Sidebar'
+import { useBack } from '../lib/back'
 
 /** Screens inside a household. On desktop they sit on the notebook page next to the sidebar. */
 export const Framed = createContext(false)
@@ -77,19 +78,12 @@ export function Screen({ children, tabbar, footer, className = '', wide, center,
   )
 }
 
-/** From the left edge to the right goes back on every screen but Home: Shopping, To-dos and Notes go Home;
- *  everything else (Messages, Pantry, a note, a profile) back to wherever you were before. */
+/** From the left edge to the right goes back on every screen but Home, by the same rule as every back button:
+ *  to wherever you were before, or Home when there's nothing earlier (Nora, 30 Oct). */
 function useSwipeBack(phone: boolean) {
-  const navigate = useNavigate()
   const location = useLocation()
-  const path = location.pathname
-  const action =
-    !phone || path === '/' || browserOwnsLeftEdge()
-      ? null
-      : () => {
-          if (['/shopping', '/todos', '/projects', '/notes'].includes(path) || location.key === 'default') navigate('/', { state: { back: true }, replace: true })
-          else navigate(-1)
-        }
+  const back = useBack()
+  const action = !phone || location.pathname === '/' || browserOwnsLeftEdge() ? null : back
   useEdgeSwipe('left', action)
 }
 

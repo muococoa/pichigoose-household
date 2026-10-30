@@ -7,7 +7,8 @@ import { DEFAULT_LAYOUT, completeLayout, useHousehold, useRooms, type LayoutEntr
 import { roomLook } from './Home'
 import { Screen } from '../components/Shell'
 import { Box, Hand, Tape, type TapeKind } from '../components/Scrapbook'
-import { GripIcon } from '../components/Icons'
+import { BackIcon, GripIcon } from '../components/Icons'
+import { useBack } from '../lib/back'
 import { useDesktop } from '../lib/desktop'
 import { CleanHouseholdButton } from './HouseholdClean'
 
@@ -121,6 +122,8 @@ export function ArrangeHomeScreen() {
     setOrder((o) => o.map((s) => (s.section === section ? { ...s, visible: !s.visible } : s)))
   }
 
+  const back = useBack()
+
   function done() {
     if (household) db.update('household_members', { household_id: household.id, user_id: me }, { home_layout: order })
     navigate('/')
@@ -135,6 +138,7 @@ export function ArrangeHomeScreen() {
           toggle={toggle}
           onReset={() => setOrder(completeLayout(DEFAULT_LAYOUT, rooms.rows))}
           onDone={done}
+          onBack={back}
         />
       </Screen>
     )
@@ -156,7 +160,11 @@ export function ArrangeHomeScreen() {
       <div style={{ padding: 'calc(var(--top) + 10px) 22px 0 40px', display: 'flex', flexDirection: 'column', gap: 18 }}>
         <div>
           {/* The broom: a fresh start for the household, top right. */}
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, marginLeft: -10 }}>
+            {/* Back without saving, like on Notes (Nora, 30 Oct). */}
+            <button type="button" aria-label={t('common.back')} onClick={back} style={{ display: 'flex', color: '#1E1A30', marginTop: 10 }}>
+              <BackIcon />
+            </button>
             <Hand as="h1" style={{ margin: 0, flex: 1 }}>
               {t('arrange.title')}
             </Hand>
@@ -234,17 +242,21 @@ type BoardProps = {
   toggle: (section: Section) => void
   onReset: () => void
   onDone: () => void
+  onBack: () => void
 }
 
 /** Desktop: just what shows on Home (Nora, 29 Oct). The order is set by dragging the notes on Home itself, which
  *  now pack like widgets, so this page is only a check box per note. Tap anywhere on a note to show or hide it. */
-function ArrangeBoard({ lookOf, order, toggle, onReset, onDone }: BoardProps) {
+function ArrangeBoard({ lookOf, order, toggle, onReset, onDone, onBack }: BoardProps) {
   const { t } = useTranslation()
   const shown = order.filter((s) => s.section !== 'money')
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 26, padding: 'var(--top) 22px 0 40px' }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
+        <button type="button" aria-label={t('common.back')} onClick={onBack} style={{ display: 'flex', color: '#1E1A30', marginTop: 14, marginLeft: -10 }}>
+          <BackIcon />
+        </button>
         <div style={{ flex: 1 }}>
           <Hand as="h1" size={52} lineHeight={56} style={{ margin: 0 }}>
             {t('arrange.title')}

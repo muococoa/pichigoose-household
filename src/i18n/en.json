@@ -587,7 +587,18 @@
     "delete": "Delete wish"
   },
   "hub": {
-    "inThisHome": "In this home"
+    "inThisHome": "In this home",
+    "addMember": "Add a member",
+    "notes_one": "note",
+    "notes_other": "notes",
+    "todos_one": "to-do",
+    "todos_other": "to-dos",
+    "toBuy_one": "thing to buy",
+    "toBuy_other": "things to buy",
+    "shelves_one": "shelf",
+    "shelves_other": "shelves",
+    "projects_one": "project",
+    "projects_other": "projects"
   },
   "archive": {
     "open_one": "Done earlier · {{count}}",

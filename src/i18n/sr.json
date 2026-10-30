@@ -595,7 +595,23 @@
     "delete": "Obriši želju"
   },
   "hub": {
-    "inThisHome": "U ovom domu"
+    "inThisHome": "U ovom domu",
+    "addMember": "Dodaj člana",
+    "notes_one": "beleška",
+    "notes_few": "beleške",
+    "notes_other": "beleški",
+    "todos_one": "zadatak",
+    "todos_few": "zadatka",
+    "todos_other": "zadataka",
+    "toBuy_one": "stvar za kupovinu",
+    "toBuy_few": "stvari za kupovinu",
+    "toBuy_other": "stvari za kupovinu",
+    "shelves_one": "polica",
+    "shelves_few": "police",
+    "shelves_other": "polica",
+    "projects_one": "projekat",
+    "projects_few": "projekta",
+    "projects_other": "projekata"
   },
   "archive": {
     "open_one": "Ranije urađeno · {{count}}",

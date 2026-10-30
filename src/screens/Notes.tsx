@@ -139,7 +139,10 @@ export function NotesScreen() {
           )}
           <button type="button" className="row cap phone-only" onClick={() => setSwitching(true)} style={{ fontSize: 14, fontWeight: 700, gap: 2, minWidth: 0 }}>
             <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name(household)}</span>
-            <ChevronDown />
+            {/* A hair lower, so it sits in the middle of the letters by eye (Nora, 30 Oct). */}
+            <span style={{ display: 'flex', transform: 'translateY(1.5px)' }}>
+              <ChevronDown />
+            </span>
           </button>
         </div>
         <div className="phone-only" style={{ position: 'relative', marginTop: 16 }}>
