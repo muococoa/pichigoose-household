@@ -616,8 +616,8 @@ html[data-kb="open"] body.adding .with-tabbar > .scroll {
 @media (prefers-reduced-motion: reduce) { .typing-bar.typing { animation: none } }
 /* Round send button in the theme color: quiet while the field is empty, lit up once you type. */
 .send-btn { flex: none; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--hero); color: #FFFFFF; box-shadow: 1px 2px 3px rgba(30, 26, 48, .2); transition: opacity .2s, transform .25s var(--ease-out) }
-.send-btn:disabled { opacity: .35; box-shadow: none; transform: scale(.92) }
-.send-btn:not(:disabled):active { transform: scale(.92) }
+.send-btn:disabled, .send-btn.empty { opacity: .35; box-shadow: none; transform: scale(.92) }
+.send-btn:not(:disabled):not(.empty):active { transform: scale(.92) }
 .kb-spacer { height: var(--kb) }
 
 /* Profile: what someone has done in the household, as little sticky notes. */

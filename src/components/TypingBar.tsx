@@ -59,9 +59,14 @@ export function TypingBar({ value, onChange, onSend, placeholder, onSticker, mul
     el.style.height = `${Math.min(el.scrollHeight, 128)}px`
   }, [value, multiline])
 
+  // The text as it is in the field right now. On iPhone the last word (and dictation) can still be held by the
+  // keyboard, so the app's copy can lag behind or even be empty when you tap Send; the field itself already has it.
+  // That made the first tap only close the keyboard and the second one send (Nora, 30 Oct).
+  const current = () => own.current?.value ?? value
+
   function send(e?: FormEvent) {
     e?.preventDefault()
-    const text = value.trim()
+    const text = current().trim()
     if (!text) return
     sentAt = Date.now()
     onSend(text)
@@ -142,9 +147,10 @@ export function TypingBar({ value, onChange, onSend, placeholder, onSticker, mul
           go first, the bar settled, and the tap missed). Enter and the keyboard's Send key go through the form. */}
       <button
         type="button"
-        className="send-btn"
+        // Never switched off (a switched-off button ignores the tap, and only closes the keyboard); it just looks pale.
+        className={`send-btn${value.trim() ? '' : ' empty'}`}
         aria-label={t('messages.send')}
-        disabled={!value.trim()}
+        aria-disabled={!value.trim()}
         tabIndex={closed ? -1 : undefined}
         onPointerDown={(e) => {
           e.preventDefault()
