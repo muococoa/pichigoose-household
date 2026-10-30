@@ -68,9 +68,9 @@ export function StickerButton({ onSend }: { onSend: (name: string) => void }) {
           if (e.detail === 0) setOpen((o) => !o)
         }}
       >
-        {/* A round sticker with its corner peeling up, and a little smile (Nora, 29 Oct). Framed tightly around the
-            drawing, and the line drawn as heavy as the Send arrow next to it (about 2 px on screen). */}
-        <svg viewBox="4.2 4.2 16.6 16.6" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.55" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        {/* A round sticker with its corner peeling up, and a little smile (Nora, 29 Oct). One line weight with the field
+            and the Send arrow: 2 px on screen (1.82 in a 20-wide box drawn at 22 px), with room so the line isn't cut off. */}
+        <svg viewBox="3 3 20 20" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.82" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
           <path d="M20.5 12.5A8 8 0 1 0 12.5 20.5Z" />
           <path d="M12.5 20.5Q14.6 14.6 20.5 12.5" />
           <path d="M9.8 9.9v.6M14.4 9.9v.6M9.4 13.3c1.4 1.3 3.6 1.3 5 0" />

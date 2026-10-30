@@ -106,7 +106,7 @@ html[data-nav="back"] .screen > .scroll { animation: sheet-in-left .5s cubic-bez
    that turns the theme color while you type. A real border, so it's the same weight all the way round (an inset
    shadow came out uneven on the curves). */
 .input {
-  width: 100%; height: 40px; background: #FFFFFF; border: 1.5px solid color-mix(in srgb, var(--hero) 24%, #FFFFFF); border-radius: 22px;
+  width: 100%; height: 40px; background: #FFFFFF; border: 2px solid color-mix(in srgb, var(--hero) 24%, #FFFFFF); border-radius: 22px;
   padding: 0 15px; font: 600 16px/22px Nunito, sans-serif; color: #1E1A30; outline: none;
 }
 .input::placeholder { color: #857A8C }
