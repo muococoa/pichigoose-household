@@ -693,3 +693,5 @@ html[data-kb="open"] body.adding .with-tabbar > .scroll {
 .swipe-btn { position: relative; flex: 1 1 0; min-width: 0; margin: 0 3px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; border: 2px solid; border-radius: 14px; background: #FFFDF8; font-size: 13px; line-height: 16px; font-weight: 800; overflow: hidden; white-space: nowrap }
 .swipe-btn > :not(.swipe-fill) { position: relative }
 .swipe-fill { position: absolute; inset: 0; width: 100%; height: 100% }
+.pin-mark { display: inline-flex; vertical-align: -2px; margin-left: 6px; color: #63586B }
+.project-row > .swipe-row { flex: 1; min-width: 0 }

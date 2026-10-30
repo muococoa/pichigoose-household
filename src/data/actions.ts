@@ -97,6 +97,8 @@ export function isNewTodo(todo: Todo, now = Date.now()) {
  * then what's due soonest, then the oldest. One rule in one place, so both screens always agree.
  */
 export function byTodoOrder(a: Todo, b: Todo) {
+  // Pinned ones first (Nora, 30 Oct).
+  if (Boolean(a.pinned) !== Boolean(b.pinned)) return a.pinned ? -1 : 1
   const na = isNewTodo(a)
   const nb = isNewTodo(b)
   if (na !== nb) return na ? -1 : 1

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from 're
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { DndContext, PointerSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core'
+import { SwipeRow, type SwipeAction } from '../components/SwipeRow'
 import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useMe } from '../auth'
@@ -11,7 +12,7 @@ import { toggleItem, toggleTodo } from '../data/actions'
 import { Floating, Screen } from '../components/Shell'
 import { Avatar, NobodyAvatar } from '../components/Avatar'
 import { Check, DeleteLink, EmptyState, Hand, Menu, Sheet, showUndo, Stamp, STAMP_COLORS, Struck, Tick, Tape, tilt } from '../components/Scrapbook'
-import { BackIcon, DotsIcon, GripIcon, PlusIcon } from '../components/Icons'
+import { BackIcon, DotsIcon, GripIcon, PlusIcon, TrashIcon } from '../components/Icons'
 import { CommentCount, Comments, useCommentCounts } from '../components/Comments'
 import { TypingBar } from '../components/TypingBar'
 import { autoFocusField } from '../lib/keyboard'
@@ -295,6 +296,7 @@ export function ProjectScreen() {
     return (
       <Tick checked={Boolean(x.done_at)} onCommit={() => toggleTodo(x, me)}>
         {(on, toggle) => (
+          <SwipeRow toMargin={false} right={[swipeDelete(() => showUndo(t('todos.deleted'), t('common.undo'), db.removeWithUndo('todos', x.id)))]}>
           <div className={`ln${on ? ' row-done' : ''}`} style={{ flex: 1, minWidth: 0, minHeight: 56 }}>
             <Check checked={on} onToggle={toggle} label={x.title} rotate={tilt(x.id)} />
             <button type="button" onClick={() => setEditing(x)} style={{ flex: 1, minWidth: 0, fontSize: 17, padding: '8px 0', textAlign: 'left' }}>
@@ -305,6 +307,7 @@ export function ProjectScreen() {
               {who ? <PersonLink id={who.id}><Avatar avatar={who.avatar} label={who.display_name} /></PersonLink> : <NobodyAvatar />}
             </span>
           </div>
+          </SwipeRow>
         )}
       </Tick>
     )
@@ -312,6 +315,7 @@ export function ProjectScreen() {
   const buyRow = (x: Item) => (
     <Tick checked={Boolean(x.checked_at)} onCommit={() => toggleItem(x, me)}>
       {(on, toggle) => (
+        <SwipeRow toMargin={false} right={[swipeDelete(() => showUndo(t('shopping.itemDeleted'), t('common.undo'), db.removeWithUndo('list_items', x.id)))]}>
         <div className={`ln${on ? ' row-done' : ''}`} style={{ flex: 1, minWidth: 0, minHeight: 52 }}>
           <Check checked={on} onToggle={toggle} label={x.name} rotate={tilt(x.id)} />
           {/* Tap the name for its pop-up: rename it, delete it, or add a comment like "from IKEA" with a link. */}
@@ -320,9 +324,14 @@ export function ProjectScreen() {
             <CommentCount n={commentsOn(x.id)} />
           </button>
         </div>
+        </SwipeRow>
       )}
     </Tick>
   )
+  // Swipe a step or a thing to buy left for Delete, like on To-dos (Nora, 30 Oct).
+  function swipeDelete(onClick: () => void): SwipeAction {
+    return { key: 'delete', label: t('common.delete'), icon: <TrashIcon />, color: 'var(--error-dark)', fill: 'var(--hero)', onClick }
+  }
 
   function addStep(title: string) {
     if (!project) return

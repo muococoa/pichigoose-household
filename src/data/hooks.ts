@@ -94,6 +94,8 @@ export type Todo = Row & {
   done_by: string | null
   created_by: string | null
   created_at: string
+  /** Pinned to the top of the list for everyone, until it's done (swipe right, Nora, 30 Oct). */
+  pinned?: boolean
   /** A step of this project, in its place in the project's order. */
   project_id?: string | null
   position?: number

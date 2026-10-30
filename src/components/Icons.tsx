@@ -259,6 +259,13 @@ export const ReplyIcon = (p: P) => (
 )
 
 /** Delete: a small trash can, in a pop-up's title row. */
+/** A push pin, for pinned to-dos. */
+export const PinIcon = (p: P) => (
+  <Svg size={22} {...p}>
+    <path d="M15 4.5l6.5 6.5M16.8 6.2l-4.3 4.3-4.3.6-1.4 1.4 6.5 6.5 1.4-1.4.6-4.3 4.3-4.3M9.8 16.2L4.5 21.5" />
+  </Svg>
+)
+
 export const TrashIcon = (p: P) => (
   <Svg size={22} {...p}>
     <path d="M5 7.5h16M10.5 7.5V5.5h5v2M7 7.5l1 13h10l1-13" />

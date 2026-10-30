@@ -12,7 +12,8 @@ export type SwipeAction = { key: string; label: string; icon: ReactNode; color: 
 const W = 78
 const OPEN_EVENT = 'swiperow-open'
 
-export function SwipeRow({ left = [], right = [], children }: { left?: SwipeAction[]; right?: SwipeAction[]; children: ReactNode }) {
+/** toMargin: disappear at the red margin line (the default), or at the row's own left edge (rows with a drag handle). */
+export function SwipeRow({ left = [], right = [], toMargin = true, children }: { left?: SwipeAction[]; right?: SwipeAction[]; toMargin?: boolean; children: ReactNode }) {
   const id = useId()
   const [x, setX] = useState(0)
   const [dragging, setDragging] = useState(false)
@@ -23,7 +24,7 @@ export function SwipeRow({ left = [], right = [], children }: { left?: SwipeActi
   function marginGap() {
     const row = rowRef.current
     const line = row?.closest('.screen')?.querySelector('.margin')
-    if (!row || !line) return 0
+    if (!toMargin || !row || !line) return 0
     return Math.max(0, row.getBoundingClientRect().left - line.getBoundingClientRect().right)
   }
   const drag = useRef<{ x: number; y: number; from: number; on: boolean } | null>(null)
@@ -57,6 +58,11 @@ export function SwipeRow({ left = [], right = [], children }: { left?: SwipeActi
       if (!d.on) {
         if (dy > 10 && dy > Math.abs(dx)) drag.current = null
         else if (Math.abs(dx) > 10 && Math.abs(dx) > dy * 1.5) {
+          // A way with no buttons is left to the page (on Shopping, swiping right still goes to the previous list).
+          if (!d.from && ((dx > 0 && !maxL) || (dx < 0 && !maxR))) {
+            drag.current = null
+            return
+          }
           d.on = true
           setDragging(true)
           setClipped(marginGap())
@@ -90,7 +96,7 @@ export function SwipeRow({ left = [], right = [], children }: { left?: SwipeActi
   }
 
   return (
-    <div ref={rowRef} className="swipe-row" style={clipped !== null ? { clipPath: `inset(-40px -40px -40px ${-clipped}px)` } : undefined} {...handlers} onTouchCancel={handlers.onTouchEnd}>
+    <div ref={rowRef} className="swipe-row" data-swipe-left={maxL ? '' : undefined} data-swipe-right={maxR ? '' : undefined} style={clipped !== null ? { clipPath: `inset(-40px -40px -40px ${-clipped}px)` } : undefined} {...handlers} onTouchCancel={handlers.onTouchEnd}>
       {left.length > 0 && (
         <div className="swipe-actions" style={{ left: 0, width: Math.max(0, x), transition: dragging ? 'none' : undefined }} aria-hidden={x <= 0}>
           {left.map((a) => (

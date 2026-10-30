@@ -22,7 +22,7 @@ import { byTodoOrder, isNewTodo, recentlyDone, toggleItem, toggleTodo } from '..
 import { Floating, Screen } from '../components/Shell'
 import { Avatar, NobodyAvatar } from '../components/Avatar'
 import { Check, Hand, NewTag, PaperClip, PichiAvatar, Struck, Tick, PichiStamp, Tape, tilt, type TapeKind } from '../components/Scrapbook'
-import { InkChevron, PlusIcon } from '../components/Icons'
+import { InkChevron, PlusIcon, PinIcon } from '../components/Icons'
 import { MyHouseholds } from './MyHouseholds'
 import { PendingInvites } from './Invite'
 import { AddSheet } from './AddSheet'
@@ -329,6 +329,12 @@ export function HomeScreen() {
                       <Check checked={on} onToggle={toggle} label={x.title} rotate={tilt(x.id)} />
                       <span style={{ flex: 1, minWidth: 0 }}>
                         <Struck on={on}>{x.title}</Struck>
+                        {/* Pinned on To-dos: a small pin, and it leads the list (Nora, 30 Oct). */}
+                        {x.pinned && (
+                          <span className="pin-mark" aria-label={t('todos.pinned')}>
+                            <PinIcon size={16} />
+                          </span>
+                        )}
                         {isNewTodo(x) && <NewTag />}
                         <CommentCount n={commentsOn(x.id)} />
                         {x.due_date && <div className="cap">{dueLabel(x.due_date, i18n.language)}</div>}

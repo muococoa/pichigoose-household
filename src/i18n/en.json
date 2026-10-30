@@ -229,7 +229,10 @@
     "add": "Add to-do",
     "deleted": "To-do deleted",
     "newTag": "new",
-    "delete": "Delete to-do"
+    "delete": "Delete to-do",
+    "pinned": "Pinned",
+    "pin": "Pin",
+    "unpin": "Unpin"
   },
   "notes": {
     "title": "Notes",

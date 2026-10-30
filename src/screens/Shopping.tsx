@@ -9,7 +9,7 @@ import { ArchiveLink } from '../components/Archive'
 import { Floating, Screen } from '../components/Shell'
 import { Avatar } from '../components/Avatar'
 import { Check, DeleteLink, Hand, PichiAvatar, PoseStamp, Struck, Tick, useArrivals, EmptyState, Sheet, Stamp, STAMP_COLORS, showToast, showUndo, tilt, type TapeKind } from '../components/Scrapbook'
-import { BackIcon, PlusIcon, ShareIcon } from '../components/Icons'
+import { BackIcon, PlusIcon, ShareIcon, TrashIcon } from '../components/Icons'
 import { ago } from '../lib/time'
 import { DndContext, MouseSensor, TouchSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core'
 import { SortableContext, arrayMove, horizontalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
@@ -23,6 +23,7 @@ import { PersonLink } from './Person'
 import { CommentCount, Comments, useCommentCounts } from '../components/Comments'
 import { groupKey, groupLow } from '../components/Shelves'
 import { useBack } from '../lib/back'
+import { SwipeRow } from '../components/SwipeRow'
 import { autoFocusField, focusField } from '../lib/keyboard'
 
 const TAB_TAPES: TapeKind[] = ['tp', 'tm', 'ty', 'tb', 'tdots', 'tblocks', 'ttri', 'tcheck']
@@ -264,6 +265,8 @@ export function ShoppingScreen() {
     return (
       <Tick key={x.id} checked={isBought} onCommit={() => toggleItem(x, me)}>
         {(on, toggle) => (
+      // Swipe the item left for Delete (Nora, 30 Oct); swiping anywhere else still changes the list.
+      <SwipeRow right={[{ key: 'delete', label: t('common.delete'), icon: <TrashIcon />, color: 'var(--error-dark)', fill: 'var(--hero)', onClick: () => swipeDelete(x) }]}>
       <div
         className={`ln${on ? ' row-done' : ''}${isBought ? '' : ' top'}`}
         style={isBought ? { height: desktop ? 72 : 48 } : { minHeight: desktop ? 72 : 64, padding: desktop ? '14px 0' : '10px 0' }}
@@ -298,9 +301,16 @@ export function ShoppingScreen() {
           </span>
         )}
       </div>
+      </SwipeRow>
         )}
       </Tick>
     )
+  }
+
+  // Like Delete in the item's pop-up: if Pichi still sees it running low at home, she asks first.
+  function swipeDelete(x: Item) {
+    if (stillNeeded(x)) return setChecking(x)
+    showUndo(t('shopping.itemDeleted'), t('common.undo'), db.removeWithUndo('list_items', x.id))
   }
 
   return (

@@ -9,7 +9,7 @@ import { ArchiveLink } from '../components/Archive'
 import { Floating, Screen } from '../components/Shell'
 import { Avatar, NobodyAvatar } from '../components/Avatar'
 import { Check, DeleteLink, Hand, NewTag, Struck, Tick, useArrivals, EmptyState, Sheet, Stamp, STAMP_COLORS, showUndo, tilt } from '../components/Scrapbook'
-import { ChevronDown, PlusIcon, TrashIcon } from '../components/Icons'
+import { ChevronDown, PinIcon, PlusIcon, TrashIcon } from '../components/Icons'
 import { SwipeRow } from '../components/SwipeRow'
 import { MyHouseholds } from './MyHouseholds'
 import { SimilarTodo } from './SimilarTodo'
@@ -23,9 +23,10 @@ import { addDays, capitalize, daysFromToday, dueLabel, fromDateString, toDateStr
 // On phones the keyboard would cover half the form the moment it opens, so the title field waits for a tap.
 const touchScreen = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches
 
-type Group = 'today' | 'thisWeek' | 'later' | 'noDate' | 'done'
-const ORDER: Group[] = ['today', 'thisWeek', 'later', 'noDate', 'done']
+type Group = 'pinned' | 'today' | 'thisWeek' | 'later' | 'noDate' | 'done'
+const ORDER: Group[] = ['pinned', 'today', 'thisWeek', 'later', 'noDate', 'done']
 const GROUP_COLOR: Record<Group, string> = {
+  pinned: STAMP_COLORS.draft,
   today: STAMP_COLORS.nora,
   thisWeek: STAMP_COLORS.open,
   later: STAMP_COLORS.draft,
@@ -35,6 +36,7 @@ const GROUP_COLOR: Record<Group, string> = {
 
 function groupOf(todo: Todo): Group {
   if (todo.done_at) return 'done'
+  if (todo.pinned) return 'pinned'
   if (!todo.due_date) return 'noDate'
   const days = daysFromToday(fromDateString(todo.due_date))
   if (days <= 0) return 'today'
@@ -256,7 +258,22 @@ export function TodosScreen() {
                 <Tick key={x.id} checked={done} onCommit={() => toggleTodo(x, me)}>
                   {(on, toggle) => (
                     // Swipe left for Delete, like WhatsApp (Nora, 30 Oct). Undo stays possible for a few seconds.
+                    // Swipe right to pin it to the top, or unpin it (Nora, 30 Oct).
                     <SwipeRow
+                      left={
+                        done
+                          ? []
+                          : [
+                              {
+                                key: 'pin',
+                                label: x.pinned ? t('todos.unpin') : t('todos.pin'),
+                                icon: <PinIcon />,
+                                color: '#63586B',
+                                fill: '#857A8C',
+                                onClick: () => db.update('todos', x.id, { pinned: !x.pinned }),
+                              },
+                            ]
+                      }
                       right={[
                         {
                           key: 'delete',

@@ -234,7 +234,10 @@
     "add": "Dodaj zadatak",
     "deleted": "Zadatak obrisan",
     "newTag": "novo",
-    "delete": "Obriši zadatak"
+    "delete": "Obriši zadatak",
+    "pinned": "Zakačeno",
+    "pin": "Zakači",
+    "unpin": "Otkači"
   },
   "notes": {
     "title": "Beleške",

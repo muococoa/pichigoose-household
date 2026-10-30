@@ -131,6 +131,7 @@ Shared chores (T1 to T4).
 | repeat | text, nullable | `'daily'`, `'weekly'`, `'monthly'`, or null (T4) [Claude: simple repeats only in version 1] |
 | done_at | timestamptz, nullable | |
 | done_by | uuid, nullable | |
+| pinned | boolean, default false | swipe right to pin; pinned to-dos lead the list for everyone until done [Nora, 30 Oct] |
 | created_by | uuid, references profiles | |
 | created_at | timestamptz | |
 

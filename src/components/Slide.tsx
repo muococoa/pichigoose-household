@@ -23,13 +23,20 @@ export function useTapeBounce(row: RefObject<HTMLElement | null>, current: strin
   }, [row, current])
 }
 
+/** Does this row take a swipe this way? Swiping left shows the buttons on its right, and the other way round; an
+ *  open row takes both ways (to close it). */
+function rowOwns(row: HTMLElement, dx: number) {
+  const open = row.querySelector<HTMLElement>('.swipe-front')?.style.transform
+  return Boolean(open) || row.hasAttribute(dx < 0 ? 'data-swipe-right' : 'data-swipe-left')
+}
+
 /** Swipe the page left (next) or right (previous), anywhere but the left edge (that one goes back), and not on
  *  fields, the menu, the add bar or a pop-up. */
 export function useSwipeBetween(onPrev: (() => void) | null, onNext: (() => void) | null) {
   const latest = useRef({ onPrev, onNext })
   latest.current = { onPrev, onNext }
   useEffect(() => {
-    let start: { x: number; y: number } | null = null
+    let start: { x: number; y: number; row: HTMLElement | null } | null = null
     function down(e: TouchEvent) {
       const t = e.touches[0]
       const target = e.target as HTMLElement
@@ -37,7 +44,7 @@ export function useSwipeBetween(onPrev: (() => void) | null, onNext: (() => void
         e.touches.length === 1 &&
         t.clientX > 40 &&
         !target.closest('input, textarea, .add-bar, .tabbar, .sheet-back, [data-noswipe]')
-      start = ok ? { x: t.clientX, y: t.clientY } : null
+      start = ok ? { x: t.clientX, y: t.clientY, row: target.closest<HTMLElement>('.swipe-row') } : null
     }
     function move(e: TouchEvent) {
       if (!start) return
@@ -45,6 +52,8 @@ export function useSwipeBetween(onPrev: (() => void) | null, onNext: (() => void
       const dx = t.clientX - start.x
       const dy = Math.abs(t.clientY - start.y)
       if (dy > 30 && dy > Math.abs(dx)) start = null
+      // Swiping a row that has buttons that way opens them instead (Nora, 30 Oct).
+      else if (start.row && Math.abs(dx) > 10 && rowOwns(start.row, dx)) start = null
       else if (Math.abs(dx) > 64 && dy < Math.abs(dx) * 0.5) {
         start = null
         if (dx < 0) latest.current.onNext?.()
