@@ -1,5 +1,4 @@
 import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
 import { db } from '../data/store'
@@ -44,7 +43,6 @@ function useLookOf(rooms: Room[]) {
 export function ArrangeHomeScreen() {
   const { t } = useTranslation()
   const me = useMe()
-  const navigate = useNavigate()
   const { household, membership, people } = useHousehold()
   const rooms = useRooms(household?.id ?? null)
   const lookOf = useLookOf(rooms.rows)
@@ -124,9 +122,10 @@ export function ArrangeHomeScreen() {
 
   const back = useBack()
 
+  // Done saves, then goes back to where you were, like the back arrow (Nora, 30 Oct).
   function done() {
     if (household) db.update('household_members', { household_id: household.id, user_id: me }, { home_layout: order })
-    navigate('/')
+    back()
   }
 
   if (desktop) {
