@@ -44,9 +44,10 @@ function groupOf(todo: Todo): Group {
 /** Small chip stickers for picking one option. */
 /** Bring a done to-do back for today instead of adding a copy (Nora, 30 Oct). It comes back as a fresh to-do with
  *  the same title and person, so the old one stays in "Done earlier" and still counts for trophies. */
-export function bringTodoBack(from: Todo, repeat: Todo['repeat'], householdId: string, me: string, due: string | null, assignee: string | null = from.assignee_id) {
+export function bringTodoBack(from: Todo, repeat: Todo['repeat'], householdId: string, me: string, due: string | null, assignee: string | null = from.assignee_id, title = from.title) {
   db.insert('todos', {
-    title: from.title,
+    // The spelling just typed wins: "Raširiti veš" brings back "Rasiriti ves" with the proper letters (Nora, 30 Oct).
+    title: title.trim() || from.title,
     assignee_id: assignee,
     due_date: due,
     repeat,
@@ -318,7 +319,7 @@ export function TodosScreen() {
         onClose={() => setQuickSimilar(null)}
         onAddAnyway={quickInsert}
         onBringBack={(from, repeatAs) => {
-          if (hid) bringTodoBack(from, repeatAs, hid, me, toDateString(new Date()), me)
+          if (hid) bringTodoBack(from, repeatAs, hid, me, toDateString(new Date()), me, quick)
           setQuickSimilar(null)
           setQuick('')
         }}
@@ -389,7 +390,7 @@ export function TodoSheet({ todo, householdId, people, onClose }: { todo: Todo |
     else insert()
   }
   function bringBack(from: Todo, repeatAs: Todo['repeat']) {
-    bringTodoBack(from, repeatAs, householdId, me, fields.due_date, fields.assignee_id)
+    bringTodoBack(from, repeatAs, householdId, me, fields.due_date, fields.assignee_id, fields.title)
     setSimilar(null)
     onClose()
   }

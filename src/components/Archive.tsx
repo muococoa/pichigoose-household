@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Sheet } from './Scrapbook'
 import { Avatar } from './Avatar'
 import type { Profile } from '../data/hooks'
+import { plain } from '../lib/similar'
 
 export type Archived = { id: string; name: string; at: string; by: string | null }
 
@@ -27,13 +28,14 @@ export function ArchiveLink({ rows, people, onAgain, title }: { rows: Archived[]
   const [added, setAdded] = useState<string[]>([])
   if (!rows.length) return null
   const sorted = [...rows].sort((a, b) => b.at.localeCompare(a.at)).slice(0, 200)
-  // One row per thing per day: the same chore done twice that day shows once, with "×2".
+  // One row per thing per day: the same chore done twice that day shows once, with "×2", whatever the spelling.
   const days: { label: string; rows: (Archived & { times: number })[] }[] = []
   for (const r of sorted) {
     const label = dayLabel(r.at, i18n.language, t)
     let day = days[days.length - 1]
     if (day?.label !== label) days.push((day = { label, rows: [] }))
-    const same = day.rows.find((x) => x.name.trim().toLocaleLowerCase() === r.name.trim().toLocaleLowerCase())
+    // "Rasiriti ves" and "Raširiti veš" are the same chore: the newest spelling shows (rows come newest first).
+    const same = day.rows.find((x) => plain(x.name) === plain(r.name))
     if (same) same.times += 1
     else day.rows.push({ ...r, times: 1 })
   }
