@@ -41,6 +41,7 @@ export function MyHouseholds({ open, onClose, page }: { open: boolean; onClose: 
   const tiles = [
     { to: '/notes', label: t('home.notes') },
     { to: '/projects', label: t('home.projects') },
+    { to: '/trophies', label: t('trophies.tile') },
     ...[...rooms.rows].sort((a, b) => a.position - b.position).map((r) => ({ to: `/pantry?room=${r.id}`, label: r.name.toLocaleLowerCase() })),
   ]
   function go(to: string) {

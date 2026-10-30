@@ -19,6 +19,7 @@ import { TodosScreen } from './screens/Todos'
 import { NoteScreen, NotesScreen } from './screens/Notes'
 import { ProjectScreen, ProjectsScreen } from './screens/Projects'
 import { AboutScreen, PichiProfileScreen } from './screens/Pichi'
+import { TrophiesScreen } from './screens/Trophies'
 import { ProfileScreen, SettingsScreen } from './screens/Profile'
 import { HouseholdsScreen } from './screens/Households'
 import { PersonScreen } from './screens/Person'
@@ -141,6 +142,7 @@ export default function App() {
           {/* The About page is public, signed in or not. Pichi's profile is inside the app. */}
           <Route path="/about" element={<AboutScreen />} />
           <Route path="/pichi" element={<Inside><PichiProfileScreen /></Inside>} />
+          <Route path="/trophies" element={<Inside><TrophiesScreen /></Inside>} />
           <Route path="/projects" element={<Inside><ProjectsScreen /></Inside>} />
           <Route path="/projects/:id" element={<Inside><ProjectScreen /></Inside>} />
           <Route path="/profile" element={<Inside><ProfileScreen /></Inside>} />

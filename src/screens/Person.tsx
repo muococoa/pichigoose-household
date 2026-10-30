@@ -9,6 +9,7 @@ import { Hand } from '../components/Scrapbook'
 import { BackIcon, GearIcon, MessagesIcon } from '../components/Icons'
 import { useBackInApp } from '../lib/back'
 import { WishList } from './Wishes'
+import { TrophyCase } from './Trophies'
 
 /** Wraps an avatar so tapping it opens that person's profile. */
 export function PersonLink({ id, children }: { id: string | null | undefined; children: ReactNode }) {
@@ -77,6 +78,7 @@ export function PersonScreen() {
               </Link>
             )}
             <WishList ownerId={person.id} ownerName={person.display_name} />
+            <TrophyCase personId={person.id} />
             {/* The numbers are parked under a button at the bottom for now (Nora, 29 Oct): interesting once in a while,
                 not every day. The wish list comes first. */}
             <button type="button" className="stk sec sm" aria-expanded={showStats} style={{ marginTop: 34, transform: 'rotate(-1deg)' }} onClick={() => setShowStats((v) => !v)}>

@@ -583,5 +583,45 @@
   },
   "hub": {
     "inThisHome": "In this home"
+  },
+  "trophies": {
+    "title": "Trophies",
+    "case": "Trophies",
+    "caseEmpty": "No trophies yet. Each month, whoever does the most of a chore wins it.",
+    "empty": "No trophies yet this month. Tick off chores and Pichi keeps count.",
+    "how": "Pichi works out the chore from each to-do's name. Grocery runs count the days you bought things.",
+    "earlier": "Earlier month",
+    "later": "Later month",
+    "times_one": "{{count}} time",
+    "times_other": "{{count}} times",
+    "runs_one": "{{count}} grocery run",
+    "runs_other": "{{count}} grocery runs",
+    "inARow_one": "{{count}} month in a row",
+    "inARow_other": "{{count}} months in a row",
+    "wonTimes_one": "won once",
+    "wonTimes_other": "won {{count}} times",
+    "names": {
+      "dishes": "Keeper of the Sink",
+      "laundry": "Laundry Wizard",
+      "hanging-laundry": "Master of Pegs",
+      "ironing": "Smooth Operator",
+      "groceries": "Fridge Filler",
+      "trash": "Bin Hero",
+      "cleaning": "Dust Slayer",
+      "cooking": "Head Chef",
+      "plants": "Plant Parent"
+    },
+    "big": {
+      "dishes": "Sink Royalty",
+      "laundry": "Grand Laundry Wizard",
+      "hanging-laundry": "Grand Master of Pegs",
+      "ironing": "Smoothest Operator",
+      "groceries": "Hero of the Fridge",
+      "trash": "Bin Legend",
+      "cleaning": "Dust Slayer Supreme",
+      "cooking": "Master Chef",
+      "plants": "Plant Whisperer"
+    },
+    "tile": "trophies"
   }
 }
