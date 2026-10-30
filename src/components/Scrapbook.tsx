@@ -1,6 +1,7 @@
 // The scrapbook building blocks: ink headlines, stamps, sticky notes, tape, checkboxes,
 // stickers, Pichi's postage stamp and the bottom sheet.
 
+import { useTranslation } from 'react-i18next'
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import pichi from '../../assets/pichi-painted.jpg'
@@ -588,4 +589,10 @@ export function UndoHost() {
     </div>,
     document.body,
   )
+}
+
+/** The small "new" label on a to-do added today (Nora, 30 Oct), the same on Home and on the To-dos page. */
+export function NewTag() {
+  const { t } = useTranslation()
+  return <span className="new-tag">{t('todos.newTag')}</span>
 }

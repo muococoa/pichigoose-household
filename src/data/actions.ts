@@ -88,6 +88,23 @@ export function recentlyDone(todo: Todo, now = Date.now()) {
   return Boolean(todo.done_at) && sameDay(todo.done_at as string, now)
 }
 
+/** Added today: shown first with a small "new" label, so what you just added is always in sight (Nora, 30 Oct). */
+export function isNewTodo(todo: Todo, now = Date.now()) {
+  return !todo.done_at && new Date(todo.created_at).toDateString() === new Date(now).toDateString()
+}
+
+/**
+ * The one order for open to-dos, on Home and on the To-dos page alike: what was added today first (newest on top),
+ * then what's due soonest, then the oldest. One rule in one place, so both screens always agree.
+ */
+export function byTodoOrder(a: Todo, b: Todo) {
+  const na = isNewTodo(a)
+  const nb = isNewTodo(b)
+  if (na !== nb) return na ? -1 : 1
+  if (na && nb) return b.created_at.localeCompare(a.created_at)
+  return (a.due_date ?? '9999').localeCompare(b.due_date ?? '9999') || a.created_at.localeCompare(b.created_at)
+}
+
 export function byPositionThenAge(a: Item, b: Item) {
   return a.position - b.position || a.created_at.localeCompare(b.created_at)
 }

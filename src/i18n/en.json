@@ -226,7 +226,8 @@
     "repeatWeekly": "Every week",
     "repeatMonthly": "Every month",
     "add": "Add to-do",
-    "deleted": "To-do deleted"
+    "deleted": "To-do deleted",
+    "newTag": "new"
   },
   "notes": {
     "title": "Notes",

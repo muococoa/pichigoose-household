@@ -4,11 +4,11 @@ import { useTranslation } from 'react-i18next'
 import { useMe } from '../auth'
 import { db } from '../data/store'
 import { useHousehold, useProjects, useTodos, type Profile, type Todo } from '../data/hooks'
-import { recentlyDone, toggleTodo } from '../data/actions'
+import { byTodoOrder, isNewTodo, recentlyDone, toggleTodo } from '../data/actions'
 import { ArchiveLink } from '../components/Archive'
 import { Floating, Screen } from '../components/Shell'
 import { Avatar, NobodyAvatar } from '../components/Avatar'
-import { Check, Hand, Struck, Tick, useArrivals, EmptyState, Sheet, Stamp, STAMP_COLORS, showUndo, tilt } from '../components/Scrapbook'
+import { Check, Hand, NewTag, Struck, Tick, useArrivals, EmptyState, Sheet, Stamp, STAMP_COLORS, showUndo, tilt } from '../components/Scrapbook'
 import { ChevronDown, PlusIcon, TrashIcon } from '../components/Icons'
 import { MyHouseholds } from './MyHouseholds'
 import { SimilarTodo } from './SimilarTodo'
@@ -119,7 +119,7 @@ export function TodosScreen() {
         g,
         rows: visible
           .filter((x) => groupOf(x) === g)
-          .sort((a, b) => (a.due_date ?? '').localeCompare(b.due_date ?? '') || a.created_at.localeCompare(b.created_at)),
+          .sort(byTodoOrder),
       }))
       .filter((x) => x.rows.length)
   }, [visible])
@@ -247,6 +247,7 @@ export function TodosScreen() {
                       <Check checked={on} onToggle={toggle} label={x.title} rotate={tilt(x.id)} />
                       <button type="button" onClick={() => setEditing(x)} style={{ flex: 1, minWidth: 0, fontSize: 17, padding: '8px 0' }}>
                         <Struck on={on}>{x.title}</Struck>
+                        {isNewTodo(x) && <NewTag />}
                         <CommentCount n={commentsOn(x.id)} />
                         {detail(x) && <div className="cap">{detail(x)}</div>}
                       </button>

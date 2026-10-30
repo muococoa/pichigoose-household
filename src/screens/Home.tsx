@@ -18,10 +18,10 @@ import {
   useTodos,
   type Section,
 } from '../data/hooks'
-import { recentlyDone, toggleItem, toggleTodo } from '../data/actions'
+import { byTodoOrder, isNewTodo, recentlyDone, toggleItem, toggleTodo } from '../data/actions'
 import { Floating, Screen } from '../components/Shell'
 import { Avatar, NobodyAvatar } from '../components/Avatar'
-import { Check, Hand, PaperClip, PichiAvatar, Struck, Tick, PichiStamp, Tape, tilt, type TapeKind } from '../components/Scrapbook'
+import { Check, Hand, NewTag, PaperClip, PichiAvatar, Struck, Tick, PichiStamp, Tape, tilt, type TapeKind } from '../components/Scrapbook'
 import { InkChevron, PlusIcon } from '../components/Icons'
 import { MyHouseholds } from './MyHouseholds'
 import { PendingInvites } from './Invite'
@@ -146,7 +146,7 @@ export function HomeScreen() {
     () =>
       todos.rows
         .filter((x) => !x.done_at)
-        .sort((a, b) => (a.due_date ?? '9999').localeCompare(b.due_date ?? '9999') || a.created_at.localeCompare(b.created_at)),
+        .sort(byTodoOrder),
     [todos.rows],
   )
   // Done today stays on the note, crossed out at the bottom, until the day passes.
@@ -328,6 +328,7 @@ export function HomeScreen() {
                       <Check checked={on} onToggle={toggle} label={x.title} rotate={tilt(x.id)} />
                       <span style={{ flex: 1, minWidth: 0 }}>
                         <Struck on={on}>{x.title}</Struck>
+                        {isNewTodo(x) && <NewTag />}
                         <CommentCount n={commentsOn(x.id)} />
                         {x.due_date && <div className="cap">{dueLabel(x.due_date, i18n.language)}</div>}
                       </span>

@@ -231,7 +231,8 @@
     "repeatWeekly": "Svake nedelje",
     "repeatMonthly": "Svakog meseca",
     "add": "Dodaj zadatak",
-    "deleted": "Zadatak obrisan"
+    "deleted": "Zadatak obrisan",
+    "newTag": "novo"
   },
   "notes": {
     "title": "Beleške",
