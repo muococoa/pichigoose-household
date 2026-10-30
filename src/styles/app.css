@@ -453,7 +453,7 @@ body.adding .offline { bottom: calc(max(var(--tabbar), var(--kb)) + 96px) }
 .sticker-box { display: flex; flex: none; align-self: center }
 /* Just the line drawing, floating, in the soft theme color of Send before you type (Nora, 29 Oct). */
 .sticker-btn { display: grid; place-items: center; width: 40px; height: 40px; color: color-mix(in srgb, var(--hero) 45%, #FFFDF8); border-radius: 50%; transition: color .15s, transform .2s var(--ease-out) }
-.sticker-btn svg { display: block; width: 26px; height: 26px }
+.sticker-btn svg { display: block; width: 40px; height: 40px }
 .sticker-btn.on { color: var(--hero) }
 .sticker-btn:active { transform: scale(.92) }
 .sticker-tray {
