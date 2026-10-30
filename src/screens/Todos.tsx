@@ -45,7 +45,7 @@ function groupOf(todo: Todo): Group {
 /** Bring a done to-do back for today instead of adding a copy (Nora, 30 Oct). It comes back as a fresh to-do with
  *  the same title and person, so the old one stays in "Done earlier" and still counts for trophies. */
 export function bringTodoBack(from: Todo, repeat: Todo['repeat'], householdId: string, me: string, due: string | null, assignee: string | null = from.assignee_id, title = from.title) {
-  db.insert('todos', {
+  return db.insert('todos', {
     // The spelling just typed wins: "Raširiti veš" brings back "Rasiriti ves" with the proper letters (Nora, 30 Oct).
     title: title.trim() || from.title,
     assignee_id: assignee,
@@ -370,8 +370,14 @@ export function TodoSheet({ todo, householdId, people, onClose }: { todo: Todo |
   // Before a copy lands on the list, Pichi checks for the same to-do (Nora, 30 Oct).
   const all = useTodos(householdId)
   const [similar, setSimilar] = useState<Similar | null>(null)
+  const [firstComment, setFirstComment] = useKept(`${keep}:comment`, '')
+  function postFirstComment(todoId: string) {
+    if (!firstComment.trim()) return
+    db.insert('comments', { household_id: householdId, item_id: null, todo_id: todoId, note_id: null, author_id: me, body: firstComment.trim(), sticker: null, reply_to: null, created_at: new Date().toISOString() })
+    setFirstComment('')
+  }
   function insert() {
-    db.insert('todos', {
+    const row = db.insert('todos', {
       ...fields,
       household_id: householdId,
       created_by: me,
@@ -379,6 +385,7 @@ export function TodoSheet({ todo, householdId, people, onClose }: { todo: Todo |
       done_at: null,
       done_by: null,
     })
+    postFirstComment(row.id as string)
     setSimilar(null)
     onClose()
   }
@@ -390,7 +397,8 @@ export function TodoSheet({ todo, householdId, people, onClose }: { todo: Todo |
     else insert()
   }
   function bringBack(from: Todo, repeatAs: Todo['repeat']) {
-    bringTodoBack(from, repeatAs, householdId, me, fields.due_date, fields.assignee_id, fields.title)
+    const row = bringTodoBack(from, repeatAs, householdId, me, fields.due_date, fields.assignee_id, fields.title)
+    postFirstComment(row.id as string)
     setSimilar(null)
     onClose()
   }
@@ -501,9 +509,17 @@ export function TodoSheet({ todo, householdId, people, onClose }: { todo: Todo |
           </div>
         </div>
       </form>
-      {todo && (
+      {todo ? (
         <div style={{ marginTop: 20 }}>
           <Comments target={{ todo_id: todo.id }} />
+        </div>
+      ) : (
+        // A new to-do can carry its first comment right away (Nora, 30 Oct): it's posted when the to-do is added.
+        <div style={{ marginTop: 20 }}>
+          <label className="label" htmlFor="todo-first-comment">
+            {t('comments.title')}
+          </label>
+          <textarea id="todo-first-comment" className="input" rows={2} placeholder={t('comments.placeholder')} value={firstComment} onChange={(e) => setFirstComment(e.target.value)} />
         </div>
       )}
       {/* Only a new to-do has a button: it creates it. */}
