@@ -235,11 +235,12 @@ export function TodosScreen() {
           </section>
           )
         })}
-        {/* Done before today: archived, one tap away, with "Again" for the things you do over and over (Nora, 30 Oct). */}
+        {/* Done before today: archived, one tap away, with "Again" for the things you do over and over (Nora, 30 Oct).
+            It follows the All / Mine / someone's filter above, like the list does. */}
         <ArchiveLink
           title={t('archive.todosTitle')}
           people={people}
-          rows={todos.rows.filter((x) => x.done_at && !recentlyDone(x) && !x.project_id).map((x) => ({ id: x.id, name: x.title, at: x.done_at as string, by: x.done_by }))}
+          rows={todos.rows.filter((x) => x.done_at && !recentlyDone(x) && !x.project_id && (shown === 'all' || x.assignee_id === (shown === 'mine' ? me : shown))).map((x) => ({ id: x.id, name: x.title, at: x.done_at as string, by: x.done_by }))}
           onAgain={(r) => {
             const was = todos.rows.find((x) => x.id === r.id)
             if (!hid || !was) return
