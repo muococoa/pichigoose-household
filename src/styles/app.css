@@ -610,7 +610,10 @@ html[data-kb="open"] body.adding .with-tabbar > .scroll {
   background: #FFFDF8 url("../../assets/paper-white.png") 0 0 / 512px 512px;
   box-shadow: 0 0 0 1px rgba(30, 26, 48, .06), 0 2px 0 rgba(30, 26, 48, .05), 0 8px 18px -8px rgba(30, 26, 48, .28);
 }
-.typing-bar .input { flex: 1; height: auto; min-height: 40px; padding: 8px 15px; resize: none; line-height: 22px; border-radius: 22px }
+/* The field's edge is the same soft pink as the sticker and send buttons next to it (Nora, 30 Oct), and the text sits
+   1.5px higher: mostly small letters, so true center reads low by eye. */
+.typing-bar .input { flex: 1; height: auto; min-height: 40px; padding: 6.5px 15px 9.5px; resize: none; line-height: 22px; border-radius: 22px; border-color: color-mix(in srgb, var(--hero) 35%, #FFFDF8) }
+.typing-bar .input:focus { border-color: var(--hero) }
 .typing-bar.quoting { flex-wrap: wrap; border-radius: 22px }
 .typing-bar .sticker-box { align-self: flex-end }
 .typing-bar .sticker-tray { left: 0; right: 0 }
