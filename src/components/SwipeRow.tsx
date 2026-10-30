@@ -9,7 +9,7 @@ import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 /** color: the edge, icon and words; fill: the pencil scribble inside, soft like an empty send button. */
 export type SwipeAction = { key: string; label: string; icon: ReactNode; color: string; fill: string; onClick: () => void }
 
-const W = 78
+const W = 90
 const OPEN_EVENT = 'swiperow-open'
 
 /** toMargin: disappear at the red margin line (the default), or at the row's own left edge (rows with a drag handle). */
@@ -98,14 +98,14 @@ export function SwipeRow({ left = [], right = [], toMargin = true, children }: {
   return (
     <div ref={rowRef} className="swipe-row" data-swipe-left={maxL ? '' : undefined} data-swipe-right={maxR ? '' : undefined} style={clipped !== null ? { clipPath: `inset(-40px -40px -40px ${-clipped}px)` } : undefined} {...handlers} onTouchCancel={handlers.onTouchEnd}>
       {left.length > 0 && (
-        <div className="swipe-actions" style={{ left: 0, width: Math.max(0, x), transition: dragging ? 'none' : undefined }} aria-hidden={x <= 0}>
+        <div className="swipe-actions on-left" style={{ left: 0, width: Math.max(0, x), transition: dragging ? 'none' : undefined }} aria-hidden={x <= 0}>
           {left.map((a) => (
             <SwipeButton key={a.key} action={a} onClick={() => run(a)} />
           ))}
         </div>
       )}
       {right.length > 0 && (
-        <div className="swipe-actions" style={{ right: 0, width: Math.max(0, -x), transition: dragging ? 'none' : undefined }} aria-hidden={x >= 0}>
+        <div className="swipe-actions on-right" style={{ right: 0, width: Math.max(0, -x), transition: dragging ? 'none' : undefined }} aria-hidden={x >= 0}>
           {right.map((a) => (
             <SwipeButton key={a.key} action={a} onClick={() => run(a)} />
           ))}
@@ -146,9 +146,9 @@ function SwipeButton({ action, onClick }: { action: SwipeAction; onClick: () => 
             <feComposite in="SourceGraphic" in2="mask" operator="in" />
           </filter>
         </defs>
-        <rect width="100%" height="100%" style={{ fill: action.fill }} opacity=".18" />
+        <rect width="100%" height="100%" style={{ fill: action.fill }} opacity=".09" />
         <g transform="rotate(-28 40 40)">
-          <rect x="-80" y="-80" width="260" height="260" style={{ fill: action.fill }} opacity=".45" filter={`url(#sw-${id})`} />
+          <rect x="-80" y="-80" width="260" height="260" style={{ fill: action.fill }} opacity=".22" filter={`url(#sw-${id})`} />
         </g>
       </svg>
       {action.icon}

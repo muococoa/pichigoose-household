@@ -690,7 +690,15 @@ html[data-kb="open"] body.adding .with-tabbar > .scroll {
 .swipe-row { position: relative; touch-action: pan-y }
 .swipe-front { position: relative; transition: transform .32s var(--ease-out) }
 .swipe-actions { position: absolute; top: 0; bottom: 0; display: flex; overflow: hidden; padding: 7px 0; transition: width .32s var(--ease-out) }
-.swipe-btn { position: relative; flex: 1 1 0; min-width: 0; margin: 0 3px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; border: 2px solid; border-radius: 14px; background: #FFFDF8; font-size: 13px; line-height: 16px; font-weight: 800; overflow: hidden; white-space: nowrap }
+/* Each button looks like the Today stamp, untilted (Nora, 30 Oct): a thin edge, stamp corners, uppercase, and the
+   stamp's worn ink over everything. A little room between it and the row. */
+.swipe-actions.on-left { padding-right: 10px }
+.swipe-actions.on-right { padding-left: 10px }
+.swipe-btn {
+  position: relative; flex: 1 1 0; min-width: 0; margin: 0 3px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  border: 2px solid; border-radius: 5px; background: #FFFDF8; font-size: 12px; line-height: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; overflow: hidden; white-space: nowrap;
+  -webkit-mask-image: url("../../assets/stamp-grunge.png"); mask-image: url("../../assets/stamp-grunge.png"); -webkit-mask-size: 300px 300px; mask-size: 300px 300px;
+}
 .swipe-btn > :not(.swipe-fill) { position: relative }
 .swipe-fill { position: absolute; inset: 0; width: 100%; height: 100% }
 .pin-mark { display: inline-flex; vertical-align: -2px; margin-left: 6px; color: #63586B }
