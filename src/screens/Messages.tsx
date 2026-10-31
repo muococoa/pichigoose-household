@@ -155,7 +155,7 @@ function Bubble({ m, mine, first, lastOfRun, group, who, time, read, hearts, quo
       {group && !mine && <span className="msg-avatar">{lastOfRun && who ? <PersonLink id={who.id}><Avatar avatar={who.avatar} size={34} /></PersonLink> : null}</span>}
       <div className="bubble-wrap" style={swipe.shift ? { transform: `translateX(${swipe.shift}px)`, transition: 'none' } : undefined}>
         <div className={`bubble${m.sticker ? ' sticker' : ''}`} onClick={tap.onClick}>
-          {group && !mine && first && <div className="bubble-name">{who?.display_name}</div>}
+          {group && !mine && first && <div className="bubble-name">{who?.display_name ?? t('common.someone')}</div>}
           {quote && <Quote m={quote} name={quoteName} />}
           {m.sticker ? <StickerImage name={m.sticker} size={128} /> : <span className="bubble-text"><Linkify text={m.body} /></span>}
           <span className="bubble-time">

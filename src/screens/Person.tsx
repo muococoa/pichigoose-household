@@ -5,7 +5,8 @@ import { useMe } from '../auth'
 import { useComments, useHousehold, useItemsIn, useLists, useNotes, useProfiles, useTodos } from '../data/hooks'
 import { Screen } from '../components/Shell'
 import { Avatar } from '../components/Avatar'
-import { Hand } from '../components/Scrapbook'
+import { DeleteLink, Hand, Sheet } from '../components/Scrapbook'
+import { db } from '../data/store'
 import { BackIcon, GearIcon, MessagesIcon } from '../components/Icons'
 import { useBackInApp } from '../lib/back'
 import { WishList } from './Wishes'
@@ -28,6 +29,15 @@ export function PersonScreen() {
   const back = useBackInApp()
   const person = useProfiles().rows.find((p) => p.id === id)
   const { household, people } = useHousehold()
+  // The household's admin (whoever created it) can take someone out of it, like someone added by accident (Nora, 31 Oct).
+  const [removing, setRemoving] = useState(false)
+  const canRemove = Boolean(household && household.created_by === me && id !== me && people.some((p) => p.id === id))
+  function remove() {
+    if (!household || !id) return
+    db.remove('household_members', { household_id: household.id, user_id: id })
+    setRemoving(false)
+    back()
+  }
   const hid = household?.id ?? null
   const lists = useLists(hid)
   const items = useItemsIn(lists.rows.map((l) => l.id))
@@ -96,9 +106,27 @@ export function PersonScreen() {
                 ))}
               </div>
             )}
+            {canRemove && (
+              <div style={{ marginTop: 40 }}>
+                <DeleteLink label={t('person.remove')} onClick={() => setRemoving(true)} />
+              </div>
+            )}
           </>
         )}
       </div>
+      <Sheet small open={removing} onClose={() => setRemoving(false)} title={t('person.removeTitle', { name: person?.display_name ?? '' })}>
+        <p className="body" style={{ margin: '0 0 20px' }}>
+          {t('person.removeText')}
+        </p>
+        <div className="row" style={{ gap: 12 }}>
+          <button type="button" className="stk sec" style={{ flex: 1 }} onClick={() => setRemoving(false)}>
+            {t('common.cancel')}
+          </button>
+          <button type="button" className="stk prim" style={{ flex: 1 }} onClick={remove}>
+            {t('person.removeYes')}
+          </button>
+        </div>
+      </Sheet>
     </Screen>
   )
 }

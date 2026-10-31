@@ -364,6 +364,10 @@
     "read": "Read by everyone"
   },
   "person": {
+    "remove": "Remove from household",
+    "removeTitle": "Remove {{name}} from the household?",
+    "removeText": "They won't see this household anymore. You can invite them again anytime.",
+    "removeYes": "Remove",
     "message": "Send a message",
     "todosAdded": "To-dos added",
     "todosDone": "To-dos done",
