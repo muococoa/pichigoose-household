@@ -347,6 +347,7 @@
     "deleted": "Comment deleted"
   },
   "messages": {
+    "joined": "{{name}} joined the household",
     "title": "Messages",
     "you": "You",
     "placeholder": "Write a message...",

@@ -476,6 +476,8 @@ export function useHousehold() {
       : []
     return {
       loaded: households.loaded && members.loaded,
+      /** Everyone's membership in this household, with when they joined. */
+      members: household ? members.rows.filter((m) => m.household_id === household.id) : [],
       households: homes,
       household,
       membership,

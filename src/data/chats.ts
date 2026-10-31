@@ -15,7 +15,7 @@ export function inChat(m: Message, key: string, me: string) {
 /** Every chat in the current household, with its messages and unread count. The group chat is always first. */
 export function useChats() {
   const me = useMe()
-  const { household, membership, people } = useHousehold()
+  const { household, membership, people, members } = useHousehold()
   const hid = household?.id ?? null
   const messages = useMessages(hid)
   const reads = useChatReads(hid)
@@ -27,10 +27,16 @@ export function useChats() {
       const readAt = reads.rows.find((r) => r.chat === key && r.user_id === me)?.read_at ?? since
       const unread = list.filter((m) => m.author_id !== me && m.created_at > readAt).length
       // Read ticks: everyone else in the chat has read up to this message. (In a private chat, the
-      // other person marks it under my id.)
-      const others = key === 'household' ? people.filter((p) => p.id !== me).map((p) => ({ id: p.id, chat: 'household' })) : [{ id: key, chat: me }]
-      const readByAll = (m: Message) =>
-        others.length > 0 && others.every((o) => (reads.rows.find((r) => r.user_id === o.id && r.chat === o.chat)?.read_at ?? '') >= m.created_at)
+      // other person marks it under my id.) In the group chat, only the people who were already in the
+      // household when it was sent count, so someone joining later doesn't take the ticks away (Nora, 31 Oct).
+      const others =
+        key === 'household'
+          ? members.filter((x) => x.user_id !== me).map((x) => ({ id: x.user_id, chat: 'household', since: x.joined_at }))
+          : [{ id: key, chat: me, since: '' }]
+      const readByAll = (m: Message) => {
+        const there = others.filter((o) => !o.since || Date.parse(o.since) <= Date.parse(m.created_at))
+        return there.length > 0 && there.every((o) => (reads.rows.find((r) => r.user_id === o.id && r.chat === o.chat)?.read_at ?? '') >= m.created_at)
+      }
       return { key, person, messages: list, last: list[list.length - 1], unread, readByAll }
     }
     const privateChats = people
@@ -38,7 +44,7 @@ export function useChats() {
       .map((p) => make(p.id, p))
       .sort((a, b) => (b.last?.created_at ?? '').localeCompare(a.last?.created_at ?? ''))
     return [make('household', null), ...privateChats]
-  }, [messages.rows, reads.rows, people, me, membership?.joined_at])
+  }, [messages.rows, reads.rows, people, members, me, membership?.joined_at])
 }
 
 /** Unread messages in the household chat, for the badge on the Messages tab. */

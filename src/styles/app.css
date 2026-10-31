@@ -602,6 +602,8 @@ html[data-kb="open"] body.adding .with-tabbar > .scroll {
   mask-image: linear-gradient(to top, transparent 0, transparent var(--fade-from), #000 var(--fade-to));
 }
 .day-stamp { display: flex; justify-content: center; margin: 18px 0 4px }
+/* Someone joined: a small paper label in the middle of the chat, like WhatsApp (Nora, 31 Oct). */
+.chat-event { width: fit-content; max-width: 80%; margin: 14px auto 8px; padding: 4px 12px 5px; border-radius: 10px; background: #FFFDF8; border: 1.5px solid #E6DED2; color: #63586B; font-size: 13px; line-height: 18px; font-weight: 700; text-align: center }
 .say-hi { text-align: center; color: #63586B; font-size: 15px; font-weight: 600; margin: 48px 0 }
 /* One typing bar for every place you type a short text (Nora, 29 Oct): chat, comments and Shopping's add field. A strip
    of our paper with rounded ends, like the menu: the field, stickers where they fit, and the round send button. */

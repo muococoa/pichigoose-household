@@ -353,6 +353,7 @@
     "deleted": "Komentar obrisan"
   },
   "messages": {
+    "joined": "{{name}} je sada deo domaćinstva",
     "title": "Poruke",
     "you": "Ti",
     "placeholder": "Napiši poruku...",

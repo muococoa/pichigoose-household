@@ -67,7 +67,10 @@ function Ticks({ read }: { read: boolean }) {
 }
 
 /** Speech bubbles grouped into runs: the same person, the same day, a few minutes apart. */
-function Bubbles({ messages, group, readByAll, onReply }: { messages: Message[]; group: boolean; readByAll: (m: Message) => boolean; onReply: (m: Message) => void }) {
+/** Someone joining the household, as a note in the middle of the group chat, like WhatsApp (Nora, 31 Oct). */
+export type Joined = { id: string; name: string; at: string }
+
+function Bubbles({ messages, joins = [], group, readByAll, onReply }: { messages: Message[]; joins?: Joined[]; group: boolean; readByAll: (m: Message) => boolean; onReply: (m: Message) => void }) {
   const me = useMe()
   const { people } = useHousehold()
   const { time, day } = useTimeLabels()
@@ -76,12 +79,34 @@ function Bubbles({ messages, group, readByAll, onReply }: { messages: Message[];
   const byId = new Map(messages.map((m) => [m.id, m]))
   const { t } = useTranslation()
   const quoteName = (q?: Message) => (!q ? '' : q.author_id === me ? t('messages.you') : (person(q.author_id)?.display_name ?? t('common.someone')))
+  // Messages and joins in one line, by time. A join breaks a run of bubbles, like a new day does.
+  type Entry = { at: string; m?: Message; joined?: Joined }
+  const entries: Entry[] = [...messages.map((m) => ({ at: m.created_at, m })), ...joins.map((j) => ({ at: j.at, joined: j }))].sort(
+    (a, b) => Date.parse(a.at) - Date.parse(b.at),
+  )
   return (
     <>
-      {messages.map((m, i) => {
-        const prev = messages[i - 1]
-        const next = messages[i + 1]
-        const newDay = !prev || !sameDay(new Date(prev.created_at), new Date(m.created_at))
+      {entries.map((e, i) => {
+        const before = entries[i - 1]
+        const newDay = !before || !sameDay(new Date(before.at), new Date(e.at))
+        const stamp = newDay && (
+          <div className="day-stamp">
+            <Stamp color={STAMP_COLORS.nora} rotate={-2}>
+              {day(e.at)}
+            </Stamp>
+          </div>
+        )
+        if (e.joined) {
+          return (
+            <div key={`joined-${e.joined.id}`}>
+              {stamp}
+              <div className="chat-event">{t('messages.joined', { name: e.joined.name })}</div>
+            </div>
+          )
+        }
+        const m = e.m as Message
+        const prev = entries[i - 1]?.m
+        const next = entries[i + 1]?.m
         const near = (a?: Message, b?: Message) =>
           Boolean(a && b && a.author_id === b.author_id && sameDay(new Date(a.created_at), new Date(b.created_at)) && Math.abs(new Date(b.created_at).getTime() - new Date(a.created_at).getTime()) < 3 * 60000)
         const first = !near(prev, m)
@@ -90,13 +115,7 @@ function Bubbles({ messages, group, readByAll, onReply }: { messages: Message[];
         const who = person(m.author_id)
         return (
           <div key={m.id}>
-            {newDay && (
-              <div className="day-stamp">
-                <Stamp color={STAMP_COLORS.nora} rotate={-2}>
-                  {day(m.created_at)}
-                </Stamp>
-              </div>
-            )}
+            {stamp}
             <Bubble
               m={m}
               mine={mine}
@@ -222,7 +241,7 @@ function Conversation({ chatKey, header, back }: { chatKey: string; header?: boo
   const { t } = useTranslation()
   const me = useMe()
   const goBack = useBackInApp()
-  const { household, name, people } = useHousehold()
+  const { household, name, people, members: memberships, membership } = useHousehold()
   const chats = useChats()
   const chat = chats.find((c) => c.key === chatKey)
   const { household: hh } = useHousehold()
@@ -288,6 +307,12 @@ function Conversation({ chatKey, header, back }: { chatKey: string; header?: boo
   const members = people.map((p) => (p.id === me ? t('messages.you') : p.display_name)).join(', ')
   const replying = replyTo ? chat.messages.find((m) => m.id === replyTo) : undefined
   const replyingWho = replying ? people.find((p) => p.id === replying.author_id) : undefined
+  // Who joined after you did (what you'd have seen arrive), as notes in the group chat.
+  const joins: Joined[] = group
+    ? memberships
+        .filter((x) => x.user_id !== me && membership && Date.parse(x.joined_at) > Date.parse(membership.joined_at))
+        .map((x) => ({ id: x.user_id, name: people.find((p) => p.id === x.user_id)?.display_name ?? t('common.someone'), at: x.joined_at }))
+    : []
 
   function send(body: string) {
     if (!household) return
@@ -331,8 +356,8 @@ function Conversation({ chatKey, header, back }: { chatKey: string; header?: boo
         </div>
       )}
       <div className="bubbles">
-        {chat.messages.length ? (
-          <Bubbles messages={chat.messages} group={group} readByAll={chat.readByAll} onReply={reply} />
+        {chat.messages.length || joins.length ? (
+          <Bubbles messages={chat.messages} joins={joins} group={group} readByAll={chat.readByAll} onReply={reply} />
         ) : (
           <p className="say-hi">{group ? t('messages.sayHiAll') : t('messages.sayHi', { name: title })}</p>
         )}
