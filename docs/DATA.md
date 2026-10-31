@@ -79,6 +79,7 @@ Who belongs to which household, plus each person's own settings for that househo
 | joined_at | timestamptz | |
 
 - Leaving a household deletes this row (A7). When the last member leaves, the household and everything in it is deleted [Claude].
+- The household's admin (`households.created_by`) can remove anyone else, which also deletes their row. What they wrote stays [Nora].
 - Default `home_layout` order: Pichi's news, shopping, to-dos, money, notes.
 - Decided by Nora: the household name is shared, and the person who joins doesn't name it. `label` stays as a personal rename from My households.
 

@@ -371,6 +371,10 @@
     "read": "Svi su pročitali"
   },
   "person": {
+    "remove": "Ukloni iz domaćinstva",
+    "removeTitle": "Ukloniti {{name}} iz domaćinstva?",
+    "removeText": "Više neće videti ovo domaćinstvo. Možeš ponovo da pošalješ pozivnicu kad god želiš.",
+    "removeYes": "Ukloni",
     "message": "Pošalji poruku",
     "todosAdded": "Dodati zadaci",
     "todosDone": "Završeni zadaci",
